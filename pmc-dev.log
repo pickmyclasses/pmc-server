@@ -1,0 +1,13 @@
+{"level":"INFO","time":"2022-01-10T13:04:47.175-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
+{"level":"INFO","time":"2022-01-10T13:04:47.180-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}
+{"level":"INFO","time":"2022-01-10T22:26:48.762-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
+{"level":"INFO","time":"2022-01-10T22:26:48.765-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}
+{"level":"INFO","time":"2022-01-11T08:22:44.046-0700","caller":"logger/logger.go:75","msg":"/course/1/review","status":200,"method":"GET","path":"/course/1/review","query":"","ip":"::1","user-agent":"PostmanRuntime/7.28.4","errors":"","cost":0.004303041}
+{"level":"INFO","time":"2022-01-11T08:23:06.360-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
+{"level":"INFO","time":"2022-01-11T08:23:06.361-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}
+{"level":"INFO","time":"2022-01-11T08:23:25.438-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
+{"level":"INFO","time":"2022-01-11T08:23:25.440-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}
+{"level":"INFO","time":"2022-01-11T08:23:32.291-0700","caller":"review/review.go:17","msg":"1"}
+{"level":"INFO","time":"2022-01-11T08:23:32.298-0700","caller":"logger/logger.go:75","msg":"/course/1/review","status":200,"method":"GET","path":"/course/1/review","query":"","ip":"::1","user-agent":"PostmanRuntime/7.28.4","errors":"","cost":0.00694475}
+{"level":"INFO","time":"2022-01-11T08:23:50.472-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
+{"level":"INFO","time":"2022-01-11T08:23:50.474-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}

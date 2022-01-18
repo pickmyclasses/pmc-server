@@ -1,0 +1,33 @@
+app:
+  name: "pmc"
+  mode: "dev"
+  port: 8081
+log:
+  level: "debug"
+  filename: "pmc-dev.log"
+  max_size: 200
+  max_age: 30
+  max_backups: 7
+  mode: "debug"
+mongo:
+  host: "127.0.0.1"
+  port: 27017
+  max_pool: 20
+  w: "majority"
+  dbname: "pmc"
+postgres:
+  host: "127.0.0.1"
+  port: 5432
+  username: "postgres"
+  password: "admin123"
+  dbname: "pmc"
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  db: 1
+  password: ""
+  pool_size: 100
+snowflake:
+  start_time: "2022-01-04"
+  machine_id: 1
+

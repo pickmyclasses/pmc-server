@@ -2,12 +2,12 @@ package routes
 
 import (
 	"net/http"
+	"pmc_server/init/logger"
 
 	classController "pmc_server/controller/class"
 	courseController "pmc_server/controller/course"
 	reviewController "pmc_server/controller/review"
 	userController "pmc_server/controller/user"
-	"pmc_server/logger"
 	"pmc_server/middlewares/auth"
 
 	"github.com/gin-gonic/gin"

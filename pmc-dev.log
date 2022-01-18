@@ -11,3 +11,5 @@
 {"level":"INFO","time":"2022-01-11T08:23:32.298-0700","caller":"logger/logger.go:75","msg":"/course/1/review","status":200,"method":"GET","path":"/course/1/review","query":"","ip":"::1","user-agent":"PostmanRuntime/7.28.4","errors":"","cost":0.00694475}
 {"level":"INFO","time":"2022-01-11T08:23:50.472-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
 {"level":"INFO","time":"2022-01-11T08:23:50.474-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}
+{"level":"INFO","time":"2022-01-18T10:56:24.607-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
+{"level":"INFO","time":"2022-01-18T10:56:24.610-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}

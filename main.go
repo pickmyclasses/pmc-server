@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"pmc_server/config"
+	"pmc_server/init/logger"
 	"pmc_server/init/postgres"
 	"pmc_server/init/redis"
 	libs "pmc_server/libs/snowflake"
-	"pmc_server/logger"
 	"pmc_server/routes"
 
 	"github.com/spf13/viper"

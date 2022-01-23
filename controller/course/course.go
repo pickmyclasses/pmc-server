@@ -5,7 +5,7 @@ import (
 
 	. "pmc_server/consts"
 	"pmc_server/logic"
-	model "pmc_server/models"
+	model "pmc_server/model"
 	"pmc_server/utils"
 
 	"github.com/gin-gonic/gin"

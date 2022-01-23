@@ -3,7 +3,7 @@ package logic
 import (
 	"errors"
 	dao "pmc_server/dao/course"
-	model "pmc_server/models"
+	model "pmc_server/model"
 	"strconv"
 )
 

@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"pmc_server/config"
-	model "pmc_server/models"
+	model "pmc_server/model"
 	"time"
 
 	"github.com/spf13/viper"

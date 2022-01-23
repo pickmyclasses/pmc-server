@@ -6,7 +6,7 @@ import (
 	dao "pmc_server/dao/user"
 	"pmc_server/libs/jwt"
 	libs "pmc_server/libs/snowflake"
-	model "pmc_server/models"
+	model "pmc_server/model"
 )
 
 func Register(param *model.RegisterParams) error {

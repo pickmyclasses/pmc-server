@@ -6,7 +6,7 @@ import (
 
 	. "pmc_server/consts"
 	dao "pmc_server/dao/review"
-	model "pmc_server/models"
+	model "pmc_server/model"
 )
 
 func GetCourseReviewList(pn, pSize int, courseID string) (*[]model.Review, int64, error) {

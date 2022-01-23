@@ -2,7 +2,7 @@ package dao
 
 import (
 	"pmc_server/init/postgres"
-	model "pmc_server/models"
+	model "pmc_server/model"
 )
 
 func FindAllUsers() ([]model.User, error) {

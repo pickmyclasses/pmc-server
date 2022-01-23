@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	dao "pmc_server/dao/class"
-	model "pmc_server/models"
+	model "pmc_server/model"
 )
 
 func GetClassList(pn, pSize int) (*[]model.Class, int64) {

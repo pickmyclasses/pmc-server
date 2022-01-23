@@ -7,7 +7,7 @@ import (
 	"pmc_server/init/postgres"
 	"strings"
 
-	model "pmc_server/models"
+	model "pmc_server/model"
 
 	"github.com/anaskhan96/go-password-encoder"
 	"go.uber.org/zap"

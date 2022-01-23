@@ -13,3 +13,17 @@
 {"level":"INFO","time":"2022-01-11T08:23:50.474-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}
 {"level":"INFO","time":"2022-01-18T10:56:24.607-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
 {"level":"INFO","time":"2022-01-18T10:56:24.610-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}
+{"level":"INFO","time":"2022-01-22T00:13:06.988-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
+{"level":"INFO","time":"2022-01-22T00:13:06.992-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}
+{"level":"INFO","time":"2022-01-23T03:31:56.763-0700","caller":"logger/logger.go:75","msg":"/course/list","status":200,"method":"GET","path":"/course/list","query":"","ip":"::1","user-agent":"PostmanRuntime/7.29.0","errors":"","cost":0.275281}
+{"level":"INFO","time":"2022-01-23T03:33:09.452-0700","caller":"logger/logger.go:75","msg":"/course/list","status":200,"method":"GET","path":"/course/list","query":"pn=2&psize=10","ip":"::1","user-agent":"PostmanRuntime/7.29.0","errors":"","cost":0.250488792}
+{"level":"INFO","time":"2022-01-23T03:33:18.967-0700","caller":"logger/logger.go:75","msg":"/course/list","status":200,"method":"GET","path":"/course/list","query":"pn=120&psize=10","ip":"::1","user-agent":"PostmanRuntime/7.29.0","errors":"","cost":0.231605917}
+{"level":"INFO","time":"2022-01-23T03:35:43.841-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
+{"level":"INFO","time":"2022-01-23T03:35:43.844-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}
+{"level":"INFO","time":"2022-01-23T03:36:35.383-0700","caller":"logger/logger.go:75","msg":"/course/3","status":404,"method":"GET","path":"/course/3","query":"","ip":"::1","user-agent":"PostmanRuntime/7.29.0","errors":"","cost":0.022342333}
+{"level":"INFO","time":"2022-01-23T03:36:48.994-0700","caller":"logger/logger.go:75","msg":"/course/10","status":404,"method":"GET","path":"/course/10","query":"","ip":"::1","user-agent":"PostmanRuntime/7.29.0","errors":"","cost":0.003959084}
+{"level":"INFO","time":"2022-01-23T03:37:05.365-0700","caller":"logger/logger.go:75","msg":"/course/22723","status":200,"method":"GET","path":"/course/22723","query":"","ip":"::1","user-agent":"PostmanRuntime/7.29.0","errors":"","cost":0.008119584}
+{"level":"INFO","time":"2022-01-23T03:38:01.511-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
+{"level":"INFO","time":"2022-01-23T03:38:01.514-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}
+{"level":"INFO","time":"2022-01-23T04:56:05.285-0700","caller":"pmc_server/main.go:80","msg":"Shutting down server"}
+{"level":"INFO","time":"2022-01-23T04:56:05.289-0700","caller":"pmc_server/main.go:89","msg":"Server exiting"}

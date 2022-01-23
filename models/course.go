@@ -2,17 +2,17 @@ package model
 
 type Course struct {
 	Base
-	DepartmentID     int64
-	PrerequisiteOfID int64
-	Department       *Department
-	Catalog          string  `gorm:"type:varchar(40);not null"`
-	Name             string  `gorm:"type:varchar(50);not null"`
-	Number           string  `gorm:"type:varchar(20);not null"`
-	Description      string  `gorm:"type:text;not null"`
-	SyllabusURL      string  `gorm:"type:varchar(120);"`
-	Introduction     string  `gorm:"type:text;not null"`
-	Type             string  `gorm:"type:varchar(20);not null"`
-	CurrentlyOffered bool    `gorm:"type:boolean;not null"`
-	Rating           float32 `gorm:"type:float(3)"`
-	PrerequisiteOf   *Course
+	IsHonor            bool     `gorm:"column:is_honor"`
+	FixedCredit        bool     `gorm:"column:fixed_credit"`
+	DesignationCatalog string   `gorm:"column:designation_catalog"`
+	Description        string   `gorm:"column:description"`
+	Prerequisites      string   `gorm:"column:prerequisites"`
+	Title              string   `gorm:"column:title"`
+	CatalogCourseName  string   `gorm:"column:catalog_course_name"`
+	Component          string   `gorm:"column:component"`
+	MaxCredit          string   `gorm:"column:max_credit"`
+	MinCredit          string   `gorm:"column:min_credit"`
+	SubjectID          int64    `gorm:"column:subject_id"`
+	AssociatedCourseID int64    `gorm:"column:associated_course_id"`
+	Subject            *Subject `gorm:"foreignKey:SubjectID"`
 }

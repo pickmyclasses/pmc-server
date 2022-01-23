@@ -1,4 +1,4 @@
-FROM golang:stretch
+FROM golang:alpine AS builder
 
 ENV GO111MODULE=on \
     CGO_ENABLED=0 \
@@ -11,10 +11,8 @@ COPY . .
 
 RUN go build -o app .
 
-WORKDIR /dist
+FROM scratch
 
-RUN cp /build/app .
+COPY --from=builder /build/app /
 
-EXPOSE 8888
-
-CMD ["/dist/app"]
+ENTRYPOINT ["/app"]

@@ -27,3 +27,12 @@ func GetClassInfoByID(id int) (*model.Class, error) {
 	}
 	return &class, nil
 }
+
+func GetClassByCourseID(courseID int64) (*[]model.Class, error) {
+	var classes []model.Class
+	result := postgres.DB.Where("course_id = ?", courseID).Find(&classes)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &classes, nil
+}

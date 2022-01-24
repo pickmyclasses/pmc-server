@@ -12,6 +12,7 @@ import (
 const CtxUserIDKey = "user_ID"
 const CtxUserFirstNameKey = "first_name"
 const CtxUserLastNameKey = "last_name"
+const CtxUserRole = "role"
 
 func JWTAuth() func(c *gin.Context) {
 	return func(c *gin.Context) {
@@ -45,6 +46,8 @@ func JWTAuth() func(c *gin.Context) {
 		c.Set(CtxUserIDKey, claims.UserID)
 		c.Set(CtxUserFirstNameKey, claims.FirstName)
 		c.Set(CtxUserLastNameKey, claims.LastName)
+		c.Set(CtxUserRole, claims.Role)
+
 		c.Next()
 	}
 }

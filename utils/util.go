@@ -24,6 +24,7 @@ func RemoveTopStruct(fields map[string]string) map[string]string {
 	return res
 }
 
+// Paginate takes the page number and page size to paginate the data
 func Paginate(page, pageSize int) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		if page == 0 {
@@ -42,6 +43,7 @@ func Paginate(page, pageSize int) func(db *gorm.DB) *gorm.DB {
 	}
 }
 
+// HandlePagination checks for the input parameters for pagination and returns the paginated data
 func HandlePagination(c *gin.Context, defaultVal string) (int, int, error) {
 	pn := c.DefaultQuery("pn", "0")
 	pSize := c.DefaultQuery("psize", defaultVal)

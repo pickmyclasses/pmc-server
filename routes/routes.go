@@ -49,7 +49,7 @@ func SetUp(mode string) *gin.Engine {
 	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 
 	// for admin
-	r.GET("/admin/user/list", admin.GetUserListHandler)
+	r.GET("/admin/user/list", auth.IsAdminAuth(), admin.GetUserListHandler)
 
 	r.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{

@@ -46,3 +46,20 @@ func ParseToken(tokenStr string) (*UniqueClaims, error) {
 	}
 	return nil, errors.New("invalid token")
 }
+
+func RefreshToken(tokenString string) (string, error) {
+	jwt.TimeFunc = func() time.Time {
+		return time.Unix(0, 0)
+	}
+	token, err := jwt.ParseWithClaims(tokenString, &UniqueClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return "", nil
+	})
+	if err != nil {
+		return "", err
+	}
+	if claims, ok := token.Claims.(*UniqueClaims); ok && token.Valid {
+		jwt.TimeFunc = time.Now
+		claims.StandardClaims.ExpiresAt = time.Now().Add(1 * time.Hour).Unix()
+	}
+	return "", nil
+}

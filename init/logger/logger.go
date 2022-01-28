@@ -16,6 +16,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// Init the logger config
 func Init(mode string) error {
 	writeSyncer := getLogConfig(
 		viper.GetString("log.filename"),
@@ -44,6 +45,7 @@ func Init(mode string) error {
 	return nil
 }
 
+// getEncoder returns the current encoder setting
 func getEncoder() zapcore.Encoder {
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -54,6 +56,7 @@ func getEncoder() zapcore.Encoder {
 	return zapcore.NewJSONEncoder(encoderConfig)
 }
 
+// getLogConfig returns the log configuration
 func getLogConfig(filename string, maxSize, maxBackup, maxAge int) zapcore.WriteSyncer {
 	lg := &lumberjack.Logger{
 		Filename:   filename,
@@ -64,6 +67,7 @@ func getLogConfig(filename string, maxSize, maxBackup, maxAge int) zapcore.Write
 	return zapcore.AddSync(lg)
 }
 
+// GinLogger defines the logger configuration of GIN
 func GinLogger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
@@ -84,6 +88,7 @@ func GinLogger() gin.HandlerFunc {
 	}
 }
 
+// GinRecovery sets the configuration for the log of the information when GIN crush/recover
 func GinRecovery(stack bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
@@ -116,7 +121,7 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 				} else {
 					zap.L().Error("[Recovery from panic]",
 						zap.Any("error", err),
-						zap.String("reuqest", string(httpRequest)),
+						zap.String("request", string(httpRequest)),
 					)
 				}
 				c.AbortWithStatus(http.StatusInternalServerError)

@@ -46,11 +46,13 @@ definitions:
   dto.Course:
     properties:
       classes:
+        description: The classes (sessions) of the given course
         items:
           $ref: '#/definitions/model.Class'
         type: array
       course:
         $ref: '#/definitions/model.Course'
+        description: The course info of the given course ID
     type: object
   dto.Review:
     properties:

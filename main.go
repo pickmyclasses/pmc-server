@@ -12,7 +12,6 @@ import (
 	"pmc_server/config"
 	"pmc_server/init/logger"
 	"pmc_server/init/postgres"
-	"pmc_server/init/redis"
 	libs "pmc_server/libs/snowflake"
 	"pmc_server/routes"
 
@@ -60,12 +59,12 @@ func main() {
 		return
 	}
 
-	// init redis
-	if err = redis.Init(); err != nil {
-		fmt.Printf("Init redis failed %s", err)
-		return
-	}
-	defer redis.Close()
+	//// init redis
+	//if err = redis.Init(); err != nil {
+	//	fmt.Printf("Init redis failed %s", err)
+	//	return
+	//}
+	//defer redis.Close()
 
 	// init router
 	r := routes.SetUp(viper.GetString("app.mode"))

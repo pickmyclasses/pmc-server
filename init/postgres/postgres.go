@@ -12,7 +12,7 @@ import (
 var DB *gorm.DB
 
 func Init() (err error) {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=disable TimeZone=UTC",
 		viper.GetString("postgres.host"),
 		viper.GetString("postgres.username"),
 		viper.GetString("postgres.password"),

@@ -3,6 +3,6 @@ package dto
 import "pmc_server/model"
 
 type Course struct {
-	Course  *model.Course `json:"course"`
-	Classes []model.Class `json:"classes"`
+	Course  *model.Course `json:"course"`  // The course info of the given course ID
+	Classes []model.Class `json:"classes"` // The classes (sessions) of the given course
 }

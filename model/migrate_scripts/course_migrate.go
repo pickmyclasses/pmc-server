@@ -1,8 +1,7 @@
-package main
+package migrate
 
 import (
 	"errors"
-	"fmt"
 	model "pmc_server/model"
 	"pmc_server/utils"
 	"strings"
@@ -60,11 +59,4 @@ func UpdateCourseAndClasses() error {
 	}
 
 	return nil
-}
-
-func main() {
-	err := UpdateCourseAndClasses()
-	if err != nil {
-		fmt.Println(err)
-	}
 }

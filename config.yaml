@@ -16,11 +16,11 @@ mongo:
   w: "majority"
   dbname: "pmc"
 postgres:
-  host: "127.0.0.1"
+  host: "pmc1.ccyv4mlgftmr.us-east-1.rds.amazonaws.com"
   port: 5432
-  username: "postgres"
+  username: "admin1"
   password: "admin123"
-  dbname: "pmc"
+  dbname: "postgres"
 redis:
   host: "127.0.0.1"
   port: 6379

@@ -1,18 +1,20 @@
-FROM golang:alpine AS builder
+FROM golang:1.16-alpine AS builder
 
-ENV GO111MODULE=on \
-    CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64
+RUN go env -w GO111MODULE=on
 
-WORKDIR /build
+COPY . /go/src/pmc_server
 
-COPY . .
+WORKDIR /go/src/pmc_server
 
-RUN go build -o app .
+RUN go install ./...
 
-FROM scratch
+FROM alpine:3.15
 
-COPY --from=builder /build/app /
+COPY ./config.yaml /
+COPY --from=builder /go/bin/pmc_server /bin/pmc_server
 
-ENTRYPOINT ["/app"]
+EXPOSE 8081
+
+ENTRYPOINT ["/bin/pmc_server"]
+
+

@@ -503,12 +503,14 @@ var doc = `{
             "type": "object",
             "properties": {
                 "classes": {
+                    "description": "The classes (sessions) of the given course",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.Class"
                     }
                 },
                 "course": {
+                    "description": "The course info of the given course ID",
                     "$ref": "#/definitions/model.Course"
                 }
             }

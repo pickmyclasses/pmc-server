@@ -1,4 +1,4 @@
-package main
+package migrate
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"pmc_server/config"
-	model "pmc_server/model"
+	"pmc_server/model"
 	"time"
 
 	"github.com/spf13/viper"
@@ -16,7 +16,7 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-func main() {
+func Migrate() {
 	err := config.Init()
 	if err != nil {
 		fmt.Println(err)

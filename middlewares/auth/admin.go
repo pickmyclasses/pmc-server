@@ -2,16 +2,16 @@ package auth
 
 import (
 	"net/http"
+	"pmc_server/middlewares/request"
 
 	. "pmc_server/consts"
-	"pmc_server/controller"
 
 	"github.com/gin-gonic/gin"
 )
 
 func IsAdminAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		currentUser, err := controller.GetCurrentUserRole(ctx)
+		currentUser, err := request.GetCurrentUserRole(ctx)
 		if err != nil {
 			ctx.Abort()
 		}

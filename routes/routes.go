@@ -25,8 +25,8 @@ func SetUp(mode string) *gin.Engine {
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 
 	// for user
-	r.POST("/register", userController.RegisterHandler)
-	r.POST("/login", userController.LoginHandler)
+	r.POST("/register", auth.Cors(), userController.RegisterHandler)
+	r.POST("/login", auth.Cors(), userController.LoginHandler)
 
 	// for course
 	r.GET("/course/list", auth.Cors(), courseController.GetCourseListHandler)
@@ -41,7 +41,7 @@ func SetUp(mode string) *gin.Engine {
 	r.GET("/class/:id", auth.Cors(), classController.GetClassByIDHandler)
 
 	// for testing
-	r.GET("/ping", auth.JWTAuth(), func(c *gin.Context) {
+	r.GET("/ping", auth.JWTAuth(), auth.Cors(), func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
 	})
 

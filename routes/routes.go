@@ -29,16 +29,16 @@ func SetUp(mode string) *gin.Engine {
 	r.POST("/login", userController.LoginHandler)
 
 	// for course
-	r.GET("/course/list", courseController.GetCourseListHandler)
-	r.GET("/course/:id", courseController.GetCourseByIDHandler)
-	r.GET("/course/:id/class", courseController.GetClassesOfCourseHandler)
-	r.GET("/course/:id/review", reviewController.GetCourseReviewListHandler)
-	r.GET("/course/:id/review/:review_id", reviewController.GetCourseReviewByIDHandler)
-	r.POST("/course/:id/review", reviewController.PostCourseReviewHandler)
+	r.GET("/course/list", auth.Cors(), courseController.GetCourseListHandler)
+	r.GET("/course/:id", auth.Cors(), courseController.GetCourseByIDHandler)
+	r.GET("/course/:id/class", auth.Cors(), courseController.GetClassesOfCourseHandler)
+	r.GET("/course/:id/review", auth.Cors(), reviewController.GetCourseReviewListHandler)
+	r.GET("/course/:id/review/:review_id", auth.Cors(), reviewController.GetCourseReviewByIDHandler)
+	r.POST("/course/:id/review", auth.Cors(), reviewController.PostCourseReviewHandler)
 
 	// for class
-	r.GET("/class/list", classController.GetClassListHandler)
-	r.GET("/class/:id", classController.GetClassByIDHandler)
+	r.GET("/class/list", auth.Cors(), classController.GetClassListHandler)
+	r.GET("/class/:id", auth.Cors(), classController.GetClassByIDHandler)
 
 	// for testing
 	r.GET("/ping", auth.JWTAuth(), func(c *gin.Context) {

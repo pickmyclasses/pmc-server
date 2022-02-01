@@ -2,6 +2,7 @@ package logic
 
 import (
 	"errors"
+	"pmc_server/model/dto"
 	"strconv"
 
 	. "pmc_server/consts"
@@ -23,4 +24,8 @@ func GetReviewByID(reviewID string) (*model.Review, error) {
 		return nil, errors.New(BAD_ID_ERR)
 	}
 	return dao.GetReviewByID(idInt)
+}
+
+func PostCourseReview(review dto.Review) error {
+	return dao.PostCourseReview(review)
 }

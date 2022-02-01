@@ -2,6 +2,7 @@ package review
 
 import (
 	"net/http"
+	"pmc_server/model/dto"
 
 	. "pmc_server/consts"
 	"pmc_server/logic"
@@ -89,5 +90,23 @@ func GetCourseReviewByIDHandler(c *gin.Context) {
 // @Success 200 {string} OK
 // @Router /course/:id/review [post]
 func PostCourseReviewHandler(c *gin.Context) {
+	var review dto.Review
+	if err := c.ShouldBind(&review); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			MESSAGE: err,
+		})
+		return
+	}
 
+	err := logic.PostCourseReview(review)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			MESSAGE: err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
+	})
 }

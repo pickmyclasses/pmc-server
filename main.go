@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"pmc_server/init/redis"
 	"syscall"
 	"time"
 
@@ -60,11 +61,11 @@ func main() {
 	}
 
 	//// init redis
-	//if err = redis.Init(); err != nil {
-	//	fmt.Printf("Init redis failed %s", err)
-	//	return
-	//}
-	//defer redis.Close()
+	if err = redis.Init(); err != nil {
+		fmt.Printf("Init redis failed %s", err)
+		return
+	}
+	defer redis.Close()
 
 	// init router
 	r := routes.SetUp(viper.GetString("app.mode"))

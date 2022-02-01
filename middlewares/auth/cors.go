@@ -3,13 +3,15 @@ package auth
 import (
 	"net/http"
 
+	"go.uber.org/zap"
+
 	"github.com/gin-gonic/gin"
 )
 
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method
-
+		zap.L().Info("cors used")
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token, x-token")
 		c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PATCH, PUT")

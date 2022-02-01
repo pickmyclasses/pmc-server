@@ -76,8 +76,6 @@ func GetCourseByIDHandler(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id query int true "course id"
-// @Param pn query int false "Page number of the paginated class list, default is 1" mininum(1)
-// @Param psize query int false "Page size(number of classes to fetch) of the paginated class list, default is 10" mininum(1) maxinum(30)
 // @Success 200 {int} total number of the courses
 // @Success 200 {array} dto.Class
 // @Router /course/:id/class [get]
@@ -90,15 +88,7 @@ func GetClassesOfCourseHandler(c *gin.Context) {
 		return
 	}
 
-	pnInt, pSizeInt, err := utils.HandlePagination(c, "20")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			MESSAGE: err,
-		})
-		return
-	}
-
-	classList, total, err := logic.GetClassListByCourseID(courseParam.ID, pnInt, pSizeInt)
+	classList, total, err := logic.GetClassListByCourseID(courseParam.ID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			MESSAGE: NO_INFO_ERR,

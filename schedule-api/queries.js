@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+const Pool = require('pg').Pool;
 
 const pool = new Pool({
   user: 'admin1',
@@ -10,13 +10,14 @@ const pool = new Pool({
 
 const getSchedule = (request, response) => 
 {
-  const id = parseInt(request.params.id)
+  const { user_id, semester_id } = request.body;
 
-  pool.query('SELECT * FROM schedule WHERE user_id = $1', [id], (error, results) => 
+  pool.query('SELECT * FROM class INNER JOIN schedule ON class.id = schedule.class_id WHERE schedule.user_id = $1 AND schedule.semester_id = $2', 
+              [user_id, semester_id], (error, results) => 
   {
     if (error) 
     {
-      throw error;
+      response.status(500).json(error);
     }
     response.status(200).json(results.rows);
   })
@@ -36,8 +37,7 @@ const postSchedule = (request, response) =>
   });
 }
 
-export default 
-{
+module.exports = {
   getSchedule,
-  postSchedule
-};
+  postSchedule,
+}

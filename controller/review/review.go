@@ -88,12 +88,12 @@ func GetCourseReviewByIDHandler(c *gin.Context) {
 // @Produce application/json
 // @Param object body model.ReviewParams true "Post review parameters"
 // @Success 200 {string} OK
-// @Router /course/:id/review [post]
+// @Router /course/review [post]
 func PostCourseReviewHandler(c *gin.Context) {
 	var review dto.Review
 	if err := c.ShouldBind(&review); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			MESSAGE: err,
+			MESSAGE: err.Error(),
 		})
 		return
 	}
@@ -101,7 +101,7 @@ func PostCourseReviewHandler(c *gin.Context) {
 	err := logic.PostCourseReview(review)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			MESSAGE: err,
+			MESSAGE: err.Error(),
 		})
 		return
 	}

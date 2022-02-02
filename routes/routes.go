@@ -25,20 +25,20 @@ func SetUp(mode string) *gin.Engine {
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 
 	// for user
-	r.POST("/register", auth.Cors(), userController.RegisterHandler)
-	r.POST("/login", auth.Cors(), userController.LoginHandler)
+	r.POST("/register", userController.RegisterHandler).Use(auth.Cors())
+	r.POST("/login", userController.LoginHandler).Use(auth.Cors())
 
 	// for course
-	r.GET("/course/list", auth.Cors(), courseController.GetCourseListHandler)
-	r.GET("/course/:id", auth.Cors(), courseController.GetCourseByIDHandler)
-	r.GET("/course/:id/class", auth.Cors(), courseController.GetClassesOfCourseHandler)
-	r.GET("/course/:id/review", auth.Cors(), reviewController.GetCourseReviewListHandler)
-	r.GET("/course/:id/review/:review_id", auth.Cors(), reviewController.GetCourseReviewByIDHandler)
-	r.POST("/course/:id/review", auth.Cors(), reviewController.PostCourseReviewHandler)
+	r.GET("/course/list", courseController.GetCourseListHandler).Use(auth.Cors())
+	r.GET("/course/:id", courseController.GetCourseByIDHandler).Use(auth.Cors())
+	r.GET("/course/:id/class", courseController.GetClassesOfCourseHandler).Use(auth.Cors())
+	r.GET("/course/:id/review", reviewController.GetCourseReviewListHandler).Use(auth.Cors())
+	r.GET("/course/:id/review/:review_id", reviewController.GetCourseReviewByIDHandler).Use(auth.Cors())
+	r.POST("/course/review", reviewController.PostCourseReviewHandler).Use(auth.Cors())
 
 	// for class
-	r.GET("/class/list", auth.Cors(), classController.GetClassListHandler)
-	r.GET("/class/:id", auth.Cors(), classController.GetClassByIDHandler)
+	r.GET("/class/list", classController.GetClassListHandler).Use(auth.Cors())
+	r.GET("/class/:id", classController.GetClassByIDHandler).Use(auth.Cors())
 
 	// for testing
 	r.GET("/ping", auth.JWTAuth(), auth.Cors(), func(c *gin.Context) {

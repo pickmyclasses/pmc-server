@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+	"pmc_server/model/dto"
 
 	. "pmc_server/consts"
 	"pmc_server/init/postgres"
@@ -29,4 +30,23 @@ func GetReviewByID(reviewID int) (*model.Review, error) {
 		return nil, errors.New(NO_INFO_ERR)
 	}
 	return &review, nil
+}
+
+func PostCourseReview(review dto.Review) error {
+	reviewModel := &model.Review{
+		Rating:      review.Rating,
+		UserID:      review.UserID,
+		CourseID:    review.CourseID,
+		Anonymous:   review.Anonymous,
+		Recommended: review.Recommended,
+		Pros:        review.Pros,
+		Cons:        review.Cons,
+		Comment:     review.Comment,
+	}
+
+	res := postgres.DB.Create(&reviewModel)
+	if res.Error != nil || res.RowsAffected == 0 {
+		return errors.New("create review failed")
+	}
+	return nil
 }

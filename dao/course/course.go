@@ -4,7 +4,7 @@ import (
 	"errors"
 	"pmc_server/init/postgres"
 
-	model "pmc_server/model"
+	"pmc_server/model"
 	"pmc_server/utils"
 )
 
@@ -28,9 +28,8 @@ func GetCourseByID(id int) (*model.Course, error) {
 	return &course, nil
 }
 
-func GetClassListByCourseID(id, pn, pSize int) (*[]model.Class, int64) {
+func GetClassListByCourseID(id int) (*[]model.Class, int64) {
 	var classes []model.Class
-	total := postgres.DB.Where("course_id = ?", id).Find(&classes).RowsAffected
-	postgres.DB.Scopes(utils.Paginate(pn, pSize)).Find(&classes)
-	return &classes, total
+	res := postgres.DB.Where("course_id = ?", id).Find(&classes)
+	return &classes, res.RowsAffected
 }

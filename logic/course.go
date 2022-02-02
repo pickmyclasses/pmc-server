@@ -37,11 +37,11 @@ func GetCourseInfo(id string) (*dto.Course, error) {
 	}, nil
 }
 
-func GetClassListByCourseID(id string, pn, pSize int) (*[]model.Class, int64, error) {
+func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		return nil, 0, errors.New("provided ID is invalid")
 	}
-	classList, total := dao.GetClassListByCourseID(idInt, pn, pSize)
+	classList, total := dao.GetClassListByCourseID(idInt)
 	return classList, total, nil
 }

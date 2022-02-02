@@ -6,19 +6,19 @@ import (
 
 	. "pmc_server/consts"
 	"pmc_server/init/postgres"
-	model "pmc_server/model"
+	"pmc_server/model"
 	"pmc_server/utils"
 )
 
 func GetReviewsByCourseID(pn, pSize, courseID int) (*[]model.Review, int64, error) {
 	var reviews []model.Review
-	result := postgres.DB.Where(&model.Review{CourseID: int64(courseID)}).Find(&reviews)
+	result := postgres.DB.Where("course_id = ?", courseID).Find(&reviews)
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
 
 	total := result.RowsAffected
-	postgres.DB.Scopes(utils.Paginate(pn, pSize)).Find(&reviews)
+	postgres.DB.Scopes(utils.Paginate(pn, pSize)).Where("course_id = ?", courseID).Find(&reviews)
 
 	return &reviews, total, nil
 }

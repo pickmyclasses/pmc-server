@@ -37,7 +37,46 @@ const postSchedule = (request, response) =>
   });
 }
 
+
+const getFeedbacks = (request, response) => {
+  pool.query('SELECT * FROM feedback ORDER BY id ASC', (error, results) => {
+    if (error) {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows);
+  })
+}
+
+const getFeedbackById = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM feedback WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const createFeedback = (request, response) => {
+  const { user_id, class_id, semester_id, rating, feedback } = request.body
+
+  pool.query('INSERT INTO feedback (user_id, class_id, semester_id, rating, feedback) VALUES ($1, $2, $3, $4, $5)', 
+                                   [user_id, class_id, semester_id, rating, feedback], (error, results) => 
+  {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(201).send(`Feedback added successfully`)
+  })
+}
+
 module.exports = {
   getSchedule,
   postSchedule,
+  getFeedbacks,
+  getFeedbackById,
+  createFeedback
 }

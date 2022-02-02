@@ -20,6 +20,12 @@ app.get('/', (request, response) => {
   response.json({ info: 'schedule API' })
 });
 
+// schedule API
 app.get('/schedule', db.getSchedule);
 app.post('/schedule', db.postSchedule);
+
+// feedback API
+app.get('/feedback', db.getFeedbacks);
+app.get('/feedback/:id', db.getFeedbackById);
+app.post('/feedback', db.createFeedback);
 

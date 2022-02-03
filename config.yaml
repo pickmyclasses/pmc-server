@@ -1,7 +1,7 @@
 app:
   name: "pmc"
   mode: "dev"
-  port: 8081
+  port: 3000
 log:
   level: "debug"
   filename: "pmc-dev.log"

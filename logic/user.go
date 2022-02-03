@@ -2,6 +2,7 @@ package logic
 
 import (
 	"errors"
+	"pmc_server/model/dto"
 
 	dao "pmc_server/dao/user"
 	"pmc_server/libs/jwt"
@@ -31,13 +32,24 @@ func Register(param *model.RegisterParams) error {
 	})
 }
 
-func Login(param *model.LoginParams) (string, error) {
+func Login(param *model.LoginParams) (*dto.User, error) {
 	user, err := dao.ReadUser(&model.User{
 		Email:    param.Email,
 		Password: param.Password,
 	})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return jwt.GenToken(user.UserID, user.FirstName, user.LastName)
+
+	token, err := jwt.GenToken(user.UserID, user.FirstName, user.LastName)
+	if err != nil {
+		return nil, err
+	}
+	return &dto.User{
+		ID:        user.ID,
+		Token:     token,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Role:      user.Role,
+	}, nil
 }

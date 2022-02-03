@@ -10,9 +10,8 @@ type RegisterParams struct {
 }
 
 type LoginParams struct {
-	Email      string `json:"email" binding:"required"`       // User Email
-	Password   string `json:"password" binding:"required"`    // User password
-	RePassword string `json:"re_password" binding:"required"` // User reentered password, to make sure they match
+	Email    string `json:"email" binding:"required"`    // User Email
+	Password string `json:"password" binding:"required"` // User password
 }
 
 type CourseParams struct {

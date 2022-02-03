@@ -58,16 +58,16 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	token, err := logic.Login(&params)
+	userInfo, err := logic.Login(&params)
 	if err != nil {
 		c.JSON(http.StatusConflict, gin.H{
-			MESSAGE: fmt.Sprintf("Register failed: %v", err),
+			MESSAGE: fmt.Sprintf("Login failed: %v", err),
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
 		MESSAGE: SUCCESS,
-		DATA:    token,
+		DATA:    userInfo,
 	})
 }

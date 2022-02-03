@@ -23,6 +23,7 @@ app.get('/', (request, response) => {
 // schedule API
 app.get('/schedule', db.getSchedule);
 app.post('/schedule', db.postSchedule);
+app.post('/remove-class', db.removeClass);
 
 // feedback API
 app.get('/feedback', db.getFeedbacks);

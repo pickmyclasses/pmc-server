@@ -37,7 +37,23 @@ const postSchedule = (request, response) =>
   });
 }
 
+const removeClass = (request, response) => 
+{
+  const { user_id, class_id, semester_id } = request.body;
 
+  pool.query('DELETE FROM schedule WHERE user_id = $1 AND class_id = $2 AND semester_id = $3;', [user_id, class_id, semester_id], (error, results) => 
+  {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(201).send(`The class has been removed from the schedule`);
+  });  
+}
+
+
+
+// ----------------------------------------------- Feedback functions -------------------------------------------------------------------------------
 const getFeedbacks = (request, response) => {
   pool.query('SELECT * FROM feedback ORDER BY id ASC', (error, results) => {
     if (error) {
@@ -76,6 +92,7 @@ const createFeedback = (request, response) => {
 module.exports = {
   getSchedule,
   postSchedule,
+  removeClass,
   getFeedbacks,
   getFeedbackById,
   createFeedback

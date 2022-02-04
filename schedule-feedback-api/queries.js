@@ -8,12 +8,14 @@ const pool = new Pool({
   port: 5432,
 });
 
+
+// ----------------------------------------------- Schedule functions -------------------------------------------------------------------------------
 const getSchedule = (request, response) => 
 {
   const user_id = parseInt(request.params.user_id);
   const semester_id = parseInt(request.params.semester_id);
 
-  pool.query('SELECT class_id FROM class INNER JOIN schedule ON class.id = schedule.class_id WHERE schedule.user_id = $1 AND schedule.semester_id = $2', 
+  pool.query('SELECT class_id FROM schedule WHERE schedule.user_id = $1 AND schedule.semester_id = $2', 
               [user_id, semester_id], (error, results) => 
   {
     if (error) 

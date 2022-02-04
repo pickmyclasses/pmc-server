@@ -1,12 +1,12 @@
 package model
 
 type RegisterParams struct {
-	Email      string `json:"email" binding:"required"`       // User Email
-	FirstName  string `json:"first_name" binding:"required"`  // User first name
-	LastName   string `json:"last_name" binding:"required"`   // User Last name
-	College    string `json:"college"`                        // User college, this is restricted to UofU now
-	Password   string `json:"password" binding:"required"`    // User provided password, will be encrypted
-	RePassword string `json:"re_password" binding:"required"` // User reentered password, to make sure they match
+	Email      string `json:"email"`       // User Email
+	FirstName  string `json:"first_name"`  // User first name
+	LastName   string `json:"last_name"`   // User Last name
+	College    string `json:"college"`     // User college, this is restricted to UofU now
+	Password   string `json:"password"`    // User provided password, will be encrypted
+	RePassword string `json:"re_password"` // User reentered password, to make sure they match
 }
 
 type LoginParams struct {

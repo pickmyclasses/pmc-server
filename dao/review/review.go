@@ -10,17 +10,37 @@ import (
 	"pmc_server/utils"
 )
 
-func GetReviewsByCourseID(pn, pSize, courseID int) (*[]model.Review, int64, error) {
+func GetReviewsByCourseID(pn, pSize, courseID int) (*[]dto.Review, int64, error) {
 	var reviews []model.Review
 	result := postgres.DB.Where("course_id = ?", courseID).Find(&reviews)
 	if result.Error != nil {
 		return nil, 0, result.Error
 	}
 
+	var reviewDtos []dto.Review
+	for _, review := range reviews {
+		var user model.User
+		_ = postgres.DB.Where("id = ?", review.UserID).Find(&user)
+		reviewDto := &dto.Review{
+			ID:          review.ID,
+			CreatedAt:   review.CreatedAt,
+			Rating:      review.Rating,
+			Anonymous:   review.Anonymous,
+			Recommended: review.Recommended,
+			Pros:        review.Pros,
+			Cons:        review.Cons,
+			Comment:     review.Comment,
+			CourseID:    review.CourseID,
+			UserID:      review.UserID,
+			Username:    user.FirstName + " " + user.LastName,
+		}
+		reviewDtos = append(reviewDtos, *reviewDto)
+	}
+
 	total := result.RowsAffected
 	postgres.DB.Scopes(utils.Paginate(pn, pSize)).Where("course_id = ?", courseID).Find(&reviews)
 
-	return &reviews, total, nil
+	return &reviewDtos, total, nil
 }
 
 func GetReviewByID(reviewID int) (*model.Review, error) {

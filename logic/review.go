@@ -10,7 +10,7 @@ import (
 	model "pmc_server/model"
 )
 
-func GetCourseReviewList(pn, pSize int, courseID string) (*[]model.Review, int64, error) {
+func GetCourseReviewList(pn, pSize int, courseID string) (*[]dto.Review, int64, error) {
 	idInt, err := strconv.Atoi(courseID)
 	if err != nil {
 		return nil, 0, errors.New(BAD_ID_ERR)

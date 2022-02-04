@@ -21,9 +21,9 @@ app.get('/', (request, response) => {
 });
 
 // schedule API
-app.get('/schedule', db.getSchedule);
-app.post('/schedule', db.postSchedule);
-app.post('/remove-class', db.removeClass);
+app.get('/schedule/:user_id/:semester_id', db.getSchedule);
+app.post('/schedule/add', db.addToSchedule);
+app.post('/schedule/remove', db.removeFromSchedule);
 
 // feedback API
 app.get('/feedback', db.getFeedbacks);

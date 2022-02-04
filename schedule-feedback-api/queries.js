@@ -10,9 +10,10 @@ const pool = new Pool({
 
 const getSchedule = (request, response) => 
 {
-  const { user_id, semester_id } = request.body;
+  const user_id = parseInt(request.params.user_id);
+  const semester_id = parseInt(request.params.semester_id);
 
-  pool.query('SELECT * FROM class INNER JOIN schedule ON class.id = schedule.class_id WHERE schedule.user_id = $1 AND schedule.semester_id = $2', 
+  pool.query('SELECT class_id FROM class INNER JOIN schedule ON class.id = schedule.class_id WHERE schedule.user_id = $1 AND schedule.semester_id = $2', 
               [user_id, semester_id], (error, results) => 
   {
     if (error) 
@@ -23,7 +24,7 @@ const getSchedule = (request, response) =>
   })
 }
 
-const postSchedule = (request, response) => 
+const addToSchedule = (request, response) => 
 {
   const { user_id, class_id, semester_id } = request.body;
 
@@ -37,7 +38,7 @@ const postSchedule = (request, response) =>
   });
 }
 
-const removeClass = (request, response) => 
+const removeFromSchedule = (request, response) => 
 {
   const { user_id, class_id, semester_id } = request.body;
 
@@ -91,8 +92,8 @@ const createFeedback = (request, response) => {
 
 module.exports = {
   getSchedule,
-  postSchedule,
-  removeClass,
+  addToSchedule,
+  removeFromSchedule,
   getFeedbacks,
   getFeedbackById,
   createFeedback

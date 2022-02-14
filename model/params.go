@@ -32,3 +32,9 @@ type ReviewParams struct {
 	IsAnonymous bool    `json:"is_anonymous" binding:"required"` // Is the user posting this review anonymously
 	Recommended bool    `json:"recommended" binding:"required"`  // Is teh course recommended by the user
 }
+
+type ScheduleParams struct {
+	ClassID    int64 `json:"class_id"`    // Course ID
+	SemesterID int64 `json:"semester_id"` // Semester ID
+	UserID     int64 `json:"student_id"`  // Student ID
+}

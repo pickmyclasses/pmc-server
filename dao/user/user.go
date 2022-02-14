@@ -4,13 +4,13 @@ import (
 	"crypto/sha512"
 	"errors"
 	"fmt"
-	"pmc_server/init/postgres"
 	"strings"
-
-	model "pmc_server/model"
 
 	"github.com/anaskhan96/go-password-encoder"
 	"go.uber.org/zap"
+
+	"pmc_server/init/postgres"
+	"pmc_server/model"
 )
 
 func UserExist(email string) (exist bool, err error) {

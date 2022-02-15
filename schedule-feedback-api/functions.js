@@ -20,6 +20,17 @@ const getClasses = (request, response) =>
   })
 }
 
+// ----------------------------------------------- College functions -------------------------------------------------------------------------------
+const getColleges = (request, response) => 
+{
+  pool.query('select * from college', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows);
+  })
+}
 
 // ----------------------------------------------- Schedule functions -------------------------------------------------------------------------------
 const getSchedule = (request, response) => 

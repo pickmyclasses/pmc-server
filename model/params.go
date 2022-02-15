@@ -33,8 +33,18 @@ type ReviewParams struct {
 	Recommended bool    `json:"recommended" binding:"required"`  // Is teh course recommended by the user
 }
 
-type ScheduleParams struct {
-	ClassID    int64 `json:"class_id"`    // Course ID
+type PostScheduleParams struct {
+	ClassID    int64 `json:"class_id"`    // Class ID
 	SemesterID int64 `json:"semester_id"` // Semester ID
 	UserID     int64 `json:"student_id"`  // Student ID
+}
+
+type GetScheduleParams struct {
+	UserID int64 `json:"user_id"` // Student ID
+}
+
+type DeleteScheduleParams struct {
+	UserID     int64 `json:"user_id"`     // Student ID
+	ClassID    int64 `json:"class_id"`    // Class ID
+	SemesterID int64 `json:"semester_id"` // Semester ID
 }

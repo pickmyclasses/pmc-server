@@ -11,7 +11,7 @@ import (
 )
 
 func AddUserSchedule(c *gin.Context) {
-	var param model.ScheduleParams
+	var param model.PostScheduleParams
 	if err := c.ShouldBindUri(&param); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			MESSAGE: BAD_PARAM_ERR,
@@ -34,9 +34,48 @@ func AddUserSchedule(c *gin.Context) {
 }
 
 func GetUserSchedule(c *gin.Context) {
+	var param model.GetScheduleParams
+	if err := c.ShouldBindUri(&param); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			MESSAGE: BAD_PARAM_ERR,
+		})
+		return
+	}
 
+	data, err := logic.GetSchedule(param)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			MESSAGE: INTERNAL_ERR,
+			ERROR:   err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
+		DATA:    data,
+	})
 }
 
 func DeleteUserSchedule(c *gin.Context) {
+	var param model.DeleteScheduleParams
+	if err := c.ShouldBindUri(&param); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			MESSAGE: BAD_PARAM_ERR,
+		})
+		return
+	}
 
+	err := logic.DeleteSchedule(param)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			MESSAGE: INTERNAL_ERR,
+			ERROR:   err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
+	})
 }

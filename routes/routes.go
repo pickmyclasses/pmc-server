@@ -8,6 +8,7 @@ import (
 	classController "pmc_server/controller/class"
 	courseController "pmc_server/controller/course"
 	reviewController "pmc_server/controller/review"
+	scheduleController "pmc_server/controller/schedule"
 	userController "pmc_server/controller/user"
 	_ "pmc_server/docs"
 	"pmc_server/middlewares/auth"
@@ -27,6 +28,11 @@ func SetUp(mode string) *gin.Engine {
 	// for user
 	r.POST("/register", userController.RegisterHandler).Use(auth.Cors())
 	r.POST("/login", userController.LoginHandler).Use(auth.Cors())
+
+	// for schedule
+	r.POST("/:id/schedule", scheduleController.AddUserSchedule).Use(auth.Cors())
+	r.GET("/:id/schedule", scheduleController.GetUserSchedule).Use(auth.Cors())
+	r.DELETE("/:id/schedule", scheduleController.DeleteUserSchedule).Use(auth.Cors())
 
 	// for course
 	r.GET("/course/list", courseController.GetCourseListHandler).Use(auth.Cors())

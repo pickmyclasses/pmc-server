@@ -8,6 +8,18 @@ const pool = new Pool({
   port: 5432,
 });
 
+// ----------------------------------------------- Course functions -------------------------------------------------------------------------------
+const getClasses = (request, response) => 
+{
+  pool.query('select * from class', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows);
+  })
+}
+
 
 // ----------------------------------------------- Schedule functions -------------------------------------------------------------------------------
 const getSchedule = (request, response) => 
@@ -92,11 +104,13 @@ const createFeedback = (request, response) => {
   })
 }
 
+
 module.exports = {
   getSchedule,
   addToSchedule,
   removeFromSchedule,
   getFeedbacks,
   getFeedbackById,
-  createFeedback
+  createFeedback,
+  getClasses,
 }

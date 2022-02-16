@@ -18,6 +18,17 @@ type CourseParams struct {
 	ID string `uri:"id" binding:"required"` // Course ID
 }
 
+type CourseFilterParams struct {
+	IsHot              bool     `json:"is_hot"`               // Should the courses be hot
+	IsOnline           bool     `json:"is_online"`            // Should the courses be online
+	IsRankRating       bool     `json:"is_rank_rating"`       // Should the courses be ranked as rating high to low
+	IsMajorRequirement bool     `json:"is_major_requirement"` // Should the courses be the major requirements
+	WeekdaySelected    []uint8  `json:"weekday_select"`       // Should the courses only be taught in a certain day
+	TagsSelected       []string `json:"tags_selected"`        // Should the courses be associated to certain tags
+	// TODO: change this to professor object
+	ProfessorSelected []string `json:"professor_selected"` // Should the courses be taught be certain professors
+}
+
 type ClassParams struct {
 	ID string `uri:"id" binding:"required"` // Class ID
 }

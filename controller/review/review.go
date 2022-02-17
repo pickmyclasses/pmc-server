@@ -2,6 +2,7 @@ package review
 
 import (
 	"net/http"
+	"pmc_server/model"
 	"pmc_server/model/dto"
 
 	. "pmc_server/consts"
@@ -90,18 +91,49 @@ func GetCourseReviewByIDHandler(c *gin.Context) {
 // @Success 200 {string} OK
 // @Router /course/review [post]
 func PostCourseReviewHandler(c *gin.Context) {
-	var review dto.Review
-	if err := c.ShouldBind(&review); err != nil {
+	var param dto.Review
+	if err := c.ShouldBind(&param); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
 			MESSAGE: err.Error(),
 		})
 		return
 	}
 
-	err := logic.PostCourseReview(review)
+	err := logic.PostCourseReview(param)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
+		c.JSON(http.StatusInternalServerError, gin.H{
 			MESSAGE: err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
+	})
+}
+
+// UpdateCourseReviewHandler Updates a single review under a course
+// @Summary Use this API to update a single review under a course
+// @Description This API is for updating a review under a course
+// @Tags Review
+// @Accept application/json
+// @Produce application/json
+// @Param object body model.ReviewParams true "Update review parameters"
+// @Success 200 {string} OK
+// @Router /course/review [post]
+func UpdateCourseReviewHandler(c *gin.Context) {
+	var param model.ReviewParams
+	if err := c.ShouldBind(&param); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			MESSAGE: err.Error(),
+		})
+		return
+	}
+
+	err := logic.UpdateCourseReview(param)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			MESSAGE: err,
 		})
 		return
 	}

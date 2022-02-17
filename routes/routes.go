@@ -30,17 +30,20 @@ func SetUp(mode string) *gin.Engine {
 	r.POST("/login", userController.LoginHandler).Use(auth.Cors())
 
 	// for schedule
-	r.POST("/:id/schedule", scheduleController.AddUserSchedule).Use(auth.Cors())
-	r.GET("/:id/schedule", scheduleController.GetUserSchedule).Use(auth.Cors())
-	r.DELETE("/:id/schedule", scheduleController.DeleteUserSchedule).Use(auth.Cors())
+	r.POST("/:id/schedule", scheduleController.AddUserScheduleHandler).Use(auth.Cors())
+	r.GET("/:id/schedule", scheduleController.GetUserScheduleHandler).Use(auth.Cors())
+	r.DELETE("/:id/schedule", scheduleController.DeleteUserScheduleHandler).Use(auth.Cors())
 
 	// for course
 	r.GET("/course/list", courseController.GetCourseListHandler).Use(auth.Cors())
 	r.GET("/course/:id", courseController.GetCourseByIDHandler).Use(auth.Cors())
 	r.GET("/course/:id/class", courseController.GetClassesOfCourseHandler).Use(auth.Cors())
+
+	// for review
 	r.GET("/course/:id/review", reviewController.GetCourseReviewListHandler).Use(auth.Cors())
 	r.GET("/course/:id/review/:review_id", reviewController.GetCourseReviewByIDHandler).Use(auth.Cors())
 	r.POST("/course/review", reviewController.PostCourseReviewHandler).Use(auth.Cors())
+	r.PUT("/course/review", reviewController.UpdateCourseReviewHandler).Use(auth.Cors())
 
 	// for class
 	r.GET("/class/list", classController.GetClassListHandler).Use(auth.Cors())

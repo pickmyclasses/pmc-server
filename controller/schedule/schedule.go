@@ -10,7 +10,7 @@ import (
 	"pmc_server/model"
 )
 
-func AddUserSchedule(c *gin.Context) {
+func AddUserScheduleHandler(c *gin.Context) {
 	var param model.PostScheduleParams
 	if err := c.ShouldBindUri(&param); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -33,7 +33,7 @@ func AddUserSchedule(c *gin.Context) {
 	})
 }
 
-func GetUserSchedule(c *gin.Context) {
+func GetUserScheduleHandler(c *gin.Context) {
 	var param model.GetScheduleParams
 	if err := c.ShouldBindUri(&param); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -57,7 +57,7 @@ func GetUserSchedule(c *gin.Context) {
 	})
 }
 
-func DeleteUserSchedule(c *gin.Context) {
+func DeleteUserScheduleHandler(c *gin.Context) {
 	var param model.DeleteScheduleParams
 	if err := c.ShouldBindUri(&param); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

@@ -29,3 +29,7 @@ func GetReviewByID(reviewID string) (*model.Review, error) {
 func PostCourseReview(review dto.Review) error {
 	return dao.PostCourseReview(review)
 }
+
+func UpdateCourseReview(review model.ReviewParams) error {
+	return dao.UpdateCourseReview(review)
+}

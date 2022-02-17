@@ -3,6 +3,7 @@ package dao
 import (
 	"errors"
 	"pmc_server/model/dto"
+	"time"
 
 	. "pmc_server/consts"
 	"pmc_server/init/postgres"
@@ -67,6 +68,27 @@ func PostCourseReview(review dto.Review) error {
 	res := postgres.DB.Create(&reviewModel)
 	if res.Error != nil || res.RowsAffected == 0 {
 		return errors.New("create review failed")
+	}
+	return nil
+}
+
+func UpdateCourseReview(review model.ReviewParams) error {
+	var currentReview model.Review
+	res := postgres.DB.Where("course_id = ?, user_id = ?", review.CourseID, review.UserID).Find(&currentReview)
+	if res.RowsAffected == 0 || res.Error != nil {
+		return errors.New("no review of given info found")
+	}
+
+	currentReview.CreatedAt = time.Now()
+	currentReview.Anonymous = review.IsAnonymous
+	currentReview.Rating = review.Rating
+	currentReview.Comment = review.Comment
+	currentReview.Pros = review.Pros
+	currentReview.Cons = review.Cons
+	currentReview.Recommended = review.Recommended
+	res = postgres.DB.Updates(&currentReview)
+	if res.RowsAffected == 0 || res.Error != nil {
+		return errors.New("internal error when updating the review")
 	}
 	return nil
 }

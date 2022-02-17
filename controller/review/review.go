@@ -120,7 +120,7 @@ func PostCourseReviewHandler(c *gin.Context) {
 // @Produce application/json
 // @Param object body model.ReviewParams true "Update review parameters"
 // @Success 200 {string} OK
-// @Router /course/review [post]
+// @Router /course/review [put]
 func UpdateCourseReviewHandler(c *gin.Context) {
 	var param model.ReviewParams
 	if err := c.ShouldBind(&param); err != nil {

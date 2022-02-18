@@ -17,54 +17,48 @@ type Course struct {
 
 func (Course) GetMapping() string {
 	return `
-  	{
-		"settings": {
-			"number_of_shards": 1,
-			"number_of_replicas": 0,
-		},
-		"mappings": {
-			"course": {
-				"properties": {
-					"id": {
-						"type": "integer"
-					},
-					"title": {
-						"type": "text"
-					},
-					"description": {
-						"type": "text"
-					},
-					"designation_catalog": {
-						"type": "text"
-					},
-					"catalog_course_name": {
-						"type": "text"
-					},
-					"prerequisites": {
-						"type": "text"
-					},
-					"component": {
-						"type": "text"
-					},
-					"max_credit": {
-						"type": "text"
-					},
-					"min_credit": {
-						"type": "text"
-					},
-					"subject": {
-						"type": "text"
-					},
-					"is_honor": {
-						"type: "boolean"
-					},
-					"fixed_credit": {
-						"type": "boolean"
-					}
-				}
-			}
-		}
-	}
+{
+   "mappings":{
+         "properties":{
+            "id":{
+               "type":"integer"
+            },
+            "title":{
+               "type":"text"
+            },
+            "description":{
+               "type":"text"
+            },
+            "designation_catalog":{
+               "type":"text"
+            },
+            "catalog_course_name":{
+               "type":"text"
+            },
+            "prerequisites":{
+               "type":"text"
+            },
+            "component":{
+               "type":"text"
+            },
+            "max_credit":{
+               "type":"text"
+            },
+            "min_credit":{
+               "type":"text"
+            },
+            "subject":{
+               "type":"text"
+            },
+            "is_honor":{
+               "type":"boolean"
+            },
+            "fixed_credit":{
+               "type":"boolean"
+            }
+         }
+      }
+}
 `
 }
 

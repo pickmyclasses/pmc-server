@@ -103,6 +103,35 @@ func GetClassesOfCourseHandler(c *gin.Context) {
 	})
 }
 
+// GetCoursesBySearchHandler Get the entire course list
+// @Summary Use this API to get the list of the classes
+// @Description This API is used to get the course list, you should do pagination
+// @Tags Course
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {int} total number of the courses
+// @Success 200 {array} dto.Course
+// @Router /course/list [post]
 func GetCoursesBySearchHandler(c *gin.Context) {
+	var param model.CourseFilterParams
+	if err := c.ShouldBindJSON(&param); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			MESSAGE: INSUFFICIENT_PARAM_ERR,
+		})
+		return
+	}
 
+	courseList, total, err := logic.GetCoursesBySearch(param)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			MESSAGE: NO_ID_ERR,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
+		TOTAL:   total,
+		DATA:    courseList,
+	})
 }

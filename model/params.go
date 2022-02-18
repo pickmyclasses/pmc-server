@@ -46,7 +46,7 @@ type ReviewParams struct {
 	Comment     string  `json:"comments" binding:"required"`     // The detailed comment on the review given by the user
 	Rating      float32 `json:"rating" binding:"required"`       // The rating of the course given by the user
 	IsAnonymous bool    `json:"is_anonymous" binding:"required"` // Is the user posting this review anonymously
-	Recommended bool    `json:"recommended" binding:"required"`  // Is teh course recommended by the user
+	Recommended bool    `json:"recommended" binding:"required"`  // Is the course recommended by the user
 }
 
 type PostScheduleParams struct {

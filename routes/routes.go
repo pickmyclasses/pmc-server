@@ -39,6 +39,9 @@ func SetUp(mode string) *gin.Engine {
 	r.GET("/course/:id", courseController.GetCourseByIDHandler).Use(auth.Cors())
 	r.GET("/course/:id/class", courseController.GetClassesOfCourseHandler).Use(auth.Cors())
 
+	// for course search
+	r.GET("/course/search")
+
 	// for review
 	r.GET("/course/:id/review", reviewController.GetCourseReviewListHandler).Use(auth.Cors())
 	r.GET("/course/:id/review/:review_id", reviewController.GetCourseReviewByIDHandler).Use(auth.Cors())

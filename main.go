@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"pmc_server/config"
+	"pmc_server/init/es"
 	"pmc_server/init/logger"
 	"pmc_server/init/postgres"
 	libs "pmc_server/libs/snowflake"
@@ -65,6 +66,11 @@ func main() {
 	//	return
 	//}
 	//defer redis.Close()
+
+	if err = es.Init(viper.GetString("elastic.url"), viper.GetString("elastic.username"), viper.GetString("elastic.password")); err != nil {
+		fmt.Printf("Init res failed %+v", err)
+		return
+	}
 
 	// init router
 	r := routes.SetUp(viper.GetString("app.mode"))

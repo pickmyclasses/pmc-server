@@ -16,7 +16,7 @@ const getClasses = (request, response) =>
     {
       response.status(400).json(error);
     }
-    response.status(200).json(results.rows);
+    response.status(200).json(result.rows);
   })
 }
 
@@ -28,7 +28,31 @@ const getColleges = (request, response) =>
     {
       response.status(400).json(error);
     }
-    response.status(200).json(results.rows);
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- Course functions -------------------------------------------------------------------------------
+const getCourses = (request, response) => 
+{
+  pool.query('select * from course', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- Subject functions -------------------------------------------------------------------------------
+const getSubjects = (request, response) => 
+{
+  pool.query('select * from subject', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
   })
 }
 
@@ -78,7 +102,6 @@ const removeFromSchedule = (request, response) =>
 }
 
 
-
 // ----------------------------------------------- Feedback functions -------------------------------------------------------------------------------
 const getFeedbacks = (request, response) => {
   pool.query('SELECT * FROM feedback ORDER BY id ASC', (error, results) => {
@@ -124,4 +147,7 @@ module.exports = {
   getFeedbackById,
   createFeedback,
   getClasses,
+  getColleges,
+  getCourses,
+  getSubjects
 }

@@ -22,12 +22,13 @@ type CourseFilterParams struct {
 	Keyword string `json:"keyword"` // Keyword user inputs, this links to the name/catalog name/subject/tag of the course
 	// TODO: fix this with actual professor entities
 	TaughtProfessor       []string `json:"taught_professor"`           // Filter courses with professor names
-	Credit                float32  `json:"credit"`                     // Filter courses with given credit
+	MinCredit             float32  `json:"credit"`                     // Filter courses with given credit
+	MaxCredit             float32  `json:"max_credit"`                 //Filter cores with the given max credit
 	IsOnline              bool     `json:"is_online"`                  // Filter courses that's online
 	IsOffline             bool     `json:"is_offline"`                 // Filter courses that's not online (in person)
 	IsHonor               bool     `json:"is_honor"`                   // Filter courses that's honor courses
 	Weekday               []int8   `json:"weekday"`                    // Filter courses that's in the specific weekdays
-	StartTime             float32  `json:"start_time"`                 // Filter courses that starts no early than the start time
+	StartTime             float32  `json:"start_time"`                 // Filter courses that starts no earlier than the start time
 	EndTime               float32  `json:"end_time"`                   // Filter courses that ends no later than the start time
 	MinRating             int8     `json:"min_rating"`                 // Filter courses that has no lower rating than the give min rating
 	RankByRatingHighToLow bool     `json:"rank_by_rating_high_to_low"` // Rank the courses by the given rating low to high

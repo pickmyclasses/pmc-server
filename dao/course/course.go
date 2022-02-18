@@ -38,20 +38,24 @@ func GetClassListByCourseID(id int) (*[]model.Class, int64) {
 
 func GetCoursesBySearch(param model.CourseFilterParams) (*[]model.Course, int32, error) {
 	query := elastic.NewBoolQuery()
-	if param.Credit != 0 {
+	if param.MinCredit != 0 {
+		query = query.Filter(elastic.NewRangeQuery("min_credit").Gte(param.MinCredit))
+	}
 
+	if param.MaxCredit != 0 {
+		query = query.Filter(elastic.NewRangeQuery("max_credit").Lte(param.MaxCredit))
 	}
 
 	if param.StartTime != 0 {
-
+		query = query.Filter(elastic.NewRangeQuery("start_time").Gte(param.StartTime))
 	}
 
 	if param.EndTime != 0 {
-
+		query = query.Filter(elastic.NewRangeQuery("end_time").Lte(param.EndTime))
 	}
 
 	if param.IsHonor {
-
+		query = query.Must(elastic.NewBoolQuery().Must())
 	}
 
 	if param.IsOffline {
@@ -81,4 +85,6 @@ func GetCoursesBySearch(param model.CourseFilterParams) (*[]model.Course, int32,
 	if param.Keyword != "" {
 		query = query.Must(elastic.NewMultiMatchQuery(param.Keyword, "title", "description", "designation_catalog", "catalog_course_name"))
 	}
+
+	return nil, -1, nil
 }

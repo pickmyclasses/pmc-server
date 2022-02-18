@@ -19,14 +19,19 @@ type CourseParams struct {
 }
 
 type CourseFilterParams struct {
-	IsHot              bool     `json:"is_hot"`               // Should the courses be hot
-	IsOnline           bool     `json:"is_online"`            // Should the courses be online
-	IsRankRating       bool     `json:"is_rank_rating"`       // Should the courses be ranked as rating high to low
-	IsMajorRequirement bool     `json:"is_major_requirement"` // Should the courses be the major requirements
-	WeekdaySelected    []uint8  `json:"weekday_select"`       // Should the courses only be taught in a certain day
-	TagsSelected       []string `json:"tags_selected"`        // Should the courses be associated to certain tags
-	// TODO: change this to professor object
-	ProfessorSelected []string `json:"professor_selected"` // Should the courses be taught be certain professors
+	Keyword string `json:"keyword"` // Keyword user inputs, this links to the name/catalog name/subject/tag of the course
+	// TODO: fix this with actual professor entities
+	TaughtProfessor       []string `json:"taught_professor"`           // Filter courses with professor names
+	Credit                float32  `json:"credit"`                     // Filter courses with given credit
+	IsOnline              bool     `json:"is_online"`                  // Filter courses that's online
+	IsOffline             bool     `json:"is_offline"`                 // Filter courses that's not online (in person)
+	IsHonor               bool     `json:"is_honor"`                   // Filter courses that's honor courses
+	Weekday               []int8   `json:"weekday"`                    // Filter courses that's in the specific weekdays
+	StartTime             float32  `json:"start_time"`                 // Filter courses that starts no early than the start time
+	EndTime               float32  `json:"end_time"`                   // Filter courses that ends no later than the start time
+	MinRating             int8     `json:"min_rating"`                 // Filter courses that has no lower rating than the give min rating
+	RankByRatingHighToLow bool     `json:"rank_by_rating_high_to_low"` // Rank the courses by the given rating low to high
+	RankByRatingLowToHigh bool     `json:"rank_by_rating_low_to_high"` // Rank the courses by the given rating low to high
 }
 
 type ClassParams struct {

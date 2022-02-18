@@ -102,3 +102,7 @@ func GetClassesOfCourseHandler(c *gin.Context) {
 		DATA:    classList,
 	})
 }
+
+func GetCoursesBySearchHandler(c *gin.Context) {
+
+}

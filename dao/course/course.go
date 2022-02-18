@@ -55,11 +55,11 @@ func GetCoursesBySearch(param model.CourseFilterParams) (*[]model.Course, int32,
 	}
 
 	if param.IsHonor {
-		query = query.Must(elastic.NewBoolQuery().Must())
+		query = query.Must(elastic.NewTermsQuery("is_honor", true))
 	}
 
 	if param.IsOffline {
-
+		query = query.Must(elast)
 	}
 
 	if param.IsOnline {

@@ -46,7 +46,7 @@ func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	return classList, total, nil
 }
 
-func GetCoursesBySearch(courseParam model.CourseFilterParams) (*[]model.Course, int32, error) {
+func GetCoursesBySearch(courseParam model.CourseFilterParams) (*[]model.Course, int64, error) {
 	courseList, total, err := dao.GetCoursesBySearch(courseParam)
 	if err != nil {
 		return nil, -1, err

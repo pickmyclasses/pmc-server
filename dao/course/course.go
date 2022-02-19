@@ -1,7 +1,10 @@
 package course
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
+	"pmc_server/init/es"
 
 	"pmc_server/init/postgres"
 	"pmc_server/model"
@@ -36,7 +39,7 @@ func GetClassListByCourseID(id int) (*[]model.Class, int64) {
 	return &classes, res.RowsAffected
 }
 
-func GetCoursesBySearch(param model.CourseFilterParams) (*[]model.Course, int32, error) {
+func GetCoursesBySearch(param model.CourseFilterParams) (*[]model.Course, int64, error) {
 	query := elastic.NewBoolQuery()
 	if param.MinCredit != 0 {
 		query = query.Filter(elastic.NewRangeQuery("min_credit").Gte(param.MinCredit))
@@ -74,16 +77,33 @@ func GetCoursesBySearch(param model.CourseFilterParams) (*[]model.Course, int32,
 	}
 
 	if param.MinRating != 0 {
-
+		query = query.Filter(elastic.NewRangeQuery("min_rating").Gte(param.MinRating))
 	}
 
 	if len(param.Weekday) != 0 {
-
+		query = query.Must(elastic.NewTermQuery("weekdays", param.Weekday))
 	}
 
 	if param.Keyword != "" {
 		query = query.Must(elastic.NewMultiMatchQuery(param.Keyword, "title", "description", "designation_catalog", "catalog_course_name"))
 	}
 
-	return nil, -1, nil
+	searchRes, err := es.Client.Search().Index("course").Query(query).Do(context.Background())
+	if err != nil {
+		return nil, -1, err
+	}
+
+	total := searchRes.TotalHits()
+
+	var courseList []model.Course
+	for _, hit := range searchRes.Hits.Hits {
+		var course model.Course
+		err := json.Unmarshal(*&hit.Source, &course)
+		if err != nil {
+			return nil, -1, err
+		}
+		courseList = append(courseList, course)
+	}
+
+	return &courseList, total, nil
 }

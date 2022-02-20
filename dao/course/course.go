@@ -130,6 +130,8 @@ func GetCoursesBySearch(param model.CourseFilterParams) ([]model.Course, int64, 
 				}
 			}
 		}
+	} else {
+		filteredCourseList = courseList
 	}
 
 	if param.RankByRatingLowToHigh {

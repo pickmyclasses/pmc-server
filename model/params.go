@@ -19,9 +19,9 @@ type CourseParams struct {
 }
 
 type CourseFilterParams struct {
-	Keyword string `json:"keyword"` // Keyword user inputs, this links to the name/catalog name/subject/tag of the course
 	// TODO: fix this with actual professor entities
 	TaughtProfessor       []string `json:"taught_professor"`           // Filter courses with professor names
+	Keyword               string   `json:"keyword"`                    // Keyword user inputs, this links to the name/catalog name/subject/tag of the course
 	MinCredit             float32  `json:"credit"`                     // Filter courses with given credit
 	MaxCredit             float32  `json:"max_credit"`                 //Filter cores with the given max credit
 	OfferedOnline         bool     `json:"is_online"`                  // Filter courses that's online
@@ -33,6 +33,8 @@ type CourseFilterParams struct {
 	MinRating             int8     `json:"min_rating"`                 // Filter courses that has no lower rating than the give min rating
 	RankByRatingHighToLow bool     `json:"rank_by_rating_high_to_low"` // Rank the courses by the given rating low to high
 	RankByRatingLowToHigh bool     `json:"rank_by_rating_low_to_high"` // Rank the courses by the given rating low to high
+	PageNumber            int      `json:"page_number"`                // The current page of the search result, default 0
+	PageSize              int      `json:"page_size"`                  // The current page size of the search result, default 10
 }
 
 type ClassParams struct {

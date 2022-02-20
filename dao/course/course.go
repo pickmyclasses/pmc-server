@@ -4,10 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"pmc_server/init/es"
+	"sort"
 
+	"pmc_server/init/es"
 	"pmc_server/init/postgres"
 	"pmc_server/model"
+	esModel "pmc_server/model/es"
 	"pmc_server/utils"
 
 	"github.com/olivere/elastic/v7"
@@ -39,7 +41,7 @@ func GetClassListByCourseID(id int) (*[]model.Class, int64) {
 	return &classes, res.RowsAffected
 }
 
-func GetCoursesBySearch(param model.CourseFilterParams) (*[]model.Course, int64, error) {
+func GetCoursesBySearch(param model.CourseFilterParams) ([]model.Course, int64, error) {
 	query := elastic.NewBoolQuery()
 	if param.MinCredit != 0 {
 		query = query.Filter(elastic.NewRangeQuery("min_credit").Gte(param.MinCredit))
@@ -61,21 +63,6 @@ func GetCoursesBySearch(param model.CourseFilterParams) (*[]model.Course, int64,
 		query = query.Must(elastic.NewTermsQuery("is_honor", true))
 	}
 
-	if param.OfferedOnline {
-	}
-
-	if param.OfferedOffline {
-
-	}
-
-	if param.RankByRatingHighToLow {
-
-	}
-
-	if param.RankByRatingLowToHigh {
-
-	}
-
 	if param.MinRating != 0 {
 		query = query.Filter(elastic.NewRangeQuery("min_rating").Gte(param.MinRating))
 	}
@@ -88,22 +75,74 @@ func GetCoursesBySearch(param model.CourseFilterParams) (*[]model.Course, int64,
 		query = query.Must(elastic.NewMultiMatchQuery(param.Keyword, "title", "description", "designation_catalog", "catalog_course_name"))
 	}
 
-	searchRes, err := es.Client.Search().Index("course").Query(query).Do(context.Background())
+	if param.PageSize > 20 {
+		param.PageSize = 20
+	}
+	if param.PageSize < 10 {
+		param.PageSize = 10
+	}
+
+	searchRes, err := es.Client.Search().
+		Index("course").Query(query).
+		From(param.PageNumber).
+		Size(param.PageSize).
+		Do(context.Background())
+
 	if err != nil {
 		return nil, -1, err
 	}
 
 	total := searchRes.TotalHits()
 
-	var courseList []model.Course
+	var esCourseIdList []int64
 	for _, hit := range searchRes.Hits.Hits {
-		var course model.Course
+		var course esModel.Course
 		err := json.Unmarshal(*&hit.Source, &course)
 		if err != nil {
+			return nil, -1, err
+		}
+		esCourseIdList = append(esCourseIdList, course.ID)
+	}
+
+	var courseList []model.Course
+	for _, id := range esCourseIdList {
+		var course model.Course
+		res := postgres.DB.Where("id = ?", id).First(&course)
+		if res.Error != nil {
 			return nil, -1, err
 		}
 		courseList = append(courseList, course)
 	}
 
-	return &courseList, total, nil
+	var filteredCourseList []model.Course
+	if param.OfferedOnline || param.OfferedOffline {
+		for _, course := range courseList {
+			var classes []model.Class
+			_ = postgres.DB.Where("course_id = ?", course.ID).Find(&classes)
+			for _, class := range classes {
+				if param.OfferedOnline && (class.OfferDate == "" || class.StartTime == "" || class.EndTime == "") {
+					filteredCourseList = append(filteredCourseList, course)
+					continue
+				}
+				if param.OfferedOffline && (class.OfferDate != "") {
+					filteredCourseList = append(filteredCourseList, course)
+					continue
+				}
+			}
+		}
+	}
+
+	if param.RankByRatingLowToHigh {
+		sort.SliceStable(filteredCourseList, func(i, j int) bool {
+			return filteredCourseList[i].Rating < filteredCourseList[j].Rating
+		})
+	}
+
+	if param.RankByRatingHighToLow {
+		sort.SliceStable(filteredCourseList, func(i, j int) bool {
+			return filteredCourseList[i].Rating > filteredCourseList[j].Rating
+		})
+	}
+
+	return filteredCourseList, total, nil
 }

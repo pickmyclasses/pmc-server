@@ -8,7 +8,7 @@ const pool = new Pool({
   port: 5432,
 });
 
-// ----------------------------------------------- Course functions -------------------------------------------------------------------------------
+// ----------------------------------------------- Class functions -------------------------------------------------------------------------------
 const getClasses = (request, response) => 
 {
   pool.query('select * from class', (error, result) => {
@@ -48,6 +48,54 @@ const getCourses = (request, response) =>
 const getSubjects = (request, response) => 
 {
   pool.query('select * from subject', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- Google Users functions -------------------------------------------------------------------------------
+const getGoogleUsers = (request, response) => 
+{
+  pool.query('select * from google_user', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- Review functions -------------------------------------------------------------------------------
+const getReviews = (request, response) => 
+{
+  pool.query('select * from review', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- Review functions -------------------------------------------------------------------------------
+const getSemesters = (request, response) => 
+{
+  pool.query('select * from semesters', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- User functions -------------------------------------------------------------------------------
+const getUsers = (request, response) => 
+{
+  pool.query('select * from users', (error, result) => {
     if(error)
     {
       response.status(400).json(error);
@@ -149,5 +197,9 @@ module.exports = {
   getClasses,
   getColleges,
   getCourses,
-  getSubjects
+  getSubjects,
+  getGoogleUsers,
+  getReviews,
+  getSemesters,
+  getUsers
 }

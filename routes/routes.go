@@ -7,8 +7,10 @@ import (
 
 	classController "pmc_server/controller/class"
 	courseController "pmc_server/controller/course"
+	ProfessorController "pmc_server/controller/professor"
 	reviewController "pmc_server/controller/review"
 	scheduleController "pmc_server/controller/schedule"
+	tagController "pmc_server/controller/tag"
 	userController "pmc_server/controller/user"
 	_ "pmc_server/docs"
 	"pmc_server/middlewares/auth"
@@ -51,6 +53,13 @@ func SetUp(mode string) *gin.Engine {
 	// for class
 	r.GET("/class/list", classController.GetClassListHandler).Use(auth.Cors())
 	r.GET("/class/:id", classController.GetClassByIDHandler).Use(auth.Cors())
+
+	// for tags
+	r.GET("/course/tags", tagController.GetTagList).Use(auth.Cors())
+	r.GET("/course/:id/tags", tagController.GetTagsByCourseID).Use(auth.Cors())
+
+	// for professors
+	r.GET("/professors", ProfessorController.GetProfessorList).Use(auth.Cors())
 
 	// for testing
 	r.GET("/ping", auth.JWTAuth(), auth.Cors(), func(c *gin.Context) {

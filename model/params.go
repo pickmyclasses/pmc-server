@@ -67,3 +67,7 @@ type DeleteScheduleParams struct {
 	ClassID    int64 `json:"class_id"`    // Class ID
 	SemesterID int64 `json:"semester_id"` // Semester ID
 }
+
+type GetTagParams struct {
+	CourseID int32 `json:"course_id"` // Course ID
+}

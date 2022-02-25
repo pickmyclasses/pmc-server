@@ -45,3 +45,4 @@ app.post('/schedule/remove', db.removeFromSchedule);
 app.get('/feedback', db.getFeedbacks);
 app.get('/feedback/:id', cors(), db.getFeedbackById);
 app.post('/feedback', db.createFeedback);
+app.post('/feedback/remove/:id', cors(), db.deleteFeedback);

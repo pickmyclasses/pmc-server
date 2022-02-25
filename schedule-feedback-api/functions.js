@@ -1,3 +1,5 @@
+const { response } = require('express');
+
 const Pool = require('pg').Pool;
 
 const pool = new Pool({
@@ -8,7 +10,7 @@ const pool = new Pool({
   port: 5432,
 });
 
-// ----------------------------------------------- Course functions -------------------------------------------------------------------------------
+// ----------------------------------------------- Class functions -------------------------------------------------------------------------------
 const getClasses = (request, response) => 
 {
   pool.query('select * from class', (error, result) => {
@@ -17,6 +19,19 @@ const getClasses = (request, response) =>
       response.status(400).json(error);
     }
     response.status(200).json(result.rows);
+  })
+}
+
+const deleteClass = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM class WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
   })
 }
 
@@ -32,6 +47,19 @@ const getColleges = (request, response) =>
   })
 }
 
+const deleteCollege = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM college WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
 // ----------------------------------------------- Course functions -------------------------------------------------------------------------------
 const getCourses = (request, response) => 
 {
@@ -44,10 +72,84 @@ const getCourses = (request, response) =>
   })
 }
 
+const deleteCourse = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM course WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
 // ----------------------------------------------- Subject functions -------------------------------------------------------------------------------
 const getSubjects = (request, response) => 
 {
   pool.query('select * from subject', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const deleteSubject = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM subject WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+// ----------------------------------------------- Google Users functions -------------------------------------------------------------------------------
+const getGoogleUsers = (request, response) => 
+{
+  pool.query('select * from google_user', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- Review functions -------------------------------------------------------------------------------
+const getReviews = (request, response) => 
+{
+  pool.query('select * from review', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- Review functions -------------------------------------------------------------------------------
+const getSemesters = (request, response) => 
+{
+  pool.query('select * from semesters', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- User functions -------------------------------------------------------------------------------
+const getUsers = (request, response) => 
+{
+  pool.query('select * from users', (error, result) => {
     if(error)
     {
       response.status(400).json(error);
@@ -138,16 +240,45 @@ const createFeedback = (request, response) => {
   })
 }
 
+const deleteFeedback = (request, response) =>
+{
+  const id = parseInt(request.params.id)
 
-module.exports = {
+  pool.query('DELETE FROM feedback WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+
+module.exports = 
+{
   getSchedule,
   addToSchedule,
   removeFromSchedule,
+
   getFeedbacks,
   getFeedbackById,
   createFeedback,
+  deleteFeedback,
+
   getClasses,
+  deleteClass,
+
   getColleges,
+  deleteCollege,
+
   getCourses,
-  getSubjects
+  deleteCourse,
+
+  getSubjects,
+  deleteSubject,
+
+  getGoogleUsers,
+  getReviews,
+  getSemesters,
+  getUsers
 }

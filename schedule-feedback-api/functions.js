@@ -1,3 +1,5 @@
+const { response } = require('express');
+
 const Pool = require('pg').Pool;
 
 const pool = new Pool({
@@ -20,6 +22,19 @@ const getClasses = (request, response) =>
   })
 }
 
+const deleteClass = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM class WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
 // ----------------------------------------------- College functions -------------------------------------------------------------------------------
 const getColleges = (request, response) => 
 {
@@ -29,6 +44,19 @@ const getColleges = (request, response) =>
       response.status(400).json(error);
     }
     response.status(200).json(result.rows);
+  })
+}
+
+const deleteCollege = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM college WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
   })
 }
 
@@ -44,6 +72,19 @@ const getCourses = (request, response) =>
   })
 }
 
+const deleteCourse = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM course WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
 // ----------------------------------------------- Subject functions -------------------------------------------------------------------------------
 const getSubjects = (request, response) => 
 {
@@ -53,6 +94,19 @@ const getSubjects = (request, response) =>
       response.status(400).json(error);
     }
     response.status(200).json(result.rows);
+  })
+}
+
+const deleteSubject = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM subject WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
   })
 }
 
@@ -186,18 +240,43 @@ const createFeedback = (request, response) => {
   })
 }
 
+const deleteFeedback = (request, response) =>
+{
+  const id = parseInt(request.params.id)
 
-module.exports = {
+  pool.query('DELETE FROM feedback WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+
+module.exports = 
+{
   getSchedule,
   addToSchedule,
   removeFromSchedule,
+
   getFeedbacks,
   getFeedbackById,
   createFeedback,
+  deleteFeedback,
+
   getClasses,
+  deleteClass,
+
   getColleges,
+  deleteCollege,
+
   getCourses,
+  deleteCourse,
+
   getSubjects,
+  deleteSubject,
+
   getGoogleUsers,
   getReviews,
   getSemesters,

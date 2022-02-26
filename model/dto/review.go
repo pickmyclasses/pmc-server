@@ -2,6 +2,12 @@ package dto
 
 import "time"
 
+type ReviewList struct {
+	Total         int64    `json:"total"`
+	Reviews       []Review `json:"reviews"`
+	OverallRating float32  `json:"overall_rating"`
+}
+
 type Review struct {
 	ID          int64     `json:"id"`          // The ID of the review
 	CreatedAt   time.Time `json:"created_at"`  // The time of the review created

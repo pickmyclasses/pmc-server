@@ -11,37 +11,34 @@ import (
 	"pmc_server/utils"
 )
 
-func GetReviewsByCourseID(pn, pSize, courseID int) (*[]dto.Review, int64, error) {
-	var reviews []model.Review
-	result := postgres.DB.Where("course_id = ?", courseID).Find(&reviews)
+func GetCourseReviewOverallRating(courseID int) (float32, error) {
+	var rating model.OverAllRating
+	result := postgres.DB.Where("course_id = ?", courseID).First(&rating)
 	if result.Error != nil {
-		return nil, 0, result.Error
+		return -1, errors.New("failed to get course rating")
 	}
 
-	var reviewDtos []dto.Review
-	for _, review := range reviews {
-		var user model.User
-		_ = postgres.DB.Where("id = ?", review.UserID).Find(&user)
-		reviewDto := &dto.Review{
-			ID:          review.ID,
-			CreatedAt:   review.CreatedAt,
-			Rating:      review.Rating,
-			Anonymous:   review.Anonymous,
-			Recommended: review.Recommended,
-			Pros:        review.Pros,
-			Cons:        review.Cons,
-			Comment:     review.Comment,
-			CourseID:    review.CourseID,
-			UserID:      review.UserID,
-			Username:    user.FirstName + " " + user.LastName,
-		}
-		reviewDtos = append(reviewDtos, *reviewDto)
+	return rating.OverAllRating, nil
+}
+
+func GetReviewTotalByCourseID(courseID int) (int64, error) {
+	var total int64
+	res := postgres.DB.Where("course_id = ?", courseID).Count(&total)
+	if res.Error != nil {
+		return -1, errors.New("failed to fetch total number of review")
 	}
+	return total, nil
+}
 
-	total := result.RowsAffected
-	postgres.DB.Scopes(utils.Paginate(pn, pSize)).Where("course_id = ?", courseID).Find(&reviews)
+func GetReviewsByCourseID(courseID, pn, pSize int) ([]model.Review, error) {
+	var reviewList []model.Review
 
-	return &reviewDtos, total, nil
+	res := postgres.DB.Scopes(utils.Paginate(pn, pSize)).Where("course_id = ?", courseID).Find(&reviewList)
+	if res.Error != nil {
+		return nil, errors.New("failed to fetch review list")
+	}
+	return reviewList, nil
+
 }
 
 func GetReviewByID(reviewID int) (*model.Review, error) {

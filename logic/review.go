@@ -2,20 +2,68 @@ package logic
 
 import (
 	"errors"
-	"pmc_server/model/dto"
+	"fmt"
 	"strconv"
 
 	. "pmc_server/consts"
-	dao "pmc_server/dao/review"
-	model "pmc_server/model"
+	reviewDao "pmc_server/dao/review"
+	userDao "pmc_server/dao/user"
+	"pmc_server/model"
+	"pmc_server/model/dto"
 )
 
-func GetCourseReviewList(pn, pSize int, courseID string) (*[]dto.Review, int64, error) {
+func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error) {
 	idInt, err := strconv.Atoi(courseID)
 	if err != nil {
-		return nil, 0, errors.New(BAD_ID_ERR)
+		return nil, errors.New(BAD_ID_ERR)
 	}
-	return dao.GetReviewsByCourseID(pn, pSize, idInt)
+
+	rating, err := reviewDao.GetCourseReviewOverallRating(idInt)
+	if err != nil {
+		return nil, err
+	}
+
+	total, err := reviewDao.GetReviewTotalByCourseID(idInt)
+	if err != nil {
+		return nil, err
+	}
+
+	reviewList, err := reviewDao.GetReviewsByCourseID(idInt, pn, pSize)
+	if err != nil {
+		return nil, err
+	}
+
+	reviewRsp := &dto.ReviewList{
+		Total: total,
+		Reviews: make([]dto.Review, 0),
+		OverallRating: rating,
+	}
+
+	for _, review := range reviewList {
+		user, err := userDao.GetUserByID(review.UserID)
+		if err != nil {
+			return nil, err
+		}
+
+		reviewDto := dto.Review{
+			ID: review.ID,
+			CreatedAt: review.CreatedAt,
+			Rating: review.Rating,
+			Anonymous: review.Anonymous,
+			Recommended: review.Recommended,
+			Pros: review.Pros,
+			Cons: review.Cons,
+			Comment: review.Comment,
+			CourseID: review.CourseID,
+			UserID: review.UserID,
+			Username: fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+		}
+
+		reviewRsp.Reviews = append(reviewRsp.Reviews, reviewDto)
+	}
+
+	return reviewRsp, nil
+
 }
 
 func GetReviewByID(reviewID string) (*model.Review, error) {
@@ -23,13 +71,13 @@ func GetReviewByID(reviewID string) (*model.Review, error) {
 	if err != nil {
 		return nil, errors.New(BAD_ID_ERR)
 	}
-	return dao.GetReviewByID(idInt)
+	return reviewDao.GetReviewByID(idInt)
 }
 
 func PostCourseReview(review dto.Review) error {
-	return dao.PostCourseReview(review)
+	return reviewDao.PostCourseReview(review)
 }
 
 func UpdateCourseReview(review model.ReviewParams) error {
-	return dao.UpdateCourseReview(review)
+	return reviewDao.UpdateCourseReview(review)
 }

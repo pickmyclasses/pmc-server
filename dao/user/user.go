@@ -57,3 +57,15 @@ func EncryptPassword(pwd string) string {
 	salt, encodedPwd := password.Encode(pwd, options)
 	return fmt.Sprintf("$pbkdf2-sha512$%s$%s", salt, encodedPwd)
 }
+
+func GetUserByID(userID int64) (*model.User, error) {
+	var user model.User
+	result := postgres.DB.Where("id = ?", userID).First(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, errors.New("user not found")
+	}
+	return &user, nil
+}

@@ -34,7 +34,7 @@ func GetCourseReviewListHandler(c *gin.Context) {
 	}
 
 	courseID := c.Param("id")
-	reviewList, total, err := logic.GetCourseReviewList(pnInt, pSizeInt, courseID)
+	reviewList, err := logic.GetCourseReviewList(pnInt, pSizeInt, courseID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			MESSAGE: NO_INFO_ERR,
@@ -43,9 +43,7 @@ func GetCourseReviewListHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		MESSAGE: SUCCESS,
 		DATA:    reviewList,
-		TOTAL:   total,
 	})
 }
 

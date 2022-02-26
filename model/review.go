@@ -2,14 +2,14 @@ package model
 
 type Review struct {
 	Base
-	Rating      float32 `gorm:"type:float(3);not null"`
-	User        *User
-	Course      *Course
-	Anonymous   bool   `gorm:"type:boolean;not null"`
-	Recommended bool   `gorm:"type:boolean;not null"`
-	Pros        string `gorm:"type:text;"`
-	Cons        string `gorm:"type:text"`
-	Comment     string `gorm:"type:text"`
-	CourseID    int64  `gorm:"type:bigint;not null"`
-	UserID      int64  `gorm:"type:bigint;not null"`
+	Rating       float32 `gorm:"column:rating"`
+	Anonymous    bool    `gorm:"column:anonymous"`
+	Recommended  bool    `gorm:"column:recommended"`
+	Pros         string  `gorm:"column:pros"`
+	Cons         string  `gorm:"column:cons"`
+	Comment      string  `gorm:"column:comment"`
+	CourseID     int64   `gorm:"column:course_id"`
+	UserID       int64   `gorm:"column:user_id"`
+	LikeCount    int32   `gorm:"column:like_count"`
+	DislikeCount int32   `gorm:"column:dislike_count"`
 }

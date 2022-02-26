@@ -32,9 +32,9 @@ func SetUp(mode string) *gin.Engine {
 	r.POST("/login", userController.LoginHandler).Use(auth.Cors())
 
 	// for schedule
-	r.POST("/:id/schedule", scheduleController.AddUserScheduleHandler).Use(auth.Cors())
-	r.GET("/:id/schedule", scheduleController.GetUserScheduleHandler).Use(auth.Cors())
-	r.DELETE("/:id/schedule", scheduleController.DeleteUserScheduleHandler).Use(auth.Cors())
+	r.POST("/schedule", scheduleController.AddUserScheduleHandler).Use(auth.Cors())
+	r.GET("/schedule", scheduleController.GetUserScheduleHandler).Use(auth.Cors())
+	r.PUT("/schedule", scheduleController.DeleteUserScheduleHandler).Use(auth.Cors())
 
 	// for course
 	r.GET("/course/list", courseController.GetCourseListHandler).Use(auth.Cors())

@@ -55,11 +55,11 @@ type ReviewParams struct {
 type PostScheduleParams struct {
 	ClassID    int64 `json:"class_id"`    // Class ID
 	SemesterID int64 `json:"semester_id"` // Semester ID
-	UserID     int64 `json:"student_id"`  // Student ID
+	UserID     int64 `json:"user_id"`  // Student ID
 }
 
 type GetScheduleParams struct {
-	UserID int64 `json:"user_id"` // Student ID
+	UserID int64 `form:"user_id"` // Student ID
 }
 
 type DeleteScheduleParams struct {

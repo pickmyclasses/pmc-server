@@ -12,9 +12,9 @@ import (
 
 func AddUserScheduleHandler(c *gin.Context) {
 	var param model.PostScheduleParams
-	if err := c.ShouldBindUri(&param); err != nil {
+	if err := c.ShouldBindJSON(&param); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			MESSAGE: BAD_PARAM_ERR,
+			ERROR: BAD_PARAM_ERR,
 		})
 		return
 	}
@@ -22,8 +22,7 @@ func AddUserScheduleHandler(c *gin.Context) {
 	err := logic.CreateSchedule(param)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			MESSAGE: INTERNAL_ERR,
-			ERROR:   err,
+			ERROR: err.Error(),
 		})
 		return
 	}
@@ -35,9 +34,9 @@ func AddUserScheduleHandler(c *gin.Context) {
 
 func GetUserScheduleHandler(c *gin.Context) {
 	var param model.GetScheduleParams
-	if err := c.ShouldBindUri(&param); err != nil {
+	if err := c.ShouldBind(&param); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			MESSAGE: BAD_PARAM_ERR,
+			ERROR: BAD_PARAM_ERR,
 		})
 		return
 	}
@@ -45,21 +44,19 @@ func GetUserScheduleHandler(c *gin.Context) {
 	data, err := logic.GetSchedule(param)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			MESSAGE: INTERNAL_ERR,
-			ERROR:   err,
+			ERROR: INTERNAL_ERR,
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		MESSAGE: SUCCESS,
 		DATA:    data,
 	})
 }
 
 func DeleteUserScheduleHandler(c *gin.Context) {
 	var param model.DeleteScheduleParams
-	if err := c.ShouldBindUri(&param); err != nil {
+	if err := c.ShouldBindJSON(&param); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			MESSAGE: BAD_PARAM_ERR,
 		})
@@ -69,8 +66,7 @@ func DeleteUserScheduleHandler(c *gin.Context) {
 	err := logic.DeleteSchedule(param)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			MESSAGE: INTERNAL_ERR,
-			ERROR:   err,
+			ERROR:   err.Error(),
 		})
 		return
 	}

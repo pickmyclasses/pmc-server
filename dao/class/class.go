@@ -1,8 +1,6 @@
 package dao
 
 import (
-	"errors"
-
 	"pmc_server/init/postgres"
 	model "pmc_server/model"
 	"pmc_server/utils"
@@ -21,9 +19,6 @@ func GetClassInfoByID(id int) (*model.Class, error) {
 	result := postgres.DB.Where("id = ?", id).First(&class)
 	if result.Error != nil {
 		return nil, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return nil, errors.New("no class info found")
 	}
 	return &class, nil
 }

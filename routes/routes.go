@@ -55,11 +55,13 @@ func SetUp(mode string) *gin.Engine {
 	r.GET("/class/:id", classController.GetClassByIDHandler).Use(auth.Cors())
 
 	// for tags
-	r.GET("/course/tags", tagController.GetTagList).Use(auth.Cors())
-	r.GET("/course/:id/tags", tagController.GetTagsByCourseID).Use(auth.Cors())
+	r.GET("/course/tag", tagController.GetTagListHandler).Use(auth.Cors())
+	r.GET("/course/:id/tag", tagController.GetTagByCourseIDHandler).Use(auth.Cors())
+	r.POST("/course/:id/tag", tagController.CreateTagByCourseIDHandler).Use(auth.Cors())
+	r.PUT("/course/:id/tag", tagController.VoteTagHandler).Use(auth.Cors())
 
 	// for professors
-	r.GET("/professors", ProfessorController.GetProfessorList).Use(auth.Cors())
+	r.GET("/professors", ProfessorController.GetProfessorListHandler).Use(auth.Cors())
 
 	// for testing
 	r.GET("/ping", auth.JWTAuth(), auth.Cors(), func(c *gin.Context) {

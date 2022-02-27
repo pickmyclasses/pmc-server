@@ -9,7 +9,7 @@ import (
 	"pmc_server/logic"
 )
 
-func GetProfessorList(ctx *gin.Context) {
+func GetProfessorListHandler(ctx *gin.Context) {
 	professorList, err := logic.GetProfessorList()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{

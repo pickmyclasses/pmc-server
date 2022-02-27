@@ -8,13 +8,23 @@ import (
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/utils"
+
+	"gorm.io/gorm"
 )
 
 func GetCourseOverallRating(courseID int64) (*model.OverAllRating, error) {
 	var rating model.OverAllRating
 	result := postgres.DB.Where("course_id = ?", courseID).First(&rating)
 	if result.Error != nil {
-		return nil, errors.New("failed to get course rating")
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			newRating, err := CreateCourseRating(courseID)
+			if err != nil {
+				return nil, errors.New("course has no rating records and failed to create new rating record")
+			}
+			rating = *newRating
+		} else {
+			return nil, errors.New("failed to get course rating")
+		}
 	}
 
 	return &rating, nil
@@ -34,21 +44,20 @@ func CreateCourseRating(CourseID int64) (*model.OverAllRating, error) {
 }
 
 func UpdateCourseRating(rating model.OverAllRating) error {
-	res := postgres.DB.
-		Where("course_id = ?", rating.CourseID).
+	res := postgres.DB.Model(&rating).
 		Updates(map[string]interface{}{"over_all_rating": rating.OverAllRating, "total_rating_count": rating.TotalRatingCount})
 
 	if res.Error != nil || res.RowsAffected == 0 {
-		return errors.New("update course rating failed")
+		return res.Error
 	}
 	return nil
 }
 
 func GetReviewTotalByCourseID(courseID int) (int64, error) {
 	var total int64
-	res := postgres.DB.Where("course_id = ?", courseID).Count(&total)
+	res := postgres.DB.Model(&model.Review{}).Where("course_id = ?", courseID).Count(&total)
 	if res.Error != nil {
-		return -1, errors.New("failed to fetch total number of review")
+		return -1, res.Error
 	}
 	return total, nil
 }
@@ -58,7 +67,10 @@ func GetReviewsByCourseID(courseID, pn, pSize int) ([]model.Review, error) {
 
 	res := postgres.DB.Scopes(utils.Paginate(pn, pSize)).Where("course_id = ?", courseID).Find(&reviewList)
 	if res.Error != nil {
-		return nil, errors.New("failed to fetch review list")
+		return make([]model.Review, 0), errors.New("failed to fetch review list")
+	}
+	if res.RowsAffected == 0 {
+		return make([]model.Review, 0), nil
 	}
 	return reviewList, nil
 

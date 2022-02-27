@@ -2,11 +2,12 @@ package review
 
 import (
 	"net/http"
-	"pmc_server/model"
-	"pmc_server/model/dto"
+	"strconv"
 
 	. "pmc_server/consts"
 	"pmc_server/logic"
+	"pmc_server/model"
+	"pmc_server/model/dto"
 	"pmc_server/utils"
 
 	"github.com/gin-gonic/gin"
@@ -25,19 +26,20 @@ import (
 // @Success 200 {array} dto.Review
 // @Router /course/:id/review [get]
 func GetCourseReviewListHandler(c *gin.Context) {
+	courseID := c.Param("id")
+
 	pnInt, pSizeInt, err := utils.HandlePagination(c, "20")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			ERROR: err,
+			ERROR: err.Error(),
 		})
 		return
 	}
 
-	courseID := c.Param("id")
 	reviewList, err := logic.GetCourseReviewList(pnInt, pSizeInt, courseID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			ERROR: NO_INFO_ERR,
+			ERROR: err.Error(),
 		})
 		return
 	}
@@ -88,6 +90,14 @@ func GetCourseReviewByIDHandler(c *gin.Context) {
 // @Success 200 {string} OK
 // @Router /course/review [post]
 func PostCourseReviewHandler(c *gin.Context) {
+	courseID := c.Param("id")
+	courseIDInt, err := strconv.Atoi(courseID)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, gin.H{
+			ERROR: NO_ID_ERR,
+		})
+		return
+	}
 	var param dto.Review
 	if err := c.ShouldBindJSON(&param); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
@@ -96,7 +106,7 @@ func PostCourseReviewHandler(c *gin.Context) {
 		return
 	}
 
-	err := logic.PostCourseReview(param)
+	err = logic.PostCourseReview(param, int64(courseIDInt))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			ERROR: err.Error(),

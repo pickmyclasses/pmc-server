@@ -47,7 +47,7 @@ func SetUp(mode string) *gin.Engine {
 	// for review
 	r.GET("/course/:id/review", reviewController.GetCourseReviewListHandler).Use(auth.Cors())
 	r.GET("/course/:id/review/:review_id", reviewController.GetCourseReviewByIDHandler).Use(auth.Cors())
-	r.POST("/course/review", reviewController.PostCourseReviewHandler).Use(auth.Cors())
+	r.POST("/course/:id/review", reviewController.PostCourseReviewHandler).Use(auth.Cors())
 	r.PUT("/course/review", reviewController.UpdateCourseReviewHandler).Use(auth.Cors())
 
 	// for class

@@ -2,14 +2,13 @@ package logic
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
 	. "pmc_server/consts"
 	reviewDao "pmc_server/dao/review"
-	userDao "pmc_server/dao/user"
 	"pmc_server/model"
 	"pmc_server/model/dto"
+	"pmc_server/utils"
 )
 
 func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error) {
@@ -40,14 +39,7 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 	}
 
 	for _, review := range reviewList {
-		user, err := userDao.GetUserByID(review.UserID)
-		if err != nil {
-			return nil, err
-		}
-
 		reviewDto := dto.Review{
-			ID:          review.ID,
-			CreatedAt:   review.CreatedAt,
 			Rating:      review.Rating,
 			Anonymous:   review.Anonymous,
 			Recommended: review.Recommended,
@@ -56,7 +48,6 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 			Comment:     review.Comment,
 			CourseID:    review.CourseID,
 			UserID:      review.UserID,
-			Username:    fmt.Sprintf("%s %s", user.FirstName, user.LastName),
 		}
 
 		reviewRsp.Reviews = append(reviewRsp.Reviews, reviewDto)
@@ -74,16 +65,16 @@ func GetReviewByID(reviewID string) (*model.Review, error) {
 	return reviewDao.GetReviewByID(idInt)
 }
 
-func PostCourseReview(review dto.Review) error {
+func PostCourseReview(review dto.Review, courseID int64) error {
 	// check old overall rating value
-	rating, err := reviewDao.GetCourseOverallRating(review.CourseID)
+	rating, err := reviewDao.GetCourseOverallRating(courseID)
 	if err != nil {
 		return err
 	}
 
 	// if there is no existing rating, create a new one first
 	if rating == nil || rating.ID == 0 {
-		rating, err = reviewDao.CreateCourseRating(review.CourseID)
+		rating, err = reviewDao.CreateCourseRating(courseID)
 		if err != nil {
 			return err
 		}
@@ -91,17 +82,18 @@ func PostCourseReview(review dto.Review) error {
 
 	// recalculate the rating for the record
 	rating.OverAllRating =
-		((rating.OverAllRating * float32(rating.TotalRatingCount)) + review.Rating) / float32(rating.TotalRatingCount)
+		float32(utils.ToFixed(float64(((rating.OverAllRating * float32(rating.TotalRatingCount)) + review.Rating) /
+			(float32(rating.TotalRatingCount) + 1)), 2))
 
 
 	reviewRec := &model.Review{
-		Rating: rating.OverAllRating,
+		Rating: review.Rating,
 		Anonymous: review.Anonymous,
 		Recommended: review.Recommended,
 		Pros: review.Pros,
 		Cons: review.Cons,
 		Comment: review.Comment,
-		CourseID: review.CourseID,
+		CourseID: courseID,
 		UserID: review.UserID,
 		LikeCount: 0,
 		DislikeCount: 0,

@@ -2,12 +2,12 @@ package tag
 
 import (
 	"github.com/gin-gonic/gin"
-	"pmc_server/model"
 
 	"net/http"
 
 	. "pmc_server/consts"
 	"pmc_server/logic"
+	"pmc_server/model"
 )
 
 func GetTagList(ctx *gin.Context) {

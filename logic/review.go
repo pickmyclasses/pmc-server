@@ -18,7 +18,7 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 		return nil, errors.New(BAD_ID_ERR)
 	}
 
-	rating, err := reviewDao.GetCourseReviewOverallRating(idInt)
+	rating, err := reviewDao.GetCourseOverallRating(int64(idInt))
 	if err != nil {
 		return nil, err
 	}
@@ -34,9 +34,9 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 	}
 
 	reviewRsp := &dto.ReviewList{
-		Total: total,
-		Reviews: make([]dto.Review, 0),
-		OverallRating: rating,
+		Total:         total,
+		Reviews:       make([]dto.Review, 0),
+		OverallRating: rating.OverAllRating,
 	}
 
 	for _, review := range reviewList {
@@ -46,17 +46,17 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 		}
 
 		reviewDto := dto.Review{
-			ID: review.ID,
-			CreatedAt: review.CreatedAt,
-			Rating: review.Rating,
-			Anonymous: review.Anonymous,
+			ID:          review.ID,
+			CreatedAt:   review.CreatedAt,
+			Rating:      review.Rating,
+			Anonymous:   review.Anonymous,
 			Recommended: review.Recommended,
-			Pros: review.Pros,
-			Cons: review.Cons,
-			Comment: review.Comment,
-			CourseID: review.CourseID,
-			UserID: review.UserID,
-			Username: fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+			Pros:        review.Pros,
+			Cons:        review.Cons,
+			Comment:     review.Comment,
+			CourseID:    review.CourseID,
+			UserID:      review.UserID,
+			Username:    fmt.Sprintf("%s %s", user.FirstName, user.LastName),
 		}
 
 		reviewRsp.Reviews = append(reviewRsp.Reviews, reviewDto)
@@ -75,7 +75,52 @@ func GetReviewByID(reviewID string) (*model.Review, error) {
 }
 
 func PostCourseReview(review dto.Review) error {
-	return reviewDao.PostCourseReview(review)
+	// check old overall rating value
+	rating, err := reviewDao.GetCourseOverallRating(review.CourseID)
+	if err != nil {
+		return err
+	}
+
+	// if there is no existing rating, create a new one first
+	if rating == nil || rating.ID == 0 {
+		rating, err = reviewDao.CreateCourseRating(review.CourseID)
+		if err != nil {
+			return err
+		}
+	}
+
+	// recalculate the rating for the record
+	rating.OverAllRating =
+		((rating.OverAllRating * float32(rating.TotalRatingCount)) + review.Rating) / float32(rating.TotalRatingCount)
+
+
+	reviewRec := &model.Review{
+		Rating: rating.OverAllRating,
+		Anonymous: review.Anonymous,
+		Recommended: review.Recommended,
+		Pros: review.Pros,
+		Cons: review.Cons,
+		Comment: review.Comment,
+		CourseID: review.CourseID,
+		UserID: review.UserID,
+		LikeCount: 0,
+		DislikeCount: 0,
+	}
+
+	err = reviewDao.CreateCourseReview(*reviewRec)
+	if err != nil {
+		return err
+	}
+
+	rating.TotalRatingCount += 1
+
+	// save the new rating
+	err = reviewDao.UpdateCourseRating(*rating)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func UpdateCourseReview(review model.ReviewParams) error {

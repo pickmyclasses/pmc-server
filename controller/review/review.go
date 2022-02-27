@@ -28,7 +28,7 @@ func GetCourseReviewListHandler(c *gin.Context) {
 	pnInt, pSizeInt, err := utils.HandlePagination(c, "20")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			MESSAGE: err,
+			ERROR: err,
 		})
 		return
 	}
@@ -37,7 +37,7 @@ func GetCourseReviewListHandler(c *gin.Context) {
 	reviewList, err := logic.GetCourseReviewList(pnInt, pSizeInt, courseID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			MESSAGE: NO_INFO_ERR,
+			ERROR: NO_INFO_ERR,
 		})
 		return
 	}
@@ -61,20 +61,19 @@ func GetCourseReviewByIDHandler(c *gin.Context) {
 	reviewID := c.Param("review_id")
 	if reviewID == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			MESSAGE: NO_ID_ERR,
+			ERROR: NO_ID_ERR,
 		})
 	}
 
 	review, err := logic.GetReviewByID(reviewID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			MESSAGE: err,
+			ERROR: err,
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		MESSAGE: SUCCESS,
 		DATA:    review,
 	})
 }
@@ -90,9 +89,9 @@ func GetCourseReviewByIDHandler(c *gin.Context) {
 // @Router /course/review [post]
 func PostCourseReviewHandler(c *gin.Context) {
 	var param dto.Review
-	if err := c.ShouldBind(&param); err != nil {
+	if err := c.ShouldBindJSON(&param); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			MESSAGE: err.Error(),
+			ERROR: err.Error(),
 		})
 		return
 	}
@@ -100,7 +99,7 @@ func PostCourseReviewHandler(c *gin.Context) {
 	err := logic.PostCourseReview(param)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			MESSAGE: err.Error(),
+			ERROR: err.Error(),
 		})
 		return
 	}

@@ -2,7 +2,6 @@ package dao
 
 import (
 	"errors"
-	"pmc_server/model/dto"
 	"time"
 
 	. "pmc_server/consts"
@@ -11,14 +10,38 @@ import (
 	"pmc_server/utils"
 )
 
-func GetCourseReviewOverallRating(courseID int) (float32, error) {
+func GetCourseOverallRating(courseID int64) (*model.OverAllRating, error) {
 	var rating model.OverAllRating
 	result := postgres.DB.Where("course_id = ?", courseID).First(&rating)
 	if result.Error != nil {
-		return -1, errors.New("failed to get course rating")
+		return nil, errors.New("failed to get course rating")
 	}
 
-	return rating.OverAllRating, nil
+	return &rating, nil
+}
+
+func CreateCourseRating(CourseID int64) (*model.OverAllRating, error) {
+	rating := &model.OverAllRating{
+		CourseID: CourseID,
+		OverAllRating: 0,
+		TotalRatingCount: 0,
+	}
+	result := postgres.DB.Create(&rating)
+	if result.Error != nil || result.RowsAffected == 0 {
+		return nil, errors.New("create new rating record failed")
+	}
+	return rating, nil
+}
+
+func UpdateCourseRating(rating model.OverAllRating) error {
+	res := postgres.DB.
+		Where("course_id = ?", rating.CourseID).
+		Updates(map[string]interface{}{"over_all_rating": rating.OverAllRating, "total_rating_count": rating.TotalRatingCount})
+
+	if res.Error != nil || res.RowsAffected == 0 {
+		return errors.New("update course rating failed")
+	}
+	return nil
 }
 
 func GetReviewTotalByCourseID(courseID int) (int64, error) {
@@ -50,19 +73,8 @@ func GetReviewByID(reviewID int) (*model.Review, error) {
 	return &review, nil
 }
 
-func PostCourseReview(review dto.Review) error {
-	reviewModel := &model.Review{
-		Rating:      review.Rating,
-		UserID:      review.UserID,
-		CourseID:    review.CourseID,
-		Anonymous:   review.Anonymous,
-		Recommended: review.Recommended,
-		Pros:        review.Pros,
-		Cons:        review.Cons,
-		Comment:     review.Comment,
-	}
-
-	res := postgres.DB.Create(&reviewModel)
+func CreateCourseReview(review model.Review) error {
+	res := postgres.DB.Create(&review)
 	if res.Error != nil || res.RowsAffected == 0 {
 		return errors.New("create review failed")
 	}

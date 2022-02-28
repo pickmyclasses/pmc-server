@@ -15,5 +15,4 @@ type Course struct {
 	SubjectID          int64    `gorm:"column:subject_id"`
 	AssociatedCourseID int64    `gorm:"column:associated_course_id"`
 	Subject            *Subject `gorm:"foreignKey:SubjectID"`
-	Rating             float32  `gorm:"column:rating""`
 }

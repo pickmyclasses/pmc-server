@@ -48,6 +48,7 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 			Comment:     review.Comment,
 			CourseID:    review.CourseID,
 			UserID:      review.UserID,
+			CreatedAt: review.CreatedAt,
 		}
 
 		reviewRsp.Reviews = append(reviewRsp.Reviews, reviewDto)

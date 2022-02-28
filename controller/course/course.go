@@ -26,11 +26,19 @@ func GetCourseListHandler(c *gin.Context) {
 	pnInt, pSizeInt, err := utils.HandlePagination(c, "10")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			MESSAGE: err,
+			ERROR: err,
 		})
+		return
 	}
 
-	courseList, total := logic.GetCourseList(pnInt, pSizeInt)
+	courseList, total, err := logic.GetCourseList(pnInt, pSizeInt)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			ERROR: err,
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		DATA:  courseList,
 		TOTAL: total,

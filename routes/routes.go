@@ -50,7 +50,7 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/course/:id/review", reviewController.GetCourseReviewListHandler)
 		r.GET("/course/:id/review/:review_id", reviewController.GetCourseReviewByIDHandler)
 		r.POST("/course/:id/review", reviewController.PostCourseReviewHandler)
-		r.PUT("/course/review", reviewController.UpdateCourseReviewHandler)
+		r.PUT("/course/:id/review", reviewController.UpdateCourseReviewHandler)
 
 		// for class
 		r.GET("/class/list", classController.GetClassListHandler)

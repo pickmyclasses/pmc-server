@@ -2,16 +2,54 @@ package logic
 
 import (
 	"errors"
-	classDao "pmc_server/dao/postgres/class"
-	dao "pmc_server/dao/postgres/course"
+	"fmt"
 	"strconv"
 
+	classDao "pmc_server/dao/postgres/class"
+	dao "pmc_server/dao/postgres/course"
+	reviewDao "pmc_server/dao/postgres/review"
 	"pmc_server/model"
 	"pmc_server/model/dto"
 )
 
-func GetCourseList(pn, pSize int) ([]model.Course, int64) {
-	return dao.GetCourses(pn, pSize)
+func GetCourseList(pn, pSize int) ([]dto.Course, int64, error) {
+	courseList, err := dao.GetCourses(pn, pSize)
+
+	if err != nil {
+		return nil, -1, fmt.Errorf("unable to get the list of course: %+v\n", err)
+	}
+
+	total, err := dao.GetCourseTotal()
+	if err != nil {
+		return nil, -1, fmt.Errorf("unable to get the total of course: %+v\n", err)
+	}
+
+	courseDtoList := make([]dto.Course, 0)
+	for _, course := range courseList {
+		classList, err := classDao.GetClassByCourseID(course.ID)
+		if err != nil {
+			return nil,
+				-1,
+				fmt.Errorf("failed to fetch class list of the course %s becuase %+v\n", course.CatalogCourseName, err)
+		}
+
+		rating, err := reviewDao.GetCourseOverallRating(course.ID)
+		if err != nil {
+			return nil,
+				-1,
+				fmt.Errorf("failed to fetch course overall rating of the corse %s becuase %+v\n", course.CatalogCourseName, err)
+		}
+
+		courseDto := dto.Course{
+			Course:        &course,
+			Classes:       *classList,
+			OverallRating: rating.OverAllRating,
+		}
+
+		courseDtoList = append(courseDtoList, courseDto)
+	}
+
+	return courseDtoList, total, nil
 }
 
 func GetCourseInfo(id string) (*dto.Course, error) {

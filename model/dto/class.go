@@ -5,20 +5,20 @@ type Class struct {
 	Semester            string `json:"semester"`
 	Year                string `json:"year"`
 	Session             string `json:"session"`
-	WaitList            string `json:"wait_list"`
-	OfferDate           string `json:"offer_date"`
-	StartTime           string `json:"start_time"`
-	EndTime             string `json:"end_time"`
+	WaitList            string `json:"waitList"`
+	OfferDate           string `json:"offerDate"`
+	StartTime           string `json:"startTime"`
+	EndTime             string `json:"endTime"`
 	Location            string `json:"location"`
-	RecommendationScore int    `json:"recommendation_score"`
+	RecommendationScore int    `json:"recommendationScore"`
 	Type                string `json:"type"`
 	Number              string `json:"number"`
 	Component           string `json:"component"`
 	Unit                string `json:"unit"`
-	SeatAvailable       int32  `json:"seat_available"`
+	SeatAvailable       int32  `json:"seatAvailable"`
 	Note                string `json:"note"`
 	Instructors         string `json:"instructors"`
-	CourseTitle         string `json:"course_title"`
-	CourseCatalogName   string `json:"course_catalog_name"`
-	CourseID            int64  `json:"course_id"`
+	CourseTitle         string `json:"courseTitle"`
+	CourseCatalogName   string `json:"courseCatalogName"`
+	CourseID            int64  `json:"courseId"`
 }

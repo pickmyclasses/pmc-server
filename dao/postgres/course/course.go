@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"sort"
-
 	"pmc_server/init/es"
 	"pmc_server/init/postgres"
 	"pmc_server/model"
@@ -15,12 +13,23 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
-func GetCourses(pn, pSize int) ([]model.Course, int64) {
+func GetCourses(pn, pSize int) ([]model.Course, error) {
 	var courses []model.Course
-	total := postgres.DB.Find(&courses).RowsAffected
-	postgres.DB.Scopes(utils.Paginate(pn, pSize)).Find(&courses)
+	res := postgres.DB.Scopes(utils.Paginate(pn, pSize)).Find(&courses)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return courses, nil
+}
 
-	return courses, total
+func GetCourseTotal() (int64, error) {
+	var total int64
+	res := postgres.DB.Model(&model.Course{}).Count(&total)
+	if res.Error != nil {
+		return -1, res.Error
+	}
+
+	return total, nil
 }
 
 func GetCourseByID(id int) (*model.Course, error) {
@@ -134,17 +143,17 @@ func GetCoursesBySearch(param model.CourseFilterParams) ([]model.Course, int64, 
 		filteredCourseList = courseList
 	}
 
-	if param.RankByRatingLowToHigh {
-		sort.SliceStable(filteredCourseList, func(i, j int) bool {
-			return filteredCourseList[i].Rating < filteredCourseList[j].Rating
-		})
-	}
-
-	if param.RankByRatingHighToLow {
-		sort.SliceStable(filteredCourseList, func(i, j int) bool {
-			return filteredCourseList[i].Rating > filteredCourseList[j].Rating
-		})
-	}
+	//if param.RankByRatingLowToHigh {
+	//	sort.SliceStable(filteredCourseList, func(i, j int) bool {
+	//		return filteredCourseList[i].Rating < filteredCourseList[j].Rating
+	//	})
+	//}
+	//
+	//if param.RankByRatingHighToLow {
+	//	sort.SliceStable(filteredCourseList, func(i, j int) bool {
+	//		return filteredCourseList[i].Rating > filteredCourseList[j].Rating
+	//	})
+	//}
 
 	return filteredCourseList, total, nil
 }

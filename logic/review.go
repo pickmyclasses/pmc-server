@@ -2,13 +2,14 @@ package logic
 
 import (
 	"errors"
-	reviewDao "pmc_server/dao/postgres/review"
+	"fmt"
 	"strconv"
 
 	. "pmc_server/consts"
+	reviewDao "pmc_server/dao/postgres/review"
+	userDao "pmc_server/dao/postgres/user"
 	"pmc_server/model"
 	"pmc_server/model/dto"
-	"pmc_server/utils"
 )
 
 func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error) {
@@ -39,6 +40,13 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 	}
 
 	for _, review := range reviewList {
+		var username string
+		userInfo, err := userDao.GetUserByID(review.UserID)
+		if err != nil || review.Anonymous {
+			username = "Anonymous student"
+		} else {
+			username = fmt.Sprintf("%s %s", userInfo.FirstName, userInfo.LastName)
+		}
 		reviewDto := dto.Review{
 			Rating:      review.Rating,
 			Anonymous:   review.Anonymous,
@@ -46,8 +54,9 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 			Pros:        review.Pros,
 			Cons:        review.Cons,
 			Comment:     review.Comment,
-			CourseID:    review.CourseID,
+			CourseID:    int64(idInt),
 			UserID:      review.UserID,
+			Username:    username,
 			CreatedAt:   review.CreatedAt,
 		}
 
@@ -83,8 +92,8 @@ func PostCourseReview(review dto.Review, courseID int64) error {
 
 	// recalculate the rating for the record
 	rating.OverAllRating =
-		float32(utils.ToFixed(float64(((rating.OverAllRating*float32(rating.TotalRatingCount))+review.Rating)/
-			(float32(rating.TotalRatingCount)+1)), 2))
+		((rating.OverAllRating * float32(rating.TotalRatingCount)) + review.Rating) /
+			(float32(rating.TotalRatingCount) + 1)
 
 	reviewRec := &model.Review{
 		Rating:       review.Rating,

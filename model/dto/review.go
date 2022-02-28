@@ -17,5 +17,6 @@ type Review struct {
 	Comment     string    `json:"comment" `    // The overall comment
 	CourseID    int64     `json:"courseID"`    // The course ID of the review
 	UserID      int64     `json:"userID"`      // The userID who posted this review
+	Username    string    `json:"username"`
 	CreatedAt   time.Time `json:"createdAt"`
 }

@@ -76,6 +76,7 @@ func GetCourseInfo(id string) (*dto.Course, error) {
 	if err != nil {
 		return nil, errors.New("provided ID is invalid")
 	}
+
 	course, err := dao.GetCourseByID(idInt)
 	if err != nil {
 		return nil, err
@@ -83,14 +84,37 @@ func GetCourseInfo(id string) (*dto.Course, error) {
 
 	classList, err := classDao.GetClassByCourseID(course.ID)
 	if err != nil {
-		return &dto.Course{
-			CourseID:  course.ID,
-			Classes: nil,
-		}, nil
+		return nil, fmt.Errorf("unable to fetch classes of the course %s: %+v\n", course.CatalogCourseName, err)
 	}
+
+	rating, err := reviewDao.GetCourseOverallRating(course.ID)
+	if err != nil {
+		return nil, fmt.Errorf("unable to fetch the rating of the course %s: %+v\n", course.CatalogCourseName, err)
+	}
+
+	maxCredit, err := strconv.ParseFloat(course.MaxCredit, 32)
+	if err != nil {
+		maxCredit = 0.0
+	}
+	minCredit, err := strconv.ParseFloat(course.MinCredit, 32)
+	if err != nil {
+		minCredit = 0.0
+	}
+
 	return &dto.Course{
-		CourseID:  course.ID,
-		Classes: *classList,
+		CourseID:           course.ID,
+		IsHonor:            course.IsHonor,
+		FixedCredit:        course.FixedCredit,
+		DesignationCatalog: course.DesignationCatalog,
+		Description:        course.Description,
+		Prerequisites:      course.Prerequisites,
+		Title:              course.Title,
+		CatalogCourseName:  course.CatalogCourseName,
+		Component:          course.Component,
+		MaxCredit:          maxCredit,
+		MinCredit:          minCredit,
+		Classes:            *classList,
+		OverallRating:      rating.OverAllRating,
 	}, nil
 }
 

@@ -3,7 +3,7 @@ package dto
 import "pmc_server/model"
 
 type Course struct {
-	CourseID           int64         `json:"courseId"`
+	CourseID           int64         `json:"courseID"`
 	IsHonor            bool          `json:"isHonor"`
 	FixedCredit        bool          `json:"fixedCredit"`
 	DesignationCatalog string        `json:"designationCatalog"`

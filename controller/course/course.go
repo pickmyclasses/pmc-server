@@ -66,10 +66,11 @@ func GetCourseByIDHandler(c *gin.Context) {
 	courseInfo, err := logic.GetCourseInfo(courseParam.ID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			MESSAGE: NO_INFO_ERR,
+			MESSAGE: err.Error(),
 		})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		DATA: &courseInfo,
 	})

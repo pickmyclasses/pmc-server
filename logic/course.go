@@ -40,10 +40,29 @@ func GetCourseList(pn, pSize int) ([]dto.Course, int64, error) {
 				fmt.Errorf("failed to fetch course overall rating of the corse %s becuase %+v\n", course.CatalogCourseName, err)
 		}
 
+		maxCredit, err := strconv.ParseFloat(course.MaxCredit, 32)
+		if err != nil {
+			maxCredit = 0.0
+		}
+		minCredit, err := strconv.ParseFloat(course.MinCredit, 32)
+		if err != nil {
+			minCredit = 0.0
+		}
+
 		courseDto := dto.Course{
-			Course:        &course,
-			Classes:       *classList,
-			OverallRating: rating.OverAllRating,
+			CourseID:           course.ID,
+			IsHonor:            course.IsHonor,
+			FixedCredit:        course.FixedCredit,
+			DesignationCatalog: course.DesignationCatalog,
+			Description:        course.Description,
+			Prerequisites:      course.Prerequisites,
+			Title:              course.Title,
+			CatalogCourseName:  course.CatalogCourseName,
+			Component:          course.Component,
+			MaxCredit:          maxCredit,
+			MinCredit:          minCredit,
+			Classes:            *classList,
+			OverallRating:      rating.OverAllRating,
 		}
 
 		courseDtoList = append(courseDtoList, courseDto)
@@ -65,12 +84,12 @@ func GetCourseInfo(id string) (*dto.Course, error) {
 	classList, err := classDao.GetClassByCourseID(course.ID)
 	if err != nil {
 		return &dto.Course{
-			Course:  course,
+			CourseID:  course.ID,
 			Classes: nil,
 		}, nil
 	}
 	return &dto.Course{
-		Course:  course,
+		CourseID:  course.ID,
 		Classes: *classList,
 	}, nil
 }

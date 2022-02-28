@@ -122,7 +122,7 @@ func GetCoursesBySearchHandler(c *gin.Context) {
 	var param model.CourseFilterParams
 	if err := c.ShouldBindJSON(&param); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			MESSAGE: INSUFFICIENT_PARAM_ERR,
+			ERROR: INSUFFICIENT_PARAM_ERR,
 		})
 		return
 	}
@@ -130,14 +130,13 @@ func GetCoursesBySearchHandler(c *gin.Context) {
 	courseList, total, err := logic.GetCoursesBySearch(param)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			MESSAGE: NO_ID_ERR,
+			ERROR: NO_ID_ERR,
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		MESSAGE: SUCCESS,
-		TOTAL:   total,
-		DATA:    courseList,
+		TOTAL: total,
+		DATA:  courseList,
 	})
 }

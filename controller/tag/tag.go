@@ -44,7 +44,7 @@ func GetTagByCourseIDHandler(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		DATA:    tagList,
+		DATA: tagList,
 	})
 }
 
@@ -66,10 +66,37 @@ func CreateTagByCourseIDHandler(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		MESSAGE:    SUCCESS,
+		MESSAGE: SUCCESS,
 	})
 }
 
 func VoteTagHandler(ctx *gin.Context) {
+	courseID := ctx.Param("id")
+	courseIDInt, err := strconv.Atoi(courseID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			ERROR: NO_ID_ERR,
+		})
+		return
+	}
 
+	var param model.VoteTagParam
+	if err := ctx.ShouldBindJSON(&param); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			ERROR: INSUFFICIENT_PARAM_ERR,
+		})
+		return
+	}
+
+	tag, err := logic.VoteTag(int64(courseIDInt), param.TagID, param.UserID, param.Upvote)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			ERROR: err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		DATA: tag,
+	})
 }

@@ -13,7 +13,7 @@ func CheckIfUserExist(userID int64) (bool, error) {
 	if res.Error != nil {
 		return false, res.Error
 	}
-	if res.RowsAffected == 0  {
+	if res.RowsAffected == 0 {
 		return false, nil
 	}
 	return true, nil
@@ -25,7 +25,7 @@ func CheckIfClassExist(classID int64) (bool, error) {
 	if res.Error != nil {
 		return false, res.Error
 	}
-	if res.RowsAffected == 0  {
+	if res.RowsAffected == 0 {
 		return true, nil
 	}
 	return true, nil

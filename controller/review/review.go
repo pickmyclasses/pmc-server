@@ -45,7 +45,7 @@ func GetCourseReviewListHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		DATA:    reviewList,
+		DATA: reviewList,
 	})
 }
 
@@ -76,7 +76,7 @@ func GetCourseReviewByIDHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		DATA:    review,
+		DATA: review,
 	})
 }
 

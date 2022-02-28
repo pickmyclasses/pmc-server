@@ -32,8 +32,8 @@ func GetCourseListHandler(c *gin.Context) {
 
 	courseList, total := logic.GetCourseList(pnInt, pSizeInt)
 	c.JSON(http.StatusOK, gin.H{
-		DATA:    courseList,
-		TOTAL:   total,
+		DATA:  courseList,
+		TOTAL: total,
 	})
 }
 
@@ -63,7 +63,7 @@ func GetCourseByIDHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		DATA:    &courseInfo,
+		DATA: &courseInfo,
 	})
 }
 

@@ -2,9 +2,9 @@ package logic
 
 import (
 	"errors"
+	"pmc_server/dao/postgres/user"
 	"pmc_server/model/dto"
 
-	dao "pmc_server/dao/user"
 	"pmc_server/libs/jwt"
 	libs "pmc_server/libs/snowflake"
 	model "pmc_server/model"

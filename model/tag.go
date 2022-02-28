@@ -6,4 +6,3 @@ type Tag struct {
 	VoteCount int32  `gorm:"column:vote_count"`
 	CourseID  int64  `gorm:"column:course_id"`
 }
-

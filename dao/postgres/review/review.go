@@ -32,8 +32,8 @@ func GetCourseOverallRating(courseID int64) (*model.OverAllRating, error) {
 
 func CreateCourseRating(CourseID int64) (*model.OverAllRating, error) {
 	rating := &model.OverAllRating{
-		CourseID: CourseID,
-		OverAllRating: 0,
+		CourseID:         CourseID,
+		OverAllRating:    0,
 		TotalRatingCount: 0,
 	}
 	result := postgres.DB.Create(&rating)

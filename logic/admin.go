@@ -1,7 +1,7 @@
 package logic
 
 import (
-	dao "pmc_server/dao/admin"
+	"pmc_server/dao/postgres/admin"
 	model "pmc_server/model"
 )
 

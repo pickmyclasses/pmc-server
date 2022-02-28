@@ -2,10 +2,10 @@ package logic
 
 import (
 	"errors"
+	classDao "pmc_server/dao/postgres/class"
+	dao "pmc_server/dao/postgres/course"
 	"strconv"
 
-	classDao "pmc_server/dao/class"
-	dao "pmc_server/dao/course"
 	"pmc_server/model"
 	"pmc_server/model/dto"
 )

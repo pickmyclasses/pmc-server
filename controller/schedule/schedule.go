@@ -50,7 +50,7 @@ func GetUserScheduleHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		DATA:    data,
+		DATA: data,
 	})
 }
 
@@ -66,7 +66,7 @@ func DeleteUserScheduleHandler(c *gin.Context) {
 	err := logic.DeleteSchedule(param)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			ERROR:   err.Error(),
+			ERROR: err.Error(),
 		})
 		return
 	}

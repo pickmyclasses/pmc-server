@@ -2,10 +2,10 @@ package logic
 
 import (
 	"errors"
+	reviewDao "pmc_server/dao/postgres/review"
 	"strconv"
 
 	. "pmc_server/consts"
-	reviewDao "pmc_server/dao/review"
 	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/utils"
@@ -82,20 +82,19 @@ func PostCourseReview(review dto.Review, courseID int64) error {
 
 	// recalculate the rating for the record
 	rating.OverAllRating =
-		float32(utils.ToFixed(float64(((rating.OverAllRating * float32(rating.TotalRatingCount)) + review.Rating) /
-			(float32(rating.TotalRatingCount) + 1)), 2))
-
+		float32(utils.ToFixed(float64(((rating.OverAllRating*float32(rating.TotalRatingCount))+review.Rating)/
+			(float32(rating.TotalRatingCount)+1)), 2))
 
 	reviewRec := &model.Review{
-		Rating: review.Rating,
-		Anonymous: review.Anonymous,
-		Recommended: review.Recommended,
-		Pros: review.Pros,
-		Cons: review.Cons,
-		Comment: review.Comment,
-		CourseID: courseID,
-		UserID: review.UserID,
-		LikeCount: 0,
+		Rating:       review.Rating,
+		Anonymous:    review.Anonymous,
+		Recommended:  review.Recommended,
+		Pros:         review.Pros,
+		Cons:         review.Cons,
+		Comment:      review.Comment,
+		CourseID:     courseID,
+		UserID:       review.UserID,
+		LikeCount:    0,
 		DislikeCount: 0,
 	}
 

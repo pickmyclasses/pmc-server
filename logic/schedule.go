@@ -2,10 +2,10 @@ package logic
 
 import (
 	"errors"
+	classDao "pmc_server/dao/postgres/class"
+	courseDao "pmc_server/dao/postgres/course"
+	dao "pmc_server/dao/postgres/schedule"
 
-	classDao "pmc_server/dao/class"
-	courseDao "pmc_server/dao/course"
-	dao "pmc_server/dao/schedule"
 	"pmc_server/model"
 	"pmc_server/model/dto"
 )
@@ -72,7 +72,7 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 			return nil, err
 		}
 		scheduleClassInfo := &dto.ClassInfo{
-			ClassData: *class,
+			ClassData:  *class,
 			CourseData: *course,
 		}
 		scheduleRes.ScheduledClassList = append(scheduleRes.ScheduledClassList, *scheduleClassInfo)

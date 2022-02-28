@@ -19,7 +19,7 @@ func GetProfessorListHandler(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		DATA: professorList,
+		DATA:    professorList,
 		MESSAGE: SUCCESS,
 	})
 }

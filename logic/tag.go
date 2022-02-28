@@ -2,8 +2,8 @@ package logic
 
 import (
 	"errors"
-	courseDao "pmc_server/dao/course"
-	dao "pmc_server/dao/tag"
+	courseDao "pmc_server/dao/postgres/course"
+	dao "pmc_server/dao/postgres/tag"
 	"pmc_server/model"
 )
 
@@ -33,4 +33,8 @@ func CreateTagByCourseID(tagInfo model.CreateTagParam) error {
 		return err
 	}
 	return nil
+}
+
+func VoteTag(courseID int64, tagID int32, userID int64, ifUpvote bool) (*model.Tag, error) {
+	return nil, nil
 }

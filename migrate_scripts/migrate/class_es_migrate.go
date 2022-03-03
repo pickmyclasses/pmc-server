@@ -10,7 +10,6 @@ import (
 	"os"
 	"pmc_server/model"
 	"pmc_server/model/es"
-	"strconv"
 	"strings"
 )
 
@@ -72,6 +71,8 @@ func migrateClasses() {
 			isHybrid = true
 		}
 
+		offerDates := convertOfferDate(class.OfferDate)
+
 		esClass := es.Class {
 			ID: class.ID,
 			CourseID: class.CourseID,
@@ -79,17 +80,21 @@ func migrateClasses() {
 			IsInPerson: isInPerson,
 			IsIVC: isIVC,
 			IsHybrid: isHybrid,
+			OfferDates: offerDates,
+			StartTime: class.StartTime,
+			EndTime: class.EndTime,
+			Professors: class.Instructors,
 		}
 
-		_, err = client.Index().Index("class").BodyJson(esClass).Id(strconv.Itoa(int(class.ID))).Do(context.Background())
+		_, err = client.Index().Index("class").BodyJson(esClass).Do(context.Background())
 		if err != nil {
 			panic(err)
 		}
 	}
 }
 
-func convertOfferDate(offerDates string) []int32 {
-	mapping := make(map[string]int32)
+func convertOfferDate(offerDates string) []int {
+	mapping := make(map[string]int)
 	mapping["mo"] = 1
 	mapping["tu"] = 2
 	mapping["we"] = 3
@@ -97,7 +102,7 @@ func convertOfferDate(offerDates string) []int32 {
 	mapping["fr"] = 5
 
 	offerLower := []rune(strings.ToLower(offerDates))
-	res := make([]int32, 0)
+	res := make([]int, 0)
 	curStr := ""
 	for _, s := range offerLower {
 		if s == '-' || s == ' '{
@@ -111,4 +116,9 @@ func convertOfferDate(offerDates string) []int32 {
 	}
 	return res
 }
+
+func main() {
+	migrateClasses()
+}
+
 

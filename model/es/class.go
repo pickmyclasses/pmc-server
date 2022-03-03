@@ -1,9 +1,5 @@
 package es
 
-import (
-	"time"
-)
-
 type Class struct {
 	ID         int64     `json:"id"`
 	CourseID   int64     `json:"course_id"`
@@ -12,9 +8,9 @@ type Class struct {
 	IsHybrid   bool      `json:"is_hybrid"`
 	IsIVC		bool `json:"is_ivc"`
 	OfferDates []int  	`json:"offer_dates"`
-	StartTime  time.Time `json:"start_time"`
-	EndTime    time.Time `json:"end_time"`
-	Professors []string  `json:"professors"`
+	StartTime  string `json:"start_time"`
+	EndTime    string `json:"end_time"`
+	Professors string  `json:"professors"`
 }
 
 func (Class) GetMapping() string {
@@ -47,16 +43,13 @@ func (Class) GetMapping() string {
             	}
             },
             "start_time":{
-               "type":"number"
+               "type":"text"
             },
             "end_time":{
-               "type":"number"
+               "type":"text"
             },
             "professors":{
-               "type":"nested",
-				"properties":{
-					"professor_name":{ "type": "text"}
-				}
+               "type":"text"
             }
          }
       }

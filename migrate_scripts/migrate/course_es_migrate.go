@@ -16,7 +16,7 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-func main() {
+func migrate() {
 	url := "https://search-pmc-search-jvq4ibvtwwkfg5kukvsexmll3q.us-east-1.es.amazonaws.com/"
 	username := "admin1"
 	password := "Admin123!"
@@ -66,6 +66,9 @@ func main() {
 			return
 		}
 
+		var rating model.OverAllRating
+		_ = db.Where("course_id = ?", course.ID).First(&rating)
+
 		esCourse := esModel.Course{
 			ID:                 course.ID,
 			DesignationCatalog: course.DesignationCatalog,
@@ -78,6 +81,7 @@ func main() {
 			MinCredit:          float32(minCredit),
 			IsHonor:            course.IsHonor,
 			FixedCredit:        course.FixedCredit,
+			Rating: rating.OverAllRating,
 		}
 
 		_, err = client.Index().Index(esCourse.GetIndexName()).BodyJson(esCourse).Id(strconv.Itoa(int(course.ID))).Do(context.Background())

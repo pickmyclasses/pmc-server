@@ -13,6 +13,7 @@ type Course struct {
 	Subject            string  `json:"subject"`
 	IsHonor            bool    `json:"is_honor"`
 	FixedCredit        bool    `json:"fixed_credit"`
+	Rating float32 `json:"rating"`
 }
 
 func (Course) GetMapping() string {
@@ -55,7 +56,10 @@ func (Course) GetMapping() string {
             },
             "fixed_credit":{
                "type":"boolean"
-            }
+            },
+			"rating": {
+				"rating":"rating"
+			},
          }
       }
 }

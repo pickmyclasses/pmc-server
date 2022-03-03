@@ -10,7 +10,7 @@ type Class struct {
 	IsOnline   bool      `json:"is_online"`
 	IsInPerson bool      `json:"is_in_person"`
 	IsHybrid   bool      `json:"is_hybrid"`
-	Rating     float32     `json:"rating"`
+	IsIVC		bool `json:"is_ivc"`
 	OfferDates []int  	`json:"offer_dates"`
 	StartTime  time.Time `json:"start_time"`
 	EndTime    time.Time `json:"end_time"`
@@ -32,18 +32,18 @@ func (Class) GetMapping() string {
                "type":"boolean"
             },
             "is_in_person":{
-               "type":"text"
+               "type":"boolean"
             },
             "is_hybrid":{
-               "type":"text"
+               "type":"boolean"
             },
-            "rating":{
-               "type":"number"
-            },
+			"is_ivc":{
+				"type":"boolean"
+			},
             "offer_dates":{
                "type":"nested",
-				"properties":{  
-               		"date_num":{ "type":"integer"},
+ 			   "properties":{  
+               		"date_num":{ "type":"integer"}
             	}
             },
             "start_time":{
@@ -53,8 +53,11 @@ func (Class) GetMapping() string {
                "type":"number"
             },
             "professors":{
-               "type":"text"
-            },
+               "type":"nested",
+				"properties":{
+					"professor_name":{ "type": "text"}
+				}
+            }
          }
       }
 }

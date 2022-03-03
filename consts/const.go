@@ -15,3 +15,6 @@ const BAD_ID_ERR = "wrong format of ID provided"
 const NO_ID_ERR = "no ID provided"
 const NO_INFO_ERR = "no content found"
 const INTERNAL_ERR = "internal error occured"
+
+
+const MAX = 10e10

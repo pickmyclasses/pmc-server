@@ -1,25 +1,28 @@
 package logic
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
 
+	courseEsDao "pmc_server/dao/es/course"
 	classDao "pmc_server/dao/postgres/class"
-	dao "pmc_server/dao/postgres/course"
+	courseDao "pmc_server/dao/postgres/course"
 	reviewDao "pmc_server/dao/postgres/review"
 	"pmc_server/model"
 	"pmc_server/model/dto"
+	esModel "pmc_server/model/es"
 )
 
 func GetCourseList(pn, pSize int) ([]dto.Course, int64, error) {
-	courseList, err := dao.GetCourses(pn, pSize)
+	courseList, err := courseDao.GetCourses(pn, pSize)
 
 	if err != nil {
 		return nil, -1, fmt.Errorf("unable to get the list of course: %+v\n", err)
 	}
 
-	total, err := dao.GetCourseTotal()
+	total, err := courseDao.GetCourseTotal()
 	if err != nil {
 		return nil, -1, fmt.Errorf("unable to get the total of course: %+v\n", err)
 	}
@@ -77,7 +80,7 @@ func GetCourseInfo(id string) (*dto.Course, error) {
 		return nil, errors.New("provided ID is invalid")
 	}
 
-	course, err := dao.GetCourseByID(idInt)
+	course, err := courseDao.GetCourseByID(idInt)
 	if err != nil {
 		return nil, err
 	}
@@ -123,14 +126,39 @@ func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	if err != nil {
 		return nil, 0, errors.New("provided ID is invalid")
 	}
-	classList, total := dao.GetClassListByCourseID(idInt)
+	classList, total := courseDao.GetClassListByCourseID(idInt)
 	return classList, total, nil
 }
 
-func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]model.Course, int64, error) {
-	courseList, total, err := dao.GetCoursesBySearch(courseParam)
-	if err != nil {
-		return nil, -1, err
+func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, error) {
+	courseBoolQuery := courseEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
+
+	if courseParam.Keyword != "" {
+		courseBoolQuery.QueryByKeywords(courseParam.Keyword)
 	}
-	return courseList, total, err
+
+	if courseParam.MinCredit != 0 {
+		courseBoolQuery.QueryByMinCredit(courseParam.MinCredit)
+	}
+
+	if courseParam.MaxCredit != 0 {
+		courseBoolQuery.QueryByMaxCredit(courseParam.MaxCredit)
+	}
+
+	res, err := courseBoolQuery.DoSearch()
+	if err != nil {
+		return nil, fmt.Errorf("error when fecthing by keywords %+v", err)
+	}
+
+	var courseIDList []int64
+	for _, hit := range res.Hits.Hits {
+		var course esModel.Course
+		err := json.Unmarshal(*&hit.Source, &course)
+		if err != nil {
+			return nil, fmt.Errorf("error when unmarshaling the search result %+v", err)
+		}
+		courseIDList = append(courseIDList, course.ID)
+	}
+
+	return courseIDList, nil
 }

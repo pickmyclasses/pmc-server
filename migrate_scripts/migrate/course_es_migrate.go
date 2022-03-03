@@ -1,4 +1,4 @@
-package migrate
+package main
 
 import (
 	"context"
@@ -16,8 +16,8 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-func postgresToES() {
-	url := "https://search-pmc-search-h5lyuv34ujl5f6gby7gxbsrnnm.us-east-1.es.amazonaws.com/"
+func main() {
+	url := "https://search-pmc-search-jvq4ibvtwwkfg5kukvsexmll3q.us-east-1.es.amazonaws.com/"
 	username := "admin1"
 	password := "Admin123!"
 	logger := log.New(os.Stdout, "pmc", log.LstdFlags)
@@ -54,6 +54,18 @@ func postgresToES() {
 	}
 
 	for _, course := range courses {
+		maxCredit, err := strconv.ParseFloat(course.MaxCredit, 32)
+		if err != nil {
+			fmt.Println("failed to convert max credit")
+			return
+		}
+
+		minCredit, err := strconv.ParseFloat(course.MinCredit, 32)
+		if err != nil {
+			fmt.Println("failed to convert min credit")
+			return
+		}
+
 		esCourse := esModel.Course{
 			ID:                 course.ID,
 			DesignationCatalog: course.DesignationCatalog,
@@ -62,16 +74,15 @@ func postgresToES() {
 			CatalogCourseName:  course.CatalogCourseName,
 			Prerequisites:      course.Prerequisites,
 			Component:          course.Component,
-			MaxCredit:          course.MaxCredit,
-			MinCredit:          course.MinCredit,
+			MaxCredit:          float32(maxCredit),
+			MinCredit:          float32(minCredit),
 			IsHonor:            course.IsHonor,
 			FixedCredit:        course.FixedCredit,
 		}
 
-		_, err := client.Index().Index(esCourse.GetIndexName()).BodyJson(esCourse).Id(strconv.Itoa(int(course.ID))).Do(context.Background())
+		_, err = client.Index().Index(esCourse.GetIndexName()).BodyJson(esCourse).Id(strconv.Itoa(int(course.ID))).Do(context.Background())
 		if err != nil {
 			panic(err)
 		}
 	}
-
 }

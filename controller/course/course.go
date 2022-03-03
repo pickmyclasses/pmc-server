@@ -128,7 +128,7 @@ func GetCoursesBySearchHandler(c *gin.Context) {
 		return
 	}
 
-	courseList, total, err := logic.GetCoursesBySearch(param)
+	data, err := logic.GetCoursesBySearch(param)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			ERROR: NO_ID_ERR,
@@ -137,7 +137,6 @@ func GetCoursesBySearchHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		TOTAL: total,
-		DATA:  courseList,
+		DATA: data,
 	})
 }

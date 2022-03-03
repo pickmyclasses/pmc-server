@@ -1,18 +1,18 @@
 package es
 
 type Course struct {
-	ID                 int64  `json:"id"`
-	DesignationCatalog string `json:"designation_catalog"`
-	Title              string `json:"title"`
-	Description        string `json:"description"`
-	CatalogCourseName  string `json:"catalog_course_name"`
-	Prerequisites      string `json:"prerequisites"`
-	Component          string `json:"component"`
-	MaxCredit          string `json:"max_credit"`
-	MinCredit          string `json:"min_credit"`
-	Subject            string `json:"subject"`
-	IsHonor            bool   `json:"is_honor"`
-	FixedCredit        bool   `json:"fixed_credit"`
+	ID                 int64   `json:"id"`
+	DesignationCatalog string  `json:"designation_catalog"`
+	Title              string  `json:"title"`
+	Description        string  `json:"description"`
+	CatalogCourseName  string  `json:"catalog_course_name"`
+	Prerequisites      string  `json:"prerequisites"`
+	Component          string  `json:"component"`
+	MaxCredit          float32 `json:"max_credit"`
+	MinCredit          float32 `json:"min_credit"`
+	Subject            string  `json:"subject"`
+	IsHonor            bool    `json:"is_honor"`
+	FixedCredit        bool    `json:"fixed_credit"`
 }
 
 func (Course) GetMapping() string {
@@ -42,10 +42,10 @@ func (Course) GetMapping() string {
                "type":"text"
             },
             "max_credit":{
-               "type":"text"
+               "type":"number"
             },
             "min_credit":{
-               "type":"text"
+               "type":"number"
             },
             "subject":{
                "type":"text"

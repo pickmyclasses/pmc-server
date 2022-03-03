@@ -22,7 +22,7 @@ type CourseFilterParams struct {
 	// TODO: fix this with actual professor entities
 	TaughtProfessor       []string `json:"taughtProfessor"`       // Filter courses with professor names
 	Keyword               string   `json:"keyword"`               // Keyword user inputs, this links to the name/catalog name/subject/tag of the course
-	MinCredit             float32  `json:"credit"`                // Filter courses with given credit
+	MinCredit             float32  `json:"minCredit"`             // Filter courses with given credit
 	MaxCredit             float32  `json:"maxCredit"`             //Filter cores with the given max credit
 	OfferedOnline         bool     `json:"isOnline"`              // Filter courses that's online
 	OfferedOffline        bool     `json:"isOffline"`             // Filter courses that's not online (in person)

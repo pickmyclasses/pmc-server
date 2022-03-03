@@ -13,7 +13,7 @@ const pool = new Pool({
 // ----------------------------------------------- Class functions -------------------------------------------------------------------------------
 const getClasses = (request, response) => 
 {
-  pool.query('select * from class', (error, result) => {
+  pool.query('select * from class ORDER BY id ASC', (error, result) => {
     if(error)
     {
       response.status(400).json(error);
@@ -22,11 +22,28 @@ const getClasses = (request, response) =>
   })
 }
 
+const updateClass = (request, response) => {
+  const { id, created_at, deleted_at, is_deleted, semester, year, session, wait_list, offer_date, start_time, end_time, location, recommendation_score, 
+  type, number, component, unit, seat_available, notes, instructors, course_title, course_catalog_name, course_id, rating } = request.body
+
+  pool.query('UPDATE public.class SET created_at = $2, deleted_at = $3, is_deleted = $4, semester = $5, year = $6, session = $7, wait_list = $8, offer_date = $9, start_time = $10, end_time = $11, location = $12, recommendation_score = $13, type = $14, number = $15, component = $16, unit = $17, seat_available = $18, notes = $19, instructors = $20, course_title = $21, course_catalog_name = $22, course_id = $23, rating = $24 where id = $1',
+              [id, created_at, deleted_at, is_deleted, semester, year, session, wait_list, offer_date, start_time, end_time, location, recommendation_score, 
+                type, number, component, unit, seat_available, notes, instructors, course_title, course_catalog_name, course_id, rating], 
+              (error, result) => {
+                if (error) 
+                {
+                  response.status(400).json(error);
+                }
+                response.status(201).send({"message" : "Update data successfully"});
+              }
+  )
+}
+
 const deleteClass = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM class WHERE id = $1', [id], (error, results) => {
+  pool.query('DELETE FROM class WHERE id = $1 ORDER BY id ASC', [id], (error, results) => {
     if (error) 
     {
       response.status(400).json(error);
@@ -38,13 +55,28 @@ const deleteClass = (request, response) =>
 // ----------------------------------------------- College functions -------------------------------------------------------------------------------
 const getColleges = (request, response) => 
 {
-  pool.query('select * from college', (error, result) => {
+  pool.query('select * from college ORDER BY id ASC', (error, result) => {
     if(error)
     {
       response.status(400).json(error);
     }
     response.status(200).json(result.rows);
   })
+}
+
+const updateCollege = (request, response) => {
+  const { id, created_at, deleted_at, is_deleted, name } = request.body
+
+  pool.query('UPDATE public.college SET created_at = $2, deleted_at = $3, is_deleted = $4, name = $5 where id = $1',
+              [id, created_at, deleted_at, is_deleted, name], 
+              (error, result) => {
+                if (error) 
+                {
+                  response.status(400).json(error);
+                }
+                response.status(201).send({"message" : "Update data successfully"});
+              }
+  )
 }
 
 const deleteCollege = (request, response) =>
@@ -63,7 +95,7 @@ const deleteCollege = (request, response) =>
 // ----------------------------------------------- Course functions -------------------------------------------------------------------------------
 const getCourses = (request, response) => 
 {
-  pool.query('select * from course', (error, result) => {
+  pool.query('select * from course ORDER BY id ASC', (error, result) => {
     if(error)
     {
       response.status(400).json(error);
@@ -88,7 +120,7 @@ const deleteCourse = (request, response) =>
 // ----------------------------------------------- Subject functions -------------------------------------------------------------------------------
 const getSubjects = (request, response) => 
 {
-  pool.query('select * from subject', (error, result) => {
+  pool.query('select * from subject ORDER BY id ASC', (error, result) => {
     if(error)
     {
       response.status(400).json(error);
@@ -113,19 +145,46 @@ const deleteSubject = (request, response) =>
 // ----------------------------------------------- Google Users functions -------------------------------------------------------------------------------
 const getGoogleUsers = (request, response) => 
 {
-  pool.query('select * from google_user', (error, result) => {
+  pool.query('select * from google_user ORDER BY id ASC', (error, result) => {
     if(error)
     {
       response.status(400).json(error);
     }
     response.status(200).json(result.rows);
   })
+}
+
+// ----------------------------------------------- Professor functions -------------------------------------------------------------------------------
+const getProfessors = (request, response) => 
+{
+  pool.query('select * from professor ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const updateProfessor = (request, response) => {
+  const { id, name, college_id, deleted_at} = request.body
+
+  pool.query('UPDATE public.professor SET name = $2, deleted_at = $3, college_id = $4, deleted_at = $5 where id = $1',
+              [id, name, deleted_at, college_id, deleted_at], 
+              (error, result) => {
+                if (error) 
+                {
+                  response.status(400).json(error);
+                }
+                response.status(201).send({"message" : "Update data successfully"});
+              }
+  )
 }
 
 // ----------------------------------------------- Review functions -------------------------------------------------------------------------------
 const getReviews = (request, response) => 
 {
-  pool.query('select * from review', (error, result) => {
+  pool.query('select * from review ORDER BY id ASC', (error, result) => {
     if(error)
     {
       response.status(400).json(error);
@@ -134,10 +193,61 @@ const getReviews = (request, response) =>
   })
 }
 
-// ----------------------------------------------- Review functions -------------------------------------------------------------------------------
+const updateReview = (request, response) => {
+  const { id, created_at, deleted_at, is_deleted, rating, anonymous, recommended, pros, cons, comment, course_id, user_id, like_count, dislike_count } = request.body
+
+  pool.query('UPDATE public.review SET created_at = $2, deleted_at = $3, is_deleted = $4, rating = $5, anonymous = $6, recommended = $7, pros = $8, cons = $9, comment = $10, course_id = $11, user_id = $12, like_count = $13, dislike_count = $14 where id = $1',
+              [id, created_at, deleted_at, is_deleted, rating, anonymous, recommended, pros, cons, comment, course_id, user_id, like_count, dislike_count], 
+              (error, result) => {
+                if (error) 
+                {
+                  response.status(400).json(error);
+                }
+                response.status(201).send({"message" : "Update data successfully"});
+              }
+  )
+}
+
+// ----------------------------------------------- Semester functions -------------------------------------------------------------------------------
 const getSemesters = (request, response) => 
 {
-  pool.query('select * from semesters', (error, result) => {
+  pool.query('select * from semester ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- Tag functions -------------------------------------------------------------------------------
+const getTags = (request, response) => 
+{
+  pool.query('select * from tag ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- Overall Rating functions -------------------------------------------------------------------------------
+const getOverallRatings = (request, response) => 
+{
+  pool.query('select * from over_all_rating ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+// ----------------------------------------------- User Voted Tags functions -------------------------------------------------------------------------------
+const getUserVotedTags = (request, response) => 
+{
+  pool.query('select * from user_voted_tag ORDER BY id ASC', (error, result) => {
     if(error)
     {
       response.status(400).json(error);
@@ -149,7 +259,35 @@ const getSemesters = (request, response) =>
 // ----------------------------------------------- User functions -------------------------------------------------------------------------------
 const getUsers = (request, response) => 
 {
-  pool.query('select * from users', (error, result) => {
+  pool.query('select * from public.user ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    console.log(result);
+    response.status(200).json(result.rows);
+  })
+}
+
+const updateUser = (request, response) => {
+  const { id, created_at, deleted_at, is_deleted, first_name, last_name, password, email, college_id, academic_year, avatar, user_id, role } = request.body
+
+  pool.query('UPDATE public.user SET created_at = $2, deleted_at = $3, is_deleted = $4, first_name = $5, last_name = $6, password = $7, email = $8, college_id = $9, academic_year = $10, avatar = $11, user_id = $12, role = $13 where id = $1',
+              [id, created_at, deleted_at, is_deleted, first_name, last_name, password, email, college_id, academic_year, avatar, user_id, role], 
+              (error, result) => {
+                if (error) 
+                {
+                  response.status(400).json(error);
+                }
+                response.status(201).send({"message" : "Update data successfully"});
+              }
+  )
+}
+
+// ----------------------------------------------- Schedule functions -------------------------------------------------------------------------------
+const getSchedules = (request, response) => 
+{
+  pool.query('select * from schedule ORDER BY id ASC', (error, result) => {
     if(error)
     {
       response.status(400).json(error);
@@ -158,7 +296,6 @@ const getUsers = (request, response) =>
   })
 }
 
-// ----------------------------------------------- Schedule functions -------------------------------------------------------------------------------
 const getSchedule = (request, response) => 
 {
   const user_id = parseInt(request.params.user_id);
@@ -173,6 +310,21 @@ const getSchedule = (request, response) =>
     }
     response.status(200).json(results.rows);
   })
+}
+
+const updateSchedule = (request, response) => {
+  const { id, user_id, class_id, semester_id, deleted_at, created_at, is_deleted} = request.body
+
+  pool.query('UPDATE public.schedule SET user_id = $2, class_id = $3, semester_id = $4, deleted_at = $5, created_at = $6, is_deleted = $7 where id = $1',
+              [id, user_id, class_id, semester_id, deleted_at, created_at, is_deleted], 
+              (error, result) => {
+                if (error) 
+                {
+                  response.status(400).json(error);
+                }
+                response.status(201).send({"message" : "Update data successfully"});
+              }
+  )
 }
 
 const addToSchedule = (request, response) => 
@@ -226,6 +378,21 @@ const getFeedbackById = (request, response) => {
   })
 }
 
+const updateFeedBack = (request, response) => {
+  const { id, user_id, class_id, semester_id, rating, feedback } = request.body
+
+  pool.query('UPDATE public.feedback SET user_id = $2, class_id = $3, semester_id = $4, rating = $5, feedback = $6 where id = $1',
+              [id, user_id, class_id, semester_id, rating, feedback], 
+              (error, result) => {
+                if (error) 
+                {
+                  response.status(400).json(error);
+                }
+                response.status(201).send({"message" : "Update data successfully"});
+              }
+  )
+}
+
 const createFeedback = (request, response) => {
   const { user_id, class_id, semester_id, rating, feedback } = request.body
 
@@ -256,20 +423,25 @@ const deleteFeedback = (request, response) =>
 
 module.exports = 
 {
+  getSchedules,
   getSchedule,
   addToSchedule,
   removeFromSchedule,
+  updateSchedule,
 
   getFeedbacks,
   getFeedbackById,
+  updateFeedBack,
   createFeedback,
   deleteFeedback,
 
   getClasses,
   deleteClass,
+  updateClass,
 
   getColleges,
   deleteCollege,
+  updateCollege,
 
   getCourses,
   deleteCourse,
@@ -277,8 +449,16 @@ module.exports =
   getSubjects,
   deleteSubject,
 
+  getProfessors,
+  updateProfessor,
+
   getGoogleUsers,
+
   getReviews,
+  updateReview,
+
   getSemesters,
-  getUsers
+
+  getUsers,
+  updateUser
 }

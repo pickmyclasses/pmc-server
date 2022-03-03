@@ -25,24 +25,46 @@ app.get('/', (request, response) => {
 
 // class API
 app.get('/class', cors(), db.getClasses);
+app.post('/class/update', cors(), db.updateClass);
 
 // college API
 app.get('/college', cors(), db.getColleges);
+app.post('/college/update', cors(), db.updateCollege);
 
 // course API
 app.get('/course', cors(), db.getCourses);
 
-// course API
+// subject API
 app.get('/subject', cors(), db.getSubjects);
 
+// professor API
+app.get('/professor', cors(), db.getProfessors);
+app.post('/professor/update', cors(), db.updateProfessor);
+
+// google_user API
+app.get('/google_user', cors(), db.getGoogleUsers);
+
+// review API
+app.get('/review', cors(), db.getReviews);
+app.post('/review/update', cors(), db.updateReview);
+
+// semester API
+app.get('/semester', cors(), db.getSemesters);
+
+// user API
+app.get('/user', cors(), db.getUsers);
+app.post('/user/update', cors(), db.updateUser);
 
 // schedule API
+app.get('/schedule', cors(), db.getSchedules);
 app.get('/schedule/:user_id/:semester_id', cors(), db.getSchedule);
 app.post('/schedule/add', db.addToSchedule);
 app.post('/schedule/remove', db.removeFromSchedule);
+app.post('/schedule/update', cors(), db.updateSchedule);
 
 // feedback API
 app.get('/feedback', db.getFeedbacks);
 app.get('/feedback/:id', cors(), db.getFeedbackById);
+app.post('/feedback/update', cors(), db.updateFeedBack);
 app.post('/feedback', db.createFeedback);
 app.post('/feedback/remove/:id', cors(), db.deleteFeedback);

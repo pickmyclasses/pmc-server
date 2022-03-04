@@ -1,7 +1,6 @@
 package logic
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -12,7 +11,6 @@ import (
 	reviewDao "pmc_server/dao/postgres/review"
 	"pmc_server/model"
 	"pmc_server/model/dto"
-	esModel "pmc_server/model/es"
 )
 
 func GetCourseList(pn, pSize int) ([]dto.Course, int64, error) {
@@ -130,7 +128,7 @@ func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	return classList, total, nil
 }
 
-func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, error) {
+func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int64, error) {
 	courseBoolQuery := courseEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
 
 	if courseParam.Keyword != "" {
@@ -145,20 +143,11 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, error) {
 		courseBoolQuery.QueryByMaxCredit(courseParam.MaxCredit)
 	}
 
-	res, err := courseBoolQuery.DoSearch()
+	res, total, err := courseBoolQuery.DoSearch()
 	if err != nil {
-		return nil, fmt.Errorf("error when fecthing by keywords %+v", err)
+		return nil, total, fmt.Errorf("error when fecthing by keywords %+v", err)
 	}
 
-	var courseIDList []int64
-	for _, hit := range res.Hits.Hits {
-		var course esModel.Course
-		err := json.Unmarshal(*&hit.Source, &course)
-		if err != nil {
-			return nil, fmt.Errorf("error when unmarshaling the search result %+v", err)
-		}
-		courseIDList = append(courseIDList, course.ID)
-	}
 
-	return courseIDList, nil
+	return *res, total, nil
 }

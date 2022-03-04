@@ -24,10 +24,6 @@ func NewBoolQuery(pageNum, pageSize int) *BoolQuery {
 		pageNum = 0
 	}
 
-	if pageSize < 10 {
-		pageSize = 10
-	}
-
 	return &BoolQuery{
 		query:      elastic.NewBoolQuery(),
 		index:      "course",

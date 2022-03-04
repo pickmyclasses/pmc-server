@@ -1,7 +1,8 @@
 module pmc_server
 
-// +heroku goVersion go1.17
-go 1.17
+// +heroku goVersion go1.16
+
+go 1.16
 
 require (
 	github.com/anaskhan96/go-password-encoder v0.0.0-20201010210601-c765b799fd72

@@ -84,8 +84,9 @@ func main() {
 	// start logic
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = fmt.Sprintf(":%d", viper.GetInt("app.port"))
+		zap.L().Fatal("port must be set")
 	}
+
 	srv := &http.Server{
 		Addr:    port,
 		Handler: r,

@@ -83,7 +83,7 @@ func main() {
 
 	// start logic
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", viper.GetInt("app.port")),
+		Addr:    fmt.Sprintf(":%d"),
 		Handler: r,
 	}
 

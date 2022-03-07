@@ -4,13 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
+
 	. "pmc_server/consts"
+	courseDao "pmc_server/dao/postgres/course"
+	reviewDao "pmc_server/dao/postgres/review"
 	"pmc_server/init/es"
+	"pmc_server/model/dto"
 	esModel "pmc_server/model/es"
 
 	"github.com/olivere/elastic/v7"
 )
 
+// BoolQuery represents the entity of a boolean query in Elastic Search
 type BoolQuery struct {
 	index      string
 	query      *elastic.BoolQuery
@@ -19,6 +25,7 @@ type BoolQuery struct {
 	context    context.Context
 }
 
+// NewBoolQuery creates a new BoolQuery object
 func NewBoolQuery(pageNum, pageSize int) *BoolQuery {
 	if pageNum < 0 {
 		pageNum = 0
@@ -55,7 +62,7 @@ func (c *BoolQuery) QueryByTypes(types string) {
 	c.query = c.query.Must(elastic.NewMatchQuery("subject", types))
 }
 
-func (c *BoolQuery) DoSearch() ([]int64, int64, error) {
+func (c *BoolQuery) DoSearch() (*[]dto.Course, int64, error) {
 	res, err := es.Client.Search().Index(c.index).Query(c.query).From(c.pageNumber).Size(c.pageSize).Do(c.context)
 	if err != nil {
 		return nil, -1, fmt.Errorf("error when searching courses %+v", err)
@@ -73,54 +80,52 @@ func (c *BoolQuery) DoSearch() ([]int64, int64, error) {
 		esCourseIdList = append(esCourseIdList, course.ID)
 	}
 
-	return esCourseIdList, total, nil
+	var courseDtoList []dto.Course
+	for _, id := range esCourseIdList {
+		course, err := courseDao.GetCourseByID(int(id))
+		if err != nil {
+			return nil, -1, fmt.Errorf("error when fetching courses %+v", err)
+		}
 
-	//var courseDtoList []dto.Course
-	//for _, id := range esCourseIdList {
-	//	course, err := courseDao.GetCourseByID(int(id))
-	//	if err != nil {
-	//		return nil, -1, fmt.Errorf("error when fetching courses %+v", err)
-	//	}
-	//
-	//	// fetch classes of the course
-	//	classList, _ := courseDao.GetClassListByCourseID(int(id))
-	//	rating, err := reviewDao.GetCourseOverallRating(id)
-	//	if err != nil {
-	//		return nil, -1, fmt.Errorf("error when fetching overall rating of the course %+v", err)
-	//	}
-	//
-	//	maxCredit := 0.0
-	//	minCredit := 0.0
-	//	max, err := strconv.ParseFloat(course.MaxCredit, 32)
-	//	if err != nil {
-	//		maxCredit = 0.0
-	//	}
-	//	maxCredit = max
-	//
-	//	min, err := strconv.ParseFloat(course.MinCredit, 32)
-	//	if err != nil {
-	//		minCredit = 0.0
-	//	}
-	//	minCredit = min
-	//
-	//	courseDto := dto.Course{
-	//		CourseID:           id,
-	//		IsHonor:            course.IsHonor,
-	//		FixedCredit:        course.FixedCredit,
-	//		DesignationCatalog: course.DesignationCatalog,
-	//		Description:        course.Description,
-	//		Prerequisites:      course.Prerequisites,
-	//		Title:              course.Title,
-	//		CatalogCourseName:  course.CatalogCourseName,
-	//		Component:          course.Component,
-	//		MaxCredit:          maxCredit,
-	//		MinCredit:          minCredit,
-	//		Classes:            *classList,
-	//		OverallRating:      rating.OverAllRating,
-	//	}
-	//
-	//	courseDtoList = append(courseDtoList, courseDto)
-	//}
-	//
-	//return &courseDtoList, total, nil
+		// fetch classes of the course
+		classList, _ := courseDao.GetClassListByCourseID(int(id))
+		rating, err := reviewDao.GetCourseOverallRating(id)
+		if err != nil {
+			return nil, -1, fmt.Errorf("error when fetching overall rating of the course %+v", err)
+		}
+
+		maxCredit := 0.0
+		minCredit := 0.0
+		max, err := strconv.ParseFloat(course.MaxCredit, 32)
+		if err != nil {
+			maxCredit = 0.0
+		}
+		maxCredit = max
+
+		min, err := strconv.ParseFloat(course.MinCredit, 32)
+		if err != nil {
+			minCredit = 0.0
+		}
+		minCredit = min
+
+		courseDto := dto.Course{
+			CourseID:           id,
+			IsHonor:            course.IsHonor,
+			FixedCredit:        course.FixedCredit,
+			DesignationCatalog: course.DesignationCatalog,
+			Description:        course.Description,
+			Prerequisites:      course.Prerequisites,
+			Title:              course.Title,
+			CatalogCourseName:  course.CatalogCourseName,
+			Component:          course.Component,
+			MaxCredit:          maxCredit,
+			MinCredit:          minCredit,
+			Classes:            *classList,
+			OverallRating:      rating.OverAllRating,
+		}
+
+		courseDtoList = append(courseDtoList, courseDto)
+	}
+
+	return &courseDtoList, total, nil
 }

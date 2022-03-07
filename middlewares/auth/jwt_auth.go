@@ -4,15 +4,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/gin-gonic/gin"
-
+	. "pmc_server/consts"
 	"pmc_server/libs/jwt"
-)
 
-const CtxUserIDKey = "user_ID"
-const CtxUserFirstNameKey = "first_name"
-const CtxUserLastNameKey = "last_name"
-const CtxUserRole = "role"
+	"github.com/gin-gonic/gin"
+)
 
 func JWTAuth() func(c *gin.Context) {
 	return func(c *gin.Context) {

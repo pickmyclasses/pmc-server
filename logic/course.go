@@ -128,7 +128,7 @@ func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	return classList, total, nil
 }
 
-func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, error) {
+func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int64, error) {
 	courseBoolQuery := courseEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
 
 	if courseParam.Keyword != "" {
@@ -149,5 +149,5 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 	}
 
 
-	return res, total, nil
+	return *res, total, nil
 }

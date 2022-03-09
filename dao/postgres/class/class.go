@@ -3,13 +3,13 @@ package dao
 import (
 	"pmc_server/init/postgres"
 	model "pmc_server/model"
-	"pmc_server/utils"
+	"pmc_server/shared"
 )
 
 func GetClasses(pn, pSize int) (*[]model.Class, int64) {
 	var classes []model.Class
 	total := postgres.DB.Find(&classes).RowsAffected
-	postgres.DB.Scopes(utils.Paginate(pn, pSize)).Find(&classes)
+	postgres.DB.Scopes(shared.Paginate(pn, pSize)).Find(&classes)
 
 	return &classes, total
 }

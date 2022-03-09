@@ -2,15 +2,15 @@ package course
 
 import (
 	"errors"
+	"pmc_server/shared"
 
 	"pmc_server/init/postgres"
 	"pmc_server/model"
-	"pmc_server/utils"
 )
 
 func GetCourses(pn, pSize int) ([]model.Course, error) {
 	var courses []model.Course
-	res := postgres.DB.Scopes(utils.Paginate(pn, pSize)).Find(&courses)
+	res := postgres.DB.Scopes(shared.Paginate(pn, pSize)).Find(&courses)
 	if res.Error != nil {
 		return nil, res.Error
 	}
@@ -44,4 +44,3 @@ func GetClassListByCourseID(id int) (*[]model.Class, int64) {
 	res := postgres.DB.Where("course_id = ?", id).Find(&classes)
 	return &classes, res.RowsAffected
 }
-

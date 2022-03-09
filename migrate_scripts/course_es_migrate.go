@@ -81,7 +81,7 @@ func migrate() {
 			MinCredit:          float32(minCredit),
 			IsHonor:            course.IsHonor,
 			FixedCredit:        course.FixedCredit,
-			Rating: rating.OverAllRating,
+			Rating:             rating.OverAllRating,
 		}
 
 		_, err = client.Index().Index(esCourse.GetIndexName()).BodyJson(esCourse).Id(strconv.Itoa(int(course.ID))).Do(context.Background())

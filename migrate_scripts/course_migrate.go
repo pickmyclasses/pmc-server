@@ -3,7 +3,7 @@ package migrate
 import (
 	"errors"
 	model "pmc_server/model"
-	"pmc_server/utils"
+	"pmc_server/shared"
 	"strings"
 
 	pos "gorm.io/driver/postgres"
@@ -46,9 +46,9 @@ func UpdateCourseAndClasses() error {
 	}
 
 	for _, class := range classes {
-		letterClass, numberClass := utils.GetLetterInfo(class.CourseCatalogName)
+		letterClass, numberClass := shared.GetLetterInfo(class.CourseCatalogName)
 		for _, course := range courses {
-			letter, number := utils.ParseString(course.CatalogCourseName, true)
+			letter, number := shared.ParseString(course.CatalogCourseName, true)
 			if letter == strings.ToUpper(letterClass) && numberClass == number {
 				res := db.Model(&class).Update("course_id", course.ID)
 				if res.RowsAffected == 0 || res.Error != nil {

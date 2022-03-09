@@ -4,12 +4,10 @@ import (
 	"errors"
 	"time"
 
-	. "pmc_server/consts"
+	"gorm.io/gorm"
 	"pmc_server/init/postgres"
 	"pmc_server/model"
-	"pmc_server/utils"
-
-	"gorm.io/gorm"
+	. "pmc_server/shared"
 )
 
 func GetCourseOverallRating(courseID int64) (*model.OverAllRating, error) {
@@ -65,7 +63,7 @@ func GetReviewTotalByCourseID(courseID int) (int64, error) {
 func GetReviewsByCourseID(courseID, pn, pSize int) ([]model.Review, error) {
 	var reviewList []model.Review
 
-	res := postgres.DB.Scopes(utils.Paginate(pn, pSize)).Where("course_id = ?", courseID).Find(&reviewList)
+	res := postgres.DB.Scopes(Paginate(pn, pSize)).Where("course_id = ?", courseID).Find(&reviewList)
 	if res.Error != nil {
 		return make([]model.Review, 0), errors.New("failed to fetch review list")
 	}
@@ -80,7 +78,7 @@ func GetReviewByID(reviewID int) (*model.Review, error) {
 	var review model.Review
 	result := postgres.DB.Where("id = ?", reviewID).First(&review)
 	if result.RowsAffected == 0 {
-		return nil, errors.New(NO_INFO_ERR)
+		return nil, errors.New(NoInfoErr)
 	}
 	return &review, nil
 }

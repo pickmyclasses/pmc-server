@@ -3,6 +3,7 @@ package migrate
 import (
 	"fmt"
 	"pmc_server/model"
+	"strings"
 
 	pos "gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -49,4 +50,36 @@ func Professors() {
 			panic("error when creating professor")
 		}
 	}
+}
+
+func ProfessorIDs() {
+	err, db := InitDB()
+	if err != nil {
+		fmt.Errorf("error when init database %+v", err)
+	}
+
+	var classes []model.Class
+	res := db.Find(&classes)
+	if res.RowsAffected == 0 || res.Error != nil {
+		fmt.Errorf("error when fetching courses")
+	}
+
+	var professors []model.Professor
+	res = db.Find(&professors)
+	if res.RowsAffected == 0 || res.Error != nil {
+		fmt.Errorf("error when fetching professors")
+	}
+
+	for _, class := range classes {
+		for _, professor := range professors {
+			if strings.TrimSpace(class.Instructors) == strings.TrimSpace(professor.Name) {
+				class.InstructorID = int32(professor.ID)
+				res = db.Save(&class)
+				if res.RowsAffected == 0 || res.Error != nil {
+					fmt.Errorf("error when updating ID field")
+				}
+			}
+		}
+	}
+
 }

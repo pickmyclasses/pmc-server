@@ -2,14 +2,9 @@ package routes
 
 import (
 	"net/http"
+	"pmc_server/middlewares/err"
 
-	classController "pmc_server/controller/class"
-	courseController "pmc_server/controller/course"
-	ProfessorController "pmc_server/controller/professor"
-	reviewController "pmc_server/controller/review"
-	scheduleController "pmc_server/controller/schedule"
-	tagController "pmc_server/controller/tag"
-	userController "pmc_server/controller/user"
+	"pmc_server/controller"
 	_ "pmc_server/docs"
 	"pmc_server/init/logger"
 	"pmc_server/middlewares/auth"
@@ -27,43 +22,43 @@ func SetUp(mode string) *gin.Engine {
 	r := gin.New()
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 
-	r.Use(auth.Cors())
+	r.Use(auth.Cors(), err.JsonErrReporter())
 	{
 		// for user
-		r.POST("/register", userController.RegisterHandler)
-		r.POST("/login", userController.LoginHandler)
+		r.POST("/register", controller.RegisterHandler)
+		r.POST("/login", controller.LoginHandler)
 
 		// for schedule
-		r.POST("/schedule", scheduleController.AddUserScheduleHandler)
-		r.GET("/schedule", scheduleController.GetUserScheduleHandler)
-		r.PUT("/schedule", scheduleController.DeleteUserScheduleHandler)
+		r.POST("/schedule", controller.AddUserScheduleHandler)
+		r.GET("/schedule", controller.GetUserScheduleHandler)
+		r.PUT("/schedule", controller.DeleteUserScheduleHandler)
 
 		// for course
-		r.GET("/course/list", courseController.GetCourseListHandler)
-		r.GET("/course/:id", courseController.GetCourseByIDHandler)
-		r.GET("/course/:id/class", courseController.GetClassesOfCourseHandler)
+		r.GET("/course/list", controller.GetCourseListHandler)
+		r.GET("/course/:id", controller.GetCourseByIDHandler)
+		r.GET("/course/:id/class", controller.GetClassesOfCourseHandler)
 
 		// for course search
-		r.POST("/course/search", courseController.GetCoursesBySearchHandler)
+		r.POST("/course/search", controller.GetCoursesBySearchHandler)
 
 		// for review
-		r.GET("/course/:id/review", reviewController.GetCourseReviewListHandler)
-		r.GET("/course/:id/review/:review_id", reviewController.GetCourseReviewByIDHandler)
-		r.POST("/course/:id/review", reviewController.PostCourseReviewHandler)
-		r.PUT("/course/:id/review", reviewController.UpdateCourseReviewHandler)
+		r.GET("/course/:id/review", controller.GetCourseReviewListHandler)
+		r.GET("/course/:id/review/:review_id", controller.GetCourseReviewByIDHandler)
+		r.POST("/course/:id/review", controller.PostCourseReviewHandler)
+		r.PUT("/course/:id/review", controller.UpdateCourseReviewHandler)
 
 		// for class
-		r.GET("/class/list", classController.GetClassListHandler)
-		r.GET("/class/:id", classController.GetClassByIDHandler)
+		r.GET("/class/list", controller.GetClassListHandler)
+		r.GET("/class/:id", controller.GetClassByIDHandler)
 
 		// for tags
-		r.GET("/course/tag", tagController.GetTagListHandler)
-		r.GET("/course/:id/tag", tagController.GetTagByCourseIDHandler)
-		r.POST("/course/:id/tag", tagController.CreateTagByCourseIDHandler)
-		r.PUT("/course/:id/tag", tagController.VoteTagHandler)
+		r.GET("/course/tag", controller.GetTagListHandler)
+		r.GET("/course/:id/tag", controller.GetTagByCourseIDHandler)
+		r.POST("/course/:id/tag", controller.CreateTagByCourseIDHandler)
+		r.PUT("/course/:id/tag", controller.VoteTagHandler)
 
 		// for professors
-		r.GET("/professors", ProfessorController.GetProfessorListHandler)
+		r.GET("/professor/list", controller.GetProfessorListHandler)
 
 		// for testing
 		r.GET("/ping", auth.JWTAuth(), func(c *gin.Context) {
@@ -72,6 +67,7 @@ func SetUp(mode string) *gin.Engine {
 
 	}
 
+	// for swagger
 	r.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 
 	r.NoRoute(func(c *gin.Context) {

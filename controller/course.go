@@ -3,10 +3,10 @@ package controller
 import (
 	"net/http"
 
-	. "pmc_server/consts"
 	"pmc_server/logic"
 	"pmc_server/model"
-	"pmc_server/utils"
+	"pmc_server/shared"
+	. "pmc_server/shared"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,19 +23,15 @@ import (
 // @Success 200 {array} dto.Course
 // @Router /course/list [get]
 func GetCourseListHandler(c *gin.Context) {
-	pnInt, pSizeInt, err := utils.HandlePagination(c, "10")
+	pnInt, pSizeInt, err := HandlePagination(c, "10")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			ERROR: err,
-		})
+		_ = c.Error(err)
 		return
 	}
 
 	courseList, total, err := logic.GetCourseList(pnInt, pSizeInt)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{
-			ERROR: err,
-		})
+		_ = c.Error(err)
 		return
 	}
 
@@ -57,17 +53,13 @@ func GetCourseListHandler(c *gin.Context) {
 func GetCourseByIDHandler(c *gin.Context) {
 	var courseParam model.CourseParams
 	if err := c.ShouldBindUri(&courseParam); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			MESSAGE: NO_ID_ERR,
-		})
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	courseInfo, err := logic.GetCourseInfo(courseParam.ID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			MESSAGE: err.Error(),
-		})
+		_ = c.Error(err)
 		return
 	}
 
@@ -89,22 +81,17 @@ func GetCourseByIDHandler(c *gin.Context) {
 func GetClassesOfCourseHandler(c *gin.Context) {
 	var courseParam model.CourseParams
 	if err := c.ShouldBindUri(&courseParam); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			MESSAGE: NO_ID_ERR,
-		})
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	classList, total, err := logic.GetClassListByCourseID(courseParam.ID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			MESSAGE: NO_INFO_ERR,
-		})
+		_ = c.Error(err)
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		MESSAGE: SUCCESS,
 		TOTAL:   total,
 		DATA:    classList,
 	})
@@ -122,22 +109,18 @@ func GetClassesOfCourseHandler(c *gin.Context) {
 func GetCoursesBySearchHandler(c *gin.Context) {
 	var param model.CourseFilterParams
 	if err := c.ShouldBindJSON(&param); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			ERROR: INSUFFICIENT_PARAM_ERR,
-		})
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	data, total, err := logic.GetCoursesBySearch(param)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			ERROR: NO_ID_ERR,
-		})
+		_ = c.Error(err)
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		DATA: data,
+		DATA:  data,
 		TOTAL: total,
 	})
 }

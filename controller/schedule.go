@@ -1,29 +1,26 @@
-package schedule
+package controller
 
 import (
 	"net/http"
 
-	"github.com/gin-gonic/gin"
-
-	. "pmc_server/consts"
 	"pmc_server/logic"
 	"pmc_server/model"
+	"pmc_server/shared"
+	. "pmc_server/shared"
+
+	"github.com/gin-gonic/gin"
 )
 
 func AddUserScheduleHandler(c *gin.Context) {
 	var param model.PostScheduleParams
 	if err := c.ShouldBindJSON(&param); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			ERROR: BAD_PARAM_ERR,
-		})
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	err := logic.CreateSchedule(param)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			ERROR: err.Error(),
-		})
+		_ = c.Error(err)
 		return
 	}
 
@@ -35,17 +32,13 @@ func AddUserScheduleHandler(c *gin.Context) {
 func GetUserScheduleHandler(c *gin.Context) {
 	var param model.GetScheduleParams
 	if err := c.ShouldBind(&param); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			ERROR: BAD_PARAM_ERR,
-		})
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	data, err := logic.GetSchedule(param)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			ERROR: INTERNAL_ERR,
-		})
+		_ = c.Error(err)
 		return
 	}
 
@@ -57,17 +50,13 @@ func GetUserScheduleHandler(c *gin.Context) {
 func DeleteUserScheduleHandler(c *gin.Context) {
 	var param model.DeleteScheduleParams
 	if err := c.ShouldBindJSON(&param); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			MESSAGE: BAD_PARAM_ERR,
-		})
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	err := logic.DeleteSchedule(param)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			ERROR: err.Error(),
-		})
+		_ = c.Error(err)
 		return
 	}
 

@@ -22,4 +22,5 @@ type Class struct {
 	CourseCatalogName   string  `gorm:"column:course_catalog_name" json:"courseCatalogName"`
 	CourseID            int64   `gorm:"column:course_id" json:"courseID"`
 	Course              *Course `gorm:"foreignKey:CourseID" json:"course"`
+	InstructorID        int32   `gorm:"column:instructor_id" json:"instructorID"`
 }

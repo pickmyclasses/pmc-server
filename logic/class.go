@@ -1,11 +1,11 @@
 package logic
 
 import (
-	"errors"
-	"pmc_server/dao/postgres/class"
 	"strconv"
 
+	"pmc_server/dao/postgres/class"
 	"pmc_server/model"
+	"pmc_server/shared"
 )
 
 func GetClassList(pn, pSize int) (*[]model.Class, int64) {
@@ -15,7 +15,7 @@ func GetClassList(pn, pSize int) (*[]model.Class, int64) {
 func GetClassByID(id string) (*model.Class, error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
-		return nil, errors.New("provided ID is invalid")
+		return nil, shared.ParamIncompatibleErr{}
 	}
 	return dao.GetClassInfoByID(idInt)
 }

@@ -1,12 +1,12 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
-	. "pmc_server/consts"
 	"pmc_server/logic"
 	"pmc_server/model"
+	"pmc_server/shared"
+	. "pmc_server/shared"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,16 +23,12 @@ import (
 func RegisterHandler(c *gin.Context) {
 	var params model.RegisterParams
 	if err := c.ShouldBindJSON(&params); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			MESSAGE: INSUFFICIENT_PARAM_ERR,
-		})
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	if err := logic.Register(&params); err != nil {
-		c.JSON(http.StatusConflict, gin.H{
-			MESSAGE: fmt.Sprintf("Register failed: %v", err),
-		})
+		_ = c.Error(err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
@@ -52,22 +48,17 @@ func RegisterHandler(c *gin.Context) {
 func LoginHandler(c *gin.Context) {
 	var params model.LoginParams
 	if err := c.ShouldBindJSON(&params); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			MESSAGE: INSUFFICIENT_PARAM_ERR,
-		})
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	userInfo, err := logic.Login(&params)
 	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{
-			MESSAGE: fmt.Sprintf("Login failed: %v", err),
-		})
+		_ = c.Error(err)
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		MESSAGE: SUCCESS,
 		DATA:    userInfo,
 	})
 }

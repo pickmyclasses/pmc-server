@@ -1,16 +1,13 @@
-package utils
+package shared
 
 import (
 	"encoding/json"
-	"errors"
 	"math"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 	"unicode"
-
-	. "pmc_server/consts"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -50,17 +47,17 @@ func HandlePagination(c *gin.Context, defaultVal string) (int, int, error) {
 	pSize := c.DefaultQuery("psize", defaultVal)
 	pnInt, err := strconv.Atoi(pn)
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, ParamIncompatibleErr{}
 	}
 
 	pSizeInt, err := strconv.Atoi(pSize)
 
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, ParamIncompatibleErr{}
 	}
 
 	if pnInt < 0 || pSizeInt < 0 {
-		return 0, 0, errors.New(BAD_PAGE_ERR)
+		return 0, 0, ParamIncompatibleErr{}
 	}
 
 	return pnInt, pSizeInt, nil

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"pmc_server/middlewares/request"
 
-	. "pmc_server/consts"
+	. "pmc_server/shared"
 
 	"github.com/gin-gonic/gin"
 )

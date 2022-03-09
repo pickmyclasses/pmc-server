@@ -1,16 +1,16 @@
 package es
 
 type Class struct {
-	ID         int64     `json:"id"`
-	CourseID   int64     `json:"course_id"`
-	IsOnline   bool      `json:"is_online"`
-	IsInPerson bool      `json:"is_in_person"`
-	IsHybrid   bool      `json:"is_hybrid"`
-	IsIVC		bool `json:"is_ivc"`
-	OfferDates []int  	`json:"offer_dates"`
+	ID         int64  `json:"id"`
+	CourseID   int64  `json:"course_id"`
+	IsOnline   bool   `json:"is_online"`
+	IsInPerson bool   `json:"is_in_person"`
+	IsHybrid   bool   `json:"is_hybrid"`
+	IsIVC      bool   `json:"is_ivc"`
+	OfferDates []int  `json:"offer_dates"`
 	StartTime  string `json:"start_time"`
 	EndTime    string `json:"end_time"`
-	Professors string  `json:"professors"`
+	Professors string `json:"professors"`
 }
 
 func (Class) GetMapping() string {

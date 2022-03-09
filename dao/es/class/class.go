@@ -7,16 +7,16 @@ import (
 )
 
 type BoolQuery struct {
-	index      string
-	query      *elastic.BoolQuery
-	context    context.Context
+	index   string
+	query   *elastic.BoolQuery
+	context context.Context
 }
 
 func NewBoolQuery() *BoolQuery {
 	return &BoolQuery{
-		query:      elastic.NewBoolQuery(),
-		index:      "course",
-		context:    context.Background(),
+		query:   elastic.NewBoolQuery(),
+		index:   "course",
+		context: context.Background(),
 	}
 }
 
@@ -39,4 +39,3 @@ func QueryByIsHybrid(isHybrid bool) {
 func QueryByOfferDates(offerDates []int) {
 
 }
-

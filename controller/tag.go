@@ -1,22 +1,21 @@
-package tag
+package controller
 
 import (
 	"net/http"
 	"strconv"
 
-	"github.com/gin-gonic/gin"
-
-	. "pmc_server/consts"
 	"pmc_server/logic"
 	"pmc_server/model"
+	"pmc_server/shared"
+	. "pmc_server/shared"
+
+	"github.com/gin-gonic/gin"
 )
 
 func GetTagListHandler(ctx *gin.Context) {
 	tagList, err := logic.GetTagList()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			ERROR: err.Error(),
-		})
+		_ = ctx.Error(err)
 		return
 	}
 
@@ -29,17 +28,13 @@ func GetTagByCourseIDHandler(ctx *gin.Context) {
 	courseID := ctx.Param("id")
 	courseIDInt, err := strconv.Atoi(courseID)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			ERROR: NO_ID_ERR,
-		})
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
 		return
 	}
 
 	tagList, err := logic.GetTagOfCourse(int64(courseIDInt))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			ERROR: err.Error(),
-		})
+		_ = ctx.Error(err)
 		return
 	}
 
@@ -51,17 +46,13 @@ func GetTagByCourseIDHandler(ctx *gin.Context) {
 func CreateTagByCourseIDHandler(ctx *gin.Context) {
 	var param model.CreateTagParam
 	if err := ctx.ShouldBindJSON(&param); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			ERROR: INSUFFICIENT_PARAM_ERR,
-		})
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
 		return
 	}
 
 	err := logic.CreateTagByCourseID(param)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			ERROR: err.Error(),
-		})
+		_ = ctx.Error(err)
 		return
 	}
 
@@ -74,25 +65,18 @@ func VoteTagHandler(ctx *gin.Context) {
 	courseID := ctx.Param("id")
 	courseIDInt, err := strconv.Atoi(courseID)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			ERROR: NO_ID_ERR,
-		})
-		return
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
 	}
 
 	var param model.VoteTagParam
 	if err := ctx.ShouldBindJSON(&param); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			ERROR: INSUFFICIENT_PARAM_ERR,
-		})
+		_ = ctx.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	tag, err := logic.VoteTag(int64(courseIDInt), param.TagID, param.UserID, param.Upvote)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			ERROR: err.Error(),
-		})
+		_ = ctx.Error(err)
 		return
 	}
 

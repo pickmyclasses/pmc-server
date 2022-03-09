@@ -1,14 +1,14 @@
-package review
+package controller
 
 import (
 	"net/http"
 	"strconv"
 
-	. "pmc_server/consts"
 	"pmc_server/logic"
 	"pmc_server/model"
 	"pmc_server/model/dto"
-	"pmc_server/utils"
+	"pmc_server/shared"
+	. "pmc_server/shared"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,19 +28,15 @@ import (
 func GetCourseReviewListHandler(c *gin.Context) {
 	courseID := c.Param("id")
 
-	pnInt, pSizeInt, err := utils.HandlePagination(c, "20")
+	pnInt, pSizeInt, err := HandlePagination(c, "20")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			ERROR: err.Error(),
-		})
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	reviewList, err := logic.GetCourseReviewList(pnInt, pSizeInt, courseID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			ERROR: err.Error(),
-		})
+		_ = c.Error(err)
 		return
 	}
 
@@ -62,16 +58,13 @@ func GetCourseReviewListHandler(c *gin.Context) {
 func GetCourseReviewByIDHandler(c *gin.Context) {
 	reviewID := c.Param("review_id")
 	if reviewID == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			ERROR: NO_ID_ERR,
-		})
+		_ = c.Error(shared.MalformedIDErr{})
+		return
 	}
 
 	review, err := logic.GetReviewByID(reviewID)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			ERROR: err,
-		})
+		_ = c.Error(err)
 		return
 	}
 
@@ -93,24 +86,19 @@ func PostCourseReviewHandler(c *gin.Context) {
 	courseID := c.Param("id")
 	courseIDInt, err := strconv.Atoi(courseID)
 	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			ERROR: NO_ID_ERR,
-		})
+		_ = c.Error(shared.MalformedIDErr{})
 		return
 	}
+
 	var param dto.Review
 	if err := c.ShouldBindJSON(&param); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			ERROR: err.Error(),
-		})
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	err = logic.PostCourseReview(param, int64(courseIDInt))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			ERROR: err.Error(),
-		})
+		_ = c.Error(err)
 		return
 	}
 
@@ -131,17 +119,13 @@ func PostCourseReviewHandler(c *gin.Context) {
 func UpdateCourseReviewHandler(c *gin.Context) {
 	var param model.ReviewParams
 	if err := c.ShouldBind(&param); err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			MESSAGE: err.Error(),
-		})
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	err := logic.UpdateCourseReview(param)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			MESSAGE: err,
-		})
+		_ = c.Error(err)
 		return
 	}
 

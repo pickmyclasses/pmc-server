@@ -1,11 +1,10 @@
-package admin
+package controller
 
 import (
-	"fmt"
 	"net/http"
 
-	. "pmc_server/consts"
 	"pmc_server/logic"
+	. "pmc_server/shared"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,12 +20,10 @@ import (
 func GetUserListHandler(c *gin.Context) {
 	result, err := logic.GetUserList()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			MESSAGE: fmt.Sprintf("unable to query user list %v", err),
-		})
+		_ = c.Error(err)
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		MESSAGE: SUCCESS,
 		DATA:    result,
 	})
 }

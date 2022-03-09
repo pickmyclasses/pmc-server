@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	. "pmc_server/consts"
 	"pmc_server/libs/jwt"
+	. "pmc_server/shared"
 
 	"github.com/gin-gonic/gin"
 )

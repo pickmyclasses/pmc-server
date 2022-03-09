@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"strconv"
 
-	. "pmc_server/consts"
 	courseDao "pmc_server/dao/postgres/course"
 	reviewDao "pmc_server/dao/postgres/review"
 	"pmc_server/init/es"
 	"pmc_server/model/dto"
 	esModel "pmc_server/model/es"
+	. "pmc_server/shared"
 
 	"github.com/olivere/elastic/v7"
 )

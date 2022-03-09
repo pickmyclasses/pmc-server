@@ -13,6 +13,12 @@ import (
 	"pmc_server/model/dto"
 )
 
+type CourseRetriever interface {
+}
+
+type CourseSearcher interface {
+}
+
 func GetCourseList(pn, pSize int) ([]dto.Course, int64, error) {
 	courseList, err := courseDao.GetCourses(pn, pSize)
 
@@ -147,7 +153,6 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 	if err != nil {
 		return nil, -1, fmt.Errorf("error when fecthing by keywords %+v", err)
 	}
-
 
 	return *res, total, nil
 }

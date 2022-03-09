@@ -47,7 +47,6 @@ func migrateClasses() {
 		panic(res.Error.Error())
 	}
 
-
 	for _, class := range classList {
 		waitList := strings.ToLower(class.WaitList)
 		if waitList != "yes" && waitList != "no" {
@@ -73,16 +72,16 @@ func migrateClasses() {
 
 		offerDates := convertOfferDate(class.OfferDate)
 
-		esClass := es.Class {
-			ID: class.ID,
-			CourseID: class.CourseID,
-			IsOnline: isOnline,
+		esClass := es.Class{
+			ID:         class.ID,
+			CourseID:   class.CourseID,
+			IsOnline:   isOnline,
 			IsInPerson: isInPerson,
-			IsIVC: isIVC,
-			IsHybrid: isHybrid,
+			IsIVC:      isIVC,
+			IsHybrid:   isHybrid,
 			OfferDates: offerDates,
-			StartTime: class.StartTime,
-			EndTime: class.EndTime,
+			StartTime:  class.StartTime,
+			EndTime:    class.EndTime,
 			Professors: class.Instructors,
 		}
 
@@ -105,7 +104,7 @@ func convertOfferDate(offerDates string) []int {
 	res := make([]int, 0)
 	curStr := ""
 	for _, s := range offerLower {
-		if s == '-' || s == ' '{
+		if s == '-' || s == ' ' {
 			continue
 		}
 		curStr = curStr + string(s)
@@ -120,5 +119,3 @@ func convertOfferDate(offerDates string) []int {
 func main() {
 	migrateClasses()
 }
-
-

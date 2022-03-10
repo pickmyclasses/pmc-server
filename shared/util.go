@@ -187,9 +187,9 @@ func ToFixed(num float64, precision int) float64 {
 }
 
 // ConvertTimestamp converts timestamp string such as 6:00am to 6, and 8:45pm to 20.45
-func ConvertTimestamp(timestamp string) int {
+func ConvertTimestamp(timestamp string) float32 {
 	offerTime := []rune(strings.ToLower(timestamp))
-	res := 0
+	var res float32
 	hours := 0
 	minutes := 0
 	plus := 0
@@ -229,7 +229,7 @@ func ConvertTimestamp(timestamp string) int {
 			plus += 12
 		}
 	}
-	res = hours + minutes + plus
+	res = float32(hours + minutes + plus)
 
 	return res
 }

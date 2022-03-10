@@ -8,8 +8,8 @@ type Class struct {
 	IsHybrid   bool   `json:"is_hybrid"`
 	IsIVC      bool   `json:"is_ivc"`
 	OfferDates []int  `json:"offer_dates"`
-	StartTime  string `json:"start_time"`
-	EndTime    string `json:"end_time"`
+	StartTime  float32 `json:"start_time"`
+	EndTime    float32 `json:"end_time"`
 	Professors string `json:"professors"`
 }
 
@@ -43,10 +43,10 @@ func (Class) GetMapping() string {
             	}
             },
             "start_time":{
-               "type":"text"
+               "type":"float"
             },
             "end_time":{
-               "type":"text"
+               "type":"float"
             },
             "professors":{
                "type":"text"

@@ -2,6 +2,7 @@ package shared
 
 import (
 	"encoding/json"
+	"errors"
 	"math"
 	"net/http"
 	"strconv"
@@ -114,7 +115,7 @@ func ParseDate(dates string) []int {
 		return daysInt
 	}
 	dates = strings.ToLower(dates)
-	dateMap := GenerateDateMap()
+	dateMap := generateDateMap()
 
 	var curStr string
 	for _, r := range dates {
@@ -134,7 +135,7 @@ func ParseTime(t string) (start, end string) {
 		return
 	}
 	t = strings.ToLower(t)
-	dateMap := GenerateDateMap()
+	dateMap := generateDateMap()
 	timeStr := string(t[0])
 	for i := 1; i < len(t); i++ {
 		if i != 0 && t[i-1] == 'm' && t[i] == 'm' {
@@ -150,8 +151,8 @@ func ParseTime(t string) (start, end string) {
 	return
 }
 
-// GenerateDateMap generates a map to represent mapping between date and number
-func GenerateDateMap() map[string]int {
+// generateDateMap generates a map to represent mapping between date and number
+func generateDateMap() map[string]int {
 	dateMap := make(map[string]int)
 	dateMap["mo"] = 1
 	dateMap["tu"] = 2
@@ -187,49 +188,35 @@ func ToFixed(num float64, precision int) float64 {
 }
 
 // ConvertTimestamp converts timestamp string such as 6:00am to 6, and 8:45pm to 20.45
-func ConvertTimestamp(timestamp string) float32 {
+func ConvertTimestamp(timestamp string) (float32, error) {
 	offerTime := []rune(strings.ToLower(timestamp))
 	var res float32
-	hours := 0
-	minutes := 0
-	plus := 0
-	appeared := false
-	for i, t := range offerTime {
-		if t == '-' || t == ' ' {
-			continue
-		}
-		if t == ':' {
-			appeared = true
-			continue
-		}
-		if unicode.IsDigit(t) {
-			if appeared {
-				if offerTime[i-1] == ':' {
-					first, _ := strconv.Atoi(string(t))
-					minutes += first / 10
-				} else {
-					second, _ := strconv.Atoi(string(t))
-					minutes += second / 100
-				}
-			} else {
-				if i == 0 {
-					first, _ := strconv.Atoi(string(t))
-					minutes += first * 10
-				} else {
-					second, _ := strconv.Atoi(string(t))
-					minutes += second
-				}
-			}
-		}
-
-		if t == 'a' {
-			continue
-		}
-		if t == 'p' {
-			plus += 12
+	hour := 0
+	var mins float32
+	if unicode.IsDigit(offerTime[0]) {
+		first, _ := strconv.Atoi(string(offerTime[0]))
+		hour += first * 10
+	}
+	if unicode.IsDigit(offerTime[1]) {
+		second, _ := strconv.Atoi(string(offerTime[1]))
+		hour += second
+	}
+	if offerTime[2] != ':' {
+		return 0, errors.New("unable to convert time stamp")
+	}
+	if unicode.IsDigit(offerTime[3]) {
+		first, _ := strconv.Atoi(string(offerTime[3]))
+		mins += float32(first) * 0.1
+	}
+	if unicode.IsDigit(offerTime[4]) {
+		first, _ := strconv.Atoi(string(offerTime[4]))
+		mins += float32(first) * 0.01
+	}
+	if unicode.IsLetter(offerTime[5]) {
+		if offerTime[5] == 'p' {
+			res += 12
 		}
 	}
-	res = float32(hours + minutes + plus)
-
-	return res
+	res += float32(hour) + mins
+	return res, nil
 }

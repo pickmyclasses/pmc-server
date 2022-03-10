@@ -3,15 +3,18 @@ package migrate
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
+	"strings"
+
+	"pmc_server/model"
+	"pmc_server/model/es"
+	"pmc_server/shared"
+
 	"github.com/olivere/elastic/v7"
 	pos "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
-	"log"
-	"os"
-	"pmc_server/model"
-	"pmc_server/model/es"
-	"strings"
 )
 
 func Classes() {
@@ -70,6 +73,16 @@ func Classes() {
 
 		offerDates := convertOfferDate(class.OfferDate)
 
+		var translatedStartTime float32
+		if class.StartTime != "" {
+			translatedStartTime, _ = shared.ConvertTimestamp(class.StartTime)
+		}
+
+		var translatedEndTime float32
+		if class.EndTime != "" {
+			translatedEndTime, _ = shared.ConvertTimestamp(class.EndTime)
+		}
+
 		esClass := es.Class{
 			ID:         class.ID,
 			CourseID:   class.CourseID,
@@ -78,8 +91,8 @@ func Classes() {
 			IsIVC:      isIVC,
 			IsHybrid:   isHybrid,
 			OfferDates: offerDates,
-			StartTime:  class.StartTime,
-			EndTime:    class.EndTime,
+			StartTime:  translatedStartTime,
+			EndTime:    translatedEndTime,
 			Professors: class.Instructors,
 		}
 

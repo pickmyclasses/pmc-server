@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// IsAdminAuth is used for checking if the logged-in user is an admin
 func IsAdminAuth() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		currentUser, err := request.GetCurrentUserRole(ctx)

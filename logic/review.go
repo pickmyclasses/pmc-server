@@ -1,7 +1,6 @@
 package logic
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 
@@ -9,13 +8,13 @@ import (
 	userDao "pmc_server/dao/postgres/user"
 	"pmc_server/model"
 	"pmc_server/model/dto"
-	. "pmc_server/shared"
+	"pmc_server/shared"
 )
 
 func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error) {
 	idInt, err := strconv.Atoi(courseID)
 	if err != nil {
-		return nil, errors.New(BadIdErr)
+		return nil, shared.MalformedIDErr{}
 	}
 
 	rating, err := reviewDao.GetCourseOverallRating(int64(idInt))
@@ -70,7 +69,7 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 func GetReviewByID(reviewID string) (*model.Review, error) {
 	idInt, err := strconv.Atoi(reviewID)
 	if err != nil {
-		return nil, errors.New(BadIdErr)
+		return nil, shared.MalformedIDErr{}
 	}
 	return reviewDao.GetReviewByID(idInt)
 }

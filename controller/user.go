@@ -59,6 +59,6 @@ func LoginHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		DATA:    userInfo,
+		DATA: userInfo,
 	})
 }

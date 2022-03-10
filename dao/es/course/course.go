@@ -3,7 +3,6 @@ package course
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strconv"
 
 	courseDao "pmc_server/dao/postgres/course"
@@ -11,12 +10,13 @@ import (
 	"pmc_server/init/es"
 	"pmc_server/model/dto"
 	esModel "pmc_server/model/es"
+	"pmc_server/shared"
 	. "pmc_server/shared"
 
 	"github.com/olivere/elastic/v7"
 )
 
-// BoolQuery represents the entity of a boolean query in Elastic Search
+// BoolQuery represents the entity of a boolean query in Elasticsearch
 type BoolQuery struct {
 	index      string
 	query      *elastic.BoolQuery
@@ -43,7 +43,7 @@ func NewBoolQuery(pageNum, pageSize int) *BoolQuery {
 func (c *BoolQuery) QueryByKeywords(keywords string) {
 	c.query = c.query.
 		Must(elastic.NewMultiMatchQuery(keywords,
-			"title", "description", "designation_catalog", "catalog_course_name"))
+			"title", "description", "designation_catalog", "catalog_course_name").Fuzziness("AUTO"))
 }
 
 func (c *BoolQuery) QueryByMinCredit(minCredit float32) {
@@ -63,9 +63,14 @@ func (c *BoolQuery) QueryByTypes(types string) {
 }
 
 func (c *BoolQuery) DoSearch() (*[]dto.Course, int64, error) {
-	res, err := es.Client.Search().Index(c.index).Query(c.query).From(c.pageNumber).Size(c.pageSize).Do(c.context)
+	res, err := es.Client.Search().
+		Index(c.index).
+		Query(c.query).
+		From(c.pageNumber).
+		Size(c.pageSize).
+		Do(c.context)
 	if err != nil {
-		return nil, -1, fmt.Errorf("error when searching courses %+v", err)
+		return nil, -1, shared.InternalErr{}
 	}
 
 	var esCourseIdList []int64
@@ -75,7 +80,7 @@ func (c *BoolQuery) DoSearch() (*[]dto.Course, int64, error) {
 		var course esModel.Course
 		err := json.Unmarshal(*&hit.Source, &course)
 		if err != nil {
-			return nil, -1, fmt.Errorf("error when unmarshalling elastic search entity %+v", err)
+			return nil, -1, shared.InternalErr{}
 		}
 		esCourseIdList = append(esCourseIdList, course.ID)
 	}
@@ -84,14 +89,14 @@ func (c *BoolQuery) DoSearch() (*[]dto.Course, int64, error) {
 	for _, id := range esCourseIdList {
 		course, err := courseDao.GetCourseByID(int(id))
 		if err != nil {
-			return nil, -1, fmt.Errorf("error when fetching courses %+v", err)
+			return nil, -1, shared.ContentNotFoundErr{}
 		}
 
 		// fetch classes of the course
 		classList, _ := courseDao.GetClassListByCourseID(int(id))
 		rating, err := reviewDao.GetCourseOverallRating(id)
 		if err != nil {
-			return nil, -1, fmt.Errorf("error when fetching overall rating of the course %+v", err)
+			return nil, -1, shared.ContentNotFoundErr{}
 		}
 
 		maxCredit := 0.0

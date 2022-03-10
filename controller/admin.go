@@ -24,6 +24,6 @@ func GetUserListHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		DATA:    result,
+		DATA: result,
 	})
 }

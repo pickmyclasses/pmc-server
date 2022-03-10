@@ -1,13 +1,12 @@
 package logic
 
 import (
-	"errors"
 	classDao "pmc_server/dao/postgres/class"
 	courseDao "pmc_server/dao/postgres/course"
 	dao "pmc_server/dao/postgres/schedule"
-
 	"pmc_server/model"
 	"pmc_server/model/dto"
+	"pmc_server/shared"
 )
 
 func CreateSchedule(param model.PostScheduleParams) error {
@@ -16,7 +15,7 @@ func CreateSchedule(param model.PostScheduleParams) error {
 		return err
 	}
 	if !exist {
-		return errors.New("user does not exist")
+		return shared.ContentNotFoundErr{}
 	}
 
 	exist, err = dao.CheckIfClassExist(param.ClassID)
@@ -24,7 +23,7 @@ func CreateSchedule(param model.PostScheduleParams) error {
 		return err
 	}
 	if !exist {
-		return errors.New("class does not exist")
+		return shared.ContentNotFoundErr{}
 	}
 
 	exist, err = dao.CheckIfScheduleExist(param.ClassID, param.UserID, param.SemesterID)
@@ -32,7 +31,7 @@ func CreateSchedule(param model.PostScheduleParams) error {
 		return err
 	}
 	if exist {
-		return errors.New("schedule already exist")
+		return shared.ResourceConflictErr{}
 	}
 
 	err = dao.CreateSchedule(param.ClassID, param.UserID, param.SemesterID)
@@ -49,7 +48,7 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 	}
 
 	if !exist {
-		return nil, errors.New("user does not exist")
+		return nil, shared.ContentNotFoundErr{}
 	}
 
 	scheduleList, err := dao.GetScheduleByUserID(param.UserID)

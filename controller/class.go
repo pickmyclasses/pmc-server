@@ -46,8 +46,8 @@ func GetClassListHandler(c *gin.Context) {
 
 	classList, total := logic.GetClassList(pnInt, pSizeInt)
 	c.JSON(http.StatusOK, gin.H{
-		DATA:    classList,
-		TOTAL:   total,
+		DATA:  classList,
+		TOTAL: total,
 	})
 
 }
@@ -74,6 +74,6 @@ func GetClassByIDHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		DATA:    classInfo,
+		DATA: classInfo,
 	})
 }

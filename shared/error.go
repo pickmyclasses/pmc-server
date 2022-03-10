@@ -33,7 +33,7 @@ func (err UserInfoNotFoundErr) Code() int {
 
 // ParamInsufficientErr represents post/get param body insufficiency
 // this should be used for any request that has a param body
-type ParamInsufficientErr struct {}
+type ParamInsufficientErr struct{}
 
 func (err ParamInsufficientErr) Error() string {
 	return InsufficientParamErr
@@ -44,7 +44,7 @@ func (err ParamInsufficientErr) Code() int {
 }
 
 // ParamIncompatibleErr represents incompatible parameters such as invalid page number, etc
-type ParamIncompatibleErr struct {}
+type ParamIncompatibleErr struct{}
 
 func (err ParamIncompatibleErr) Error() string {
 	return BadParamErr
@@ -55,7 +55,7 @@ func (err ParamIncompatibleErr) Code() int {
 }
 
 // MalformedIDErr represents the error when the provided ID is malformed or does not exist
-type MalformedIDErr struct {}
+type MalformedIDErr struct{}
 
 func (err MalformedIDErr) Error() string {
 	return BadIdErr
@@ -63,6 +63,28 @@ func (err MalformedIDErr) Error() string {
 
 func (err MalformedIDErr) Code() int {
 	return http.StatusUnprocessableEntity
+}
+
+// InfoUnmatchedErr represents the error when provided data info doesn't match to the database
+type InfoUnmatchedErr struct{}
+
+func (err InfoUnmatchedErr) Error() string {
+	return InfoMismatchErr
+}
+
+func (err InfoUnmatchedErr) Code() int {
+	return http.StatusUnauthorized
+}
+
+// ResourceConflictErr represents the error when the provided data already exist in the database
+type ResourceConflictErr struct{}
+
+func (err ResourceConflictErr) Error() string {
+	return ResourceAlreadyExistErr
+}
+
+func (err ResourceConflictErr) Code() int {
+	return http.StatusConflict
 }
 
 // InternalErr represents an internal server errors

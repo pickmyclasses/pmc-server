@@ -18,7 +18,7 @@ func GetClassInfoByID(id int) (*model.Class, error) {
 	var class model.Class
 	result := postgres.DB.Where("id = ?", id).First(&class)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, shared.InternalErr{}
 	}
 	return &class, nil
 }
@@ -27,7 +27,7 @@ func GetClassByCourseID(courseID int64) (*[]model.Class, error) {
 	var classes []model.Class
 	result := postgres.DB.Where("course_id = ?", courseID).Find(&classes)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, shared.InternalErr{}
 	}
 	return &classes, nil
 }

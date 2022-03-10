@@ -82,7 +82,12 @@ func main() {
 	}
 
 	// start logic
-	port := os.Getenv("PORT")
+	var port string
+	if viper.GetString("app.mode") == "dev" {
+		port = "3000"
+	} else {
+		port = os.Getenv("PORT")
+	}
 	if port == "" {
 		zap.L().Fatal("port must be set")
 	}

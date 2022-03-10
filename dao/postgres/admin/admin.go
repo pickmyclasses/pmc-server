@@ -2,7 +2,7 @@ package dao
 
 import (
 	"pmc_server/init/postgres"
-	model "pmc_server/model"
+	"pmc_server/model"
 	"pmc_server/shared"
 )
 

@@ -17,8 +17,8 @@ import (
 // @Tags Course
 // @Accept application/json
 // @Produce application/json
-// @Param pn query int false "Page number of the paginated course list, default is 1" mininum(1)
-// @Param psize query int false "Page size(number of course to fetch) of the paginated course list, default is 10" mininum(1) maxinum(30)
+// @Param pn query int false "Page number of the paginated course list, default is 1" minimum(1)
+// @Param psize query int false "Page size(number of course to fetch) of the paginated course list, default is 10" minimum(1) maximum(30)
 // @Success 200 {int} total number of the courses
 // @Success 200 {array} dto.Course
 // @Router /course/list [get]
@@ -92,8 +92,8 @@ func GetClassesOfCourseHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		TOTAL:   total,
-		DATA:    classList,
+		TOTAL: total,
+		DATA:  classList,
 	})
 }
 

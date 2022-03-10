@@ -13,7 +13,7 @@ import (
 func Register(param *model.RegisterParams) error {
 	exist, err := dao.UserExist(param.Email)
 	if err != nil {
-		return errors.New("failed to find user info")
+		return err
 	}
 
 	if exist {

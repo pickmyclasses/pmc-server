@@ -1,7 +1,6 @@
 package course
 
 import (
-	"errors"
 	"pmc_server/shared"
 
 	"pmc_server/init/postgres"
@@ -12,7 +11,7 @@ func GetCourses(pn, pSize int) ([]model.Course, error) {
 	var courses []model.Course
 	res := postgres.DB.Scopes(shared.Paginate(pn, pSize)).Find(&courses)
 	if res.Error != nil {
-		return nil, res.Error
+		return nil, shared.InternalErr{}
 	}
 	return courses, nil
 }
@@ -21,7 +20,7 @@ func GetCourseTotal() (int64, error) {
 	var total int64
 	res := postgres.DB.Model(&model.Course{}).Count(&total)
 	if res.Error != nil {
-		return -1, res.Error
+		return -1, shared.InternalErr{}
 	}
 
 	return total, nil
@@ -31,10 +30,10 @@ func GetCourseByID(id int) (*model.Course, error) {
 	var course model.Course
 	result := postgres.DB.Where("id = ?", id).First(&course)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, shared.InternalErr{}
 	}
 	if result.RowsAffected == 0 {
-		return nil, errors.New("no course info found")
+		return nil, shared.ContentNotFoundErr{}
 	}
 	return &course, nil
 }

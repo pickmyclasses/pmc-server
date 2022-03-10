@@ -4,10 +4,12 @@ import (
 	"errors"
 	"time"
 
-	"gorm.io/gorm"
 	"pmc_server/init/postgres"
 	"pmc_server/model"
+	"pmc_server/shared"
 	. "pmc_server/shared"
+
+	"gorm.io/gorm"
 )
 
 func GetCourseOverallRating(courseID int64) (*model.OverAllRating, error) {
@@ -17,11 +19,11 @@ func GetCourseOverallRating(courseID int64) (*model.OverAllRating, error) {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			newRating, err := CreateCourseRating(courseID)
 			if err != nil {
-				return nil, errors.New("course has no rating records and failed to create new rating record")
+				return nil, shared.ContentNotFoundErr{}
 			}
 			rating = *newRating
 		} else {
-			return nil, errors.New("failed to get course rating")
+			return nil, shared.InternalErr{}
 		}
 	}
 
@@ -36,7 +38,7 @@ func CreateCourseRating(CourseID int64) (*model.OverAllRating, error) {
 	}
 	result := postgres.DB.Create(&rating)
 	if result.Error != nil || result.RowsAffected == 0 {
-		return nil, errors.New("create new rating record failed")
+		return nil, shared.InternalErr{}
 	}
 	return rating, nil
 }
@@ -46,7 +48,7 @@ func UpdateCourseRating(rating model.OverAllRating) error {
 		Updates(map[string]interface{}{"over_all_rating": rating.OverAllRating, "total_rating_count": rating.TotalRatingCount})
 
 	if res.Error != nil || res.RowsAffected == 0 {
-		return res.Error
+		return shared.InternalErr{}
 	}
 	return nil
 }
@@ -55,7 +57,7 @@ func GetReviewTotalByCourseID(courseID int) (int64, error) {
 	var total int64
 	res := postgres.DB.Model(&model.Review{}).Where("course_id = ?", courseID).Count(&total)
 	if res.Error != nil {
-		return -1, res.Error
+		return -1, shared.InternalErr{}
 	}
 	return total, nil
 }
@@ -65,11 +67,12 @@ func GetReviewsByCourseID(courseID, pn, pSize int) ([]model.Review, error) {
 
 	res := postgres.DB.Scopes(Paginate(pn, pSize)).Where("course_id = ?", courseID).Find(&reviewList)
 	if res.Error != nil {
-		return make([]model.Review, 0), errors.New("failed to fetch review list")
+		return make([]model.Review, 0), shared.InternalErr{}
 	}
 	if res.RowsAffected == 0 {
 		return make([]model.Review, 0), nil
 	}
+
 	return reviewList, nil
 
 }
@@ -78,7 +81,7 @@ func GetReviewByID(reviewID int) (*model.Review, error) {
 	var review model.Review
 	result := postgres.DB.Where("id = ?", reviewID).First(&review)
 	if result.RowsAffected == 0 {
-		return nil, errors.New(NoInfoErr)
+		return nil, shared.ContentNotFoundErr{}
 	}
 	return &review, nil
 }
@@ -86,7 +89,7 @@ func GetReviewByID(reviewID int) (*model.Review, error) {
 func CreateCourseReview(review model.Review) error {
 	res := postgres.DB.Create(&review)
 	if res.Error != nil || res.RowsAffected == 0 {
-		return errors.New("create review failed")
+		return shared.InternalErr{}
 	}
 	return nil
 }
@@ -95,7 +98,7 @@ func UpdateCourseReview(review model.ReviewParams) error {
 	var currentReview model.Review
 	res := postgres.DB.Where("course_id = ?, user_id = ?", review.CourseID, review.UserID).Find(&currentReview)
 	if res.RowsAffected == 0 || res.Error != nil {
-		return errors.New("no review of given info found")
+		return shared.InternalErr{}
 	}
 
 	currentReview.CreatedAt = time.Now()
@@ -107,7 +110,7 @@ func UpdateCourseReview(review model.ReviewParams) error {
 	currentReview.Recommended = review.Recommended
 	res = postgres.DB.Updates(&currentReview)
 	if res.RowsAffected == 0 || res.Error != nil {
-		return errors.New("internal error when updating the review")
+		return shared.InternalErr{}
 	}
 	return nil
 }

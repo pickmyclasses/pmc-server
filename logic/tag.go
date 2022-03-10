@@ -1,10 +1,10 @@
 package logic
 
 import (
-	"errors"
 	courseDao "pmc_server/dao/postgres/course"
 	dao "pmc_server/dao/postgres/tag"
 	"pmc_server/model"
+	"pmc_server/shared"
 )
 
 func GetTagList() ([]model.Tag, error) {
@@ -21,11 +21,11 @@ func CreateTagByCourseID(tagInfo model.CreateTagParam) error {
 		return err
 	}
 	if course == nil {
-		return errors.New("no course found")
+		return shared.ContentNotFoundErr{}
 	}
 
-	if len(tagInfo.Content) > 10 {
-		return errors.New("tag length exceeded")
+	if len(tagInfo.Content) > 20 {
+		tagInfo.Content = tagInfo.Content[:20]
 	}
 
 	err = dao.CreateTagByCourseID(tagInfo.CourseID, tagInfo.Content)

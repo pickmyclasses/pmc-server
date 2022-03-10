@@ -2,8 +2,8 @@ package dao
 
 import (
 	"crypto/sha512"
-	"errors"
 	"fmt"
+	"pmc_server/shared"
 	"strings"
 
 	"github.com/anaskhan96/go-password-encoder"
@@ -18,7 +18,7 @@ func UserExist(email string) (exist bool, err error) {
 	var user model.User
 	result := postgres.DB.Where(&model.User{Email: email}).Find(&user)
 	if result.Error != nil {
-		return true, result.Error
+		return true, shared.InternalErr{}
 	}
 	return result.RowsAffected != 0, err
 }
@@ -29,7 +29,7 @@ func InsertUser(user *model.User) error {
 
 	result := postgres.DB.Create(&user)
 	if result.Error != nil {
-		return result.Error
+		return shared.InternalErr{}
 	}
 	return nil
 }
@@ -39,10 +39,10 @@ func ReadUser(user *model.User) (*model.User, error) {
 	var u model.User
 	result := postgres.DB.Where(&model.User{Email: user.Email}).Find(&u)
 	if result.Error != nil {
-		return nil, errors.New("failed to find user")
+		return nil, shared.InternalErr{}
 	}
 	if result.RowsAffected == 0 {
-		return nil, errors.New("user does not exist")
+		return nil, shared.ResourceConflictErr{}
 	}
 
 	zap.L().Info(u.Password)
@@ -50,7 +50,7 @@ func ReadUser(user *model.User) (*model.User, error) {
 	passwordInfo := strings.Split(u.Password, "$")
 	check := password.Verify(user.Password, passwordInfo[2], passwordInfo[3], options)
 	if !check {
-		return nil, errors.New("user info does not match")
+		return nil, shared.InfoUnmatchedErr{}
 	}
 	return &u, nil
 }
@@ -67,10 +67,10 @@ func GetUserByID(userID int64) (*model.User, error) {
 	var user model.User
 	result := postgres.DB.Where("id = ?", userID).First(&user)
 	if result.Error != nil {
-		return nil, result.Error
+		return nil, shared.InternalErr{}
 	}
 	if result.RowsAffected == 0 {
-		return nil, errors.New("user not found")
+		return nil, shared.ContentNotFoundErr{}
 	}
 	return &user, nil
 }

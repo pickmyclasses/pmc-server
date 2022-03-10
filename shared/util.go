@@ -180,8 +180,56 @@ func round(num float64) int {
 	return int(num + math.Copysign(0.5, num))
 }
 
-// ToFixed fixed a float number to the given percision
+// ToFixed fixed a float number to the given precision
 func ToFixed(num float64, precision int) float64 {
 	output := math.Pow(10, float64(precision))
 	return float64(round(num*output)) / output
+}
+
+// ConvertTimestamp converts timestamp string such as 6:00am to 6, and 8:45pm to 20.45
+func ConvertTimestamp(timestamp string) int {
+	offerTime := []rune(strings.ToLower(timestamp))
+	res := 0
+	hours := 0
+	minutes := 0
+	plus := 0
+	appeared := false
+	for i, t := range offerTime {
+		if t == '-' || t == ' ' {
+			continue
+		}
+		if t == ':' {
+			appeared = true
+			continue
+		}
+		if unicode.IsDigit(t) {
+			if appeared {
+				if offerTime[i-1] == ':' {
+					first, _ := strconv.Atoi(string(t))
+					minutes += first / 10
+				} else {
+					second, _ := strconv.Atoi(string(t))
+					minutes += second / 100
+				}
+			} else {
+				if i == 0 {
+					first, _ := strconv.Atoi(string(t))
+					minutes += first * 10
+				} else {
+					second, _ := strconv.Atoi(string(t))
+					minutes += second
+				}
+			}
+		}
+
+		if t == 'a' {
+			continue
+		}
+		if t == 'p' {
+			plus += 12
+		}
+	}
+	res = hours + minutes + plus
+
+	return res
 }

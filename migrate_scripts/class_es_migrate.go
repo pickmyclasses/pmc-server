@@ -2,6 +2,7 @@ package migrate
 
 import (
 	"context"
+	"fmt"
 	"github.com/olivere/elastic/v7"
 	pos "gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -13,7 +14,7 @@ import (
 	"strings"
 )
 
-func migrateClasses() {
+func Classes() {
 	dsn := "host=pmc1.ccyv4mlgftmr.us-east-1.rds.amazonaws.com user=admin1 password=admin123 dbname=postgres port=5432 sslmode=disable"
 	db, err := gorm.Open(pos.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
@@ -47,12 +48,9 @@ func migrateClasses() {
 		panic(res.Error.Error())
 	}
 
-	for _, class := range classList {
-		waitList := strings.ToLower(class.WaitList)
-		if waitList != "yes" && waitList != "no" {
-			continue
-		}
+	fmt.Printf("length of classList = %d\n", len(classList))
 
+	for _, class := range classList {
 		var isOnline bool
 		var isInPerson bool
 		var isIVC bool
@@ -114,8 +112,4 @@ func convertOfferDate(offerDates string) []int {
 		}
 	}
 	return res
-}
-
-func main() {
-	migrateClasses()
 }

@@ -1,8 +1,8 @@
 package logic
 
 import (
-	"errors"
 	"fmt"
+	"pmc_server/shared"
 	"strconv"
 
 	courseEsDao "pmc_server/dao/es/course"
@@ -81,7 +81,7 @@ func GetCourseList(pn, pSize int) ([]dto.Course, int64, error) {
 func GetCourseInfo(id string) (*dto.Course, error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
-		return nil, errors.New("provided ID is invalid")
+		return nil, shared.ParamIncompatibleErr{}
 	}
 
 	course, err := courseDao.GetCourseByID(idInt)
@@ -91,12 +91,12 @@ func GetCourseInfo(id string) (*dto.Course, error) {
 
 	classList, err := classDao.GetClassByCourseID(course.ID)
 	if err != nil {
-		return nil, fmt.Errorf("unable to fetch classes of the course %s: %+v\n", course.CatalogCourseName, err)
+		return nil, err
 	}
 
 	rating, err := reviewDao.GetCourseOverallRating(course.ID)
 	if err != nil {
-		return nil, fmt.Errorf("unable to fetch the rating of the course %s: %+v\n", course.CatalogCourseName, err)
+		return nil, err
 	}
 
 	maxCredit, err := strconv.ParseFloat(course.MaxCredit, 32)
@@ -128,7 +128,7 @@ func GetCourseInfo(id string) (*dto.Course, error) {
 func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
-		return nil, 0, errors.New("provided ID is invalid")
+		return nil, 0, shared.MalformedIDErr{}
 	}
 	classList, total := courseDao.GetClassListByCourseID(idInt)
 	return classList, total, nil

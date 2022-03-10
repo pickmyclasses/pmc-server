@@ -1,17 +1,15 @@
 package routes
 
 import (
+	"github.com/gin-gonic/gin"
+	gs "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"net/http"
-	"pmc_server/middlewares/err"
-
 	"pmc_server/controller"
 	_ "pmc_server/docs"
 	"pmc_server/init/logger"
 	"pmc_server/middlewares/auth"
-
-	"github.com/gin-gonic/gin"
-	gs "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"pmc_server/middlewares/err"
 )
 
 func SetUp(mode string) *gin.Engine {
@@ -61,7 +59,7 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/professor/list", controller.GetProfessorListHandler)
 
 		// for testing
-		r.GET("/ping", auth.JWTAuth(), func(c *gin.Context) {
+		r.GET("/ping", auth.JWT(), func(c *gin.Context) {
 			c.String(http.StatusOK, "pong")
 		})
 

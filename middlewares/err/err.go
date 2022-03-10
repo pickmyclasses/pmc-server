@@ -1,9 +1,9 @@
 package err
 
 import (
-	"pmc_server/shared"
-
+	"errors"
 	"github.com/gin-gonic/gin"
+	"pmc_server/shared"
 )
 
 func JsonErrReporter() gin.HandlerFunc {
@@ -20,26 +20,36 @@ func jsonErrReporter(errType gin.ErrorType) gin.HandlerFunc {
 		if len(detectedErr) > 0 {
 			err := detectedErr[0].Err
 			var parsedErr shared.AppErr
-			switch err.(type) {
-			case *shared.ContentNotFoundErr:
-				parsedErr = err.(*shared.ContentNotFoundErr)
-			case *shared.UserInfoNotFoundErr:
-				parsedErr = err.(*shared.UserInfoNotFoundErr)
-			case *shared.InternalErr:
-				parsedErr = err.(*shared.InternalErr)
-			case *shared.ParamInsufficientErr:
-				parsedErr = err.(*shared.ParamInsufficientErr)
-			case *shared.ParamIncompatibleErr:
-				parsedErr = err.(*shared.ParamIncompatibleErr)
-			case *shared.MalformedIDErr:
-				parsedErr = err.(*shared.MalformedIDErr)
-			default:
-				parsedErr = err.(*shared.InternalErr)
+			if errors.Is(err, shared.ContentNotFoundErr{}) {
+				parsedErr = shared.ContentNotFoundErr{}
 			}
-			c.IndentedJSON(parsedErr.Code(), parsedErr)
+			if errors.Is(err, shared.ParamIncompatibleErr{}) {
+				parsedErr = shared.ParamInsufficientErr{}
+			}
+			if errors.Is(err, shared.ParamInsufficientErr{}) {
+				parsedErr = shared.ParamInsufficientErr{}
+			}
+			if errors.Is(err, shared.UserInfoNotFoundErr{}) {
+				parsedErr = shared.UserInfoNotFoundErr{}
+			}
+			if errors.Is(err, shared.MalformedIDErr{}) {
+				parsedErr = shared.MalformedIDErr{}
+			}
+			if errors.Is(err, shared.ResourceConflictErr{}) {
+				parsedErr = shared.ResourceConflictErr{}
+			}
+			if errors.Is(err, shared.InfoUnmatchedErr{}) {
+				parsedErr = shared.InfoUnmatchedErr{}
+			}
+			if errors.Is(err, shared.InternalErr{}) {
+				parsedErr = shared.InternalErr{}
+			}
+
+			c.IndentedJSON(parsedErr.Code(), gin.H{
+				shared.ERROR: parsedErr.Error(),
+			})
 			c.Abort()
 			return
 		}
 	}
 }
-

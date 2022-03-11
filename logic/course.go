@@ -2,22 +2,17 @@ package logic
 
 import (
 	"fmt"
-	"pmc_server/shared"
 	"strconv"
 
+	classEsDao "pmc_server/dao/es/class"
 	courseEsDao "pmc_server/dao/es/course"
 	classDao "pmc_server/dao/postgres/class"
 	courseDao "pmc_server/dao/postgres/course"
 	reviewDao "pmc_server/dao/postgres/review"
 	"pmc_server/model"
 	"pmc_server/model/dto"
+	"pmc_server/shared"
 )
-
-type CourseRetriever interface {
-}
-
-type CourseSearcher interface {
-}
 
 func GetCourseList(pn, pSize int) ([]dto.Course, int64, error) {
 	courseList, err := courseDao.GetCourses(pn, pSize)
@@ -149,10 +144,48 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 		courseBoolQuery.QueryByMaxCredit(courseParam.MaxCredit)
 	}
 
-	res, total, err := courseBoolQuery.DoSearch()
+	// get the courses that fit the search criteria
+	courseFitIDList, total, err := courseBoolQuery.DoSearch()
 	if err != nil {
 		return nil, -1, fmt.Errorf("error when fecthing by keywords %+v", err)
 	}
 
-	return *res, total, nil
+	classBoolQuery := classEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
+
+	classBoolQuery.QueryByIsOnline(courseParam.OfferedOnline)
+	classBoolQuery.QueryByIsInPerson(courseParam.OfferedOffline)
+	classBoolQuery.QueryByIsHybrid(courseParam.OfferedHybrid)
+	classBoolQuery.QueryByIsIVC(courseParam.OfferedIVC)
+
+	if len(courseParam.Weekday) != 0 {
+		classBoolQuery.QueryByOfferDates(courseParam.Weekday)
+	}
+
+	if len(courseParam.TaughtProfessor)  != 0 {
+		for _, professor := range courseParam.TaughtProfessor {
+			classBoolQuery.QueryByProfessor(professor)
+		}
+	}
+
+	var startTime float32
+	var endTime float32
+	if courseParam.StartTime != 0 || courseParam.EndTime != 0 {
+		if courseParam.StartTime == 0 {
+			startTime = 0
+		} else {
+			startTime = courseParam.StartTime
+		}
+
+		if courseParam.EndTime == 0 {
+			endTime = 24
+		} else {
+			endTime = courseParam.EndTime
+		}
+		classBoolQuery.QueryByOfferTime(startTime, endTime)
+	}
+
+	classFitIDList, total, err := classBoolQuery.DoSearch()
+
+	intersection := shared.Intersection(*courseFitIDList, *classFitIDList)
+
 }

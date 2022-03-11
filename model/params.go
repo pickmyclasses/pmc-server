@@ -25,9 +25,11 @@ type CourseFilterParams struct {
 	MinCredit             float32  `json:"minCredit"`             // Filter courses with given credit
 	MaxCredit             float32  `json:"maxCredit"`             //Filter cores with the given max credit
 	OfferedOnline         bool     `json:"isOnline"`              // Filter courses that's online
-	OfferedOffline        bool     `json:"isOffline"`             // Filter courses that's not online (in person)
+	OfferedOffline        bool     `json:"isOffline"`             // Filter courses that's in person
+	OfferedIVC            bool     `json:"offered_ivc"`           // Filter classes that's ivc
+	OfferedHybrid         bool     `json:"offered_hybrid"`        // Filter classes that's hybrid
 	IsHonor               bool     `json:"isHonor"`               // Filter courses that's honor courses
-	Weekday               []int8   `json:"weekday"`               // Filter courses that's in the specific weekdays
+	Weekday               []int    `json:"weekday"`               // Filter courses that's in the specific weekdays
 	StartTime             float32  `json:"startTime"`             // Filter courses that starts no earlier than the start time
 	EndTime               float32  `json:"endTime"`               // Filter courses that ends no later than the start time
 	MinRating             int8     `json:"minRating"`             // Filter courses that has no lower rating than the give min rating

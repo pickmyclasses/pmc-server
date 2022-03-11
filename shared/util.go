@@ -220,3 +220,18 @@ func ConvertTimestamp(timestamp string) (float32, error) {
 	res += float32(hour) + mins
 	return res, nil
 }
+
+// Intersection finds intersection of two slices
+func Intersection(s1, s2 []int64) (inter []int64{}) {
+	hash := make(map[interface{}]bool)
+	for _, e := range s1 {
+		hash[e] = true
+	}
+
+	for _, e := range s2 {
+		if hash[e] {
+			inter = append(inter, hash[e])
+		}
+	}
+	return
+}

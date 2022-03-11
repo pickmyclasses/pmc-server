@@ -3,12 +3,7 @@ package course
 import (
 	"context"
 	"encoding/json"
-	"strconv"
-
-	courseDao "pmc_server/dao/postgres/course"
-	reviewDao "pmc_server/dao/postgres/review"
 	"pmc_server/init/es"
-	"pmc_server/model/dto"
 	esModel "pmc_server/model/es"
 	"pmc_server/shared"
 	. "pmc_server/shared"
@@ -62,7 +57,7 @@ func (c *BoolQuery) QueryByTypes(types string) {
 	c.query = c.query.Must(elastic.NewMatchQuery("subject", types))
 }
 
-func (c *BoolQuery) DoSearch() (*[]dto.Course, int64, error) {
+func (c *BoolQuery) DoSearch() (*[]int64, int64, error) {
 	res, err := es.Client.Search().
 		Index(c.index).
 		Query(c.query).
@@ -85,52 +80,5 @@ func (c *BoolQuery) DoSearch() (*[]dto.Course, int64, error) {
 		esCourseIdList = append(esCourseIdList, course.ID)
 	}
 
-	var courseDtoList []dto.Course
-	for _, id := range esCourseIdList {
-		course, err := courseDao.GetCourseByID(int(id))
-		if err != nil {
-			return nil, -1, shared.ContentNotFoundErr{}
-		}
-
-		// fetch classes of the course
-		classList, _ := courseDao.GetClassListByCourseID(int(id))
-		rating, err := reviewDao.GetCourseOverallRating(id)
-		if err != nil {
-			return nil, -1, shared.ContentNotFoundErr{}
-		}
-
-		maxCredit := 0.0
-		minCredit := 0.0
-		max, err := strconv.ParseFloat(course.MaxCredit, 32)
-		if err != nil {
-			maxCredit = 0.0
-		}
-		maxCredit = max
-
-		min, err := strconv.ParseFloat(course.MinCredit, 32)
-		if err != nil {
-			minCredit = 0.0
-		}
-		minCredit = min
-
-		courseDto := dto.Course{
-			CourseID:           id,
-			IsHonor:            course.IsHonor,
-			FixedCredit:        course.FixedCredit,
-			DesignationCatalog: course.DesignationCatalog,
-			Description:        course.Description,
-			Prerequisites:      course.Prerequisites,
-			Title:              course.Title,
-			CatalogCourseName:  course.CatalogCourseName,
-			Component:          course.Component,
-			MaxCredit:          maxCredit,
-			MinCredit:          minCredit,
-			Classes:            *classList,
-			OverallRating:      rating.OverAllRating,
-		}
-
-		courseDtoList = append(courseDtoList, courseDto)
-	}
-
-	return &courseDtoList, total, nil
+	return &esCourseIdList, total, nil
 }

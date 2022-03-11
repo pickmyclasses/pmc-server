@@ -3,8 +3,6 @@ package class
 import (
 	"context"
 	"encoding/json"
-	"time"
-
 	"pmc_server/init/es"
 	esModel "pmc_server/model/es"
 	"pmc_server/shared"
@@ -20,11 +18,13 @@ type BoolQuery struct {
 	pageSize   int
 }
 
-func NewBoolQuery() *BoolQuery {
+func NewBoolQuery(pageNumber, pageSize int) *BoolQuery {
 	return &BoolQuery{
-		query:   elastic.NewBoolQuery(),
-		index:   "class",
-		context: context.Background(),
+		query:      elastic.NewBoolQuery(),
+		index:      "class",
+		context:    context.Background(),
+		pageSize:   pageSize,
+		pageNumber: pageNumber,
 	}
 }
 
@@ -52,10 +52,14 @@ func (c *BoolQuery) QueryByOfferDates(offerDates []int) {
 	c.query = c.query.Filter(elastic.NewTermsQuery("offer_dates", status...))
 }
 
-func (c *BoolQuery) QueryByOfferTime(startTime, endTime time.Time) {
+func (c *BoolQuery) QueryByOfferTime(startTime, endTime float32) {
 	c.query = c.query.
 		Must(elastic.NewRangeQuery("start_time").Gte(startTime)).
 		Must(elastic.NewRangeQuery("end_time").Lte(endTime))
+}
+
+func (c *BoolQuery) QueryByProfessor(professorName string) {
+	c.query = c.query.Must(elastic.NewFuzzyQuery(professorName, "professors").Fuzziness("AUTO"))
 }
 
 func (c *BoolQuery) DoSearch() (*[]int64, int64, error) {
@@ -69,7 +73,7 @@ func (c *BoolQuery) DoSearch() (*[]int64, int64, error) {
 		return nil, -1, shared.InternalErr{}
 	}
 
-	var esClassIDList []int64
+	var esCourseIDList []int64
 	total := res.Hits.TotalHits.Value
 
 	for _, hit := range res.Hits.Hits {
@@ -78,8 +82,8 @@ func (c *BoolQuery) DoSearch() (*[]int64, int64, error) {
 		if err != nil {
 			return nil, -1, shared.InternalErr{}
 		}
-		esClassIDList = append(esClassIDList, course.ID)
+		esCourseIDList = append(esCourseIDList, course.ID)
 	}
 
-	return &esClassIDList, total, nil
+	return &esCourseIDList, total, nil
 }

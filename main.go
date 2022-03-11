@@ -24,14 +24,11 @@ import (
 // @version 1.0
 // @description General API Description for PickMyClasses
 // @termsOfService http://swagger.io/terms/
-
 // @contact.name Kaijie Fu
 // @contact.url http://www.swagger.io/support
 // @contact.email fio827601499@gmail.com
-
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
 // @host localhost
 // @BasePath /user
 func main() {

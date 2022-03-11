@@ -2,7 +2,7 @@ package dao
 
 import (
 	"pmc_server/init/postgres"
-	model "pmc_server/model"
+	"pmc_server/model"
 	"pmc_server/shared"
 )
 
@@ -31,3 +31,19 @@ func GetClassByCourseID(courseID int64) (*[]model.Class, error) {
 	}
 	return &classes, nil
 }
+
+func GetClassByComponent(components []string) (*[]model.Class, error) {
+	var classes []model.Class
+	sql := "select * from class where component "
+	if shared.Contains(components, "In Person") {
+		sql += ""
+	}
+
+	return &classes, nil
+}
+
+
+
+
+
+

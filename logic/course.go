@@ -129,17 +129,15 @@ func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	return classList, total, nil
 }
 
-func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int64, error) {
+func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, error) {
 	courseBoolQuery := courseEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
 
 	if courseParam.Keyword != "" {
 		courseBoolQuery.QueryByKeywords(courseParam.Keyword)
 	}
-
 	if courseParam.MinCredit != 0 {
 		courseBoolQuery.QueryByMinCredit(courseParam.MinCredit)
 	}
-
 	if courseParam.MaxCredit != 0 {
 		courseBoolQuery.QueryByMaxCredit(courseParam.MaxCredit)
 	}
@@ -150,18 +148,25 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 		return nil, -1, fmt.Errorf("error when fecthing by keywords %+v", err)
 	}
 
-	classBoolQuery := classEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
+	classBoolQuery := classEsDao.NewBoolQuery(courseParam.PageSize)
 
-	classBoolQuery.QueryByIsOnline(courseParam.OfferedOnline)
-	classBoolQuery.QueryByIsInPerson(courseParam.OfferedOffline)
-	classBoolQuery.QueryByIsHybrid(courseParam.OfferedHybrid)
-	classBoolQuery.QueryByIsIVC(courseParam.OfferedIVC)
+	if courseParam.OfferedOnline {
+		classBoolQuery.QueryByIsOnline(true)
+	}
+	if courseParam.OfferedOffline {
+		classBoolQuery.QueryByIsInPerson(true)
+	}
+	if courseParam.OfferedHybrid {
+		classBoolQuery.QueryByIsHybrid(true)
+	}
+	if courseParam.OfferedIVC {
+		classBoolQuery.QueryByIsIVC(true)
+	}
 
 	if len(courseParam.Weekday) != 0 {
 		classBoolQuery.QueryByOfferDates(courseParam.Weekday)
 	}
-
-	if len(courseParam.TaughtProfessor)  != 0 {
+	if len(courseParam.TaughtProfessor) != 0 {
 		for _, professor := range courseParam.TaughtProfessor {
 			classBoolQuery.QueryByProfessor(professor)
 		}
@@ -175,7 +180,6 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 		} else {
 			startTime = courseParam.StartTime
 		}
-
 		if courseParam.EndTime == 0 {
 			endTime = 24
 		} else {
@@ -188,4 +192,7 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 
 	intersection := shared.Intersection(*courseFitIDList, *classFitIDList)
 
+	//courseList := make([]dto.Course, 0)
+
+	return intersection, total, nil
 }

@@ -222,7 +222,7 @@ func ConvertTimestamp(timestamp string) (float32, error) {
 }
 
 // Intersection finds intersection of two slices
-func Intersection(s1, s2 []int64) (inter []int64{}) {
+func Intersection(s1, s2 []int64) (inter []int64) {
 	hash := make(map[interface{}]bool)
 	for _, e := range s1 {
 		hash[e] = true
@@ -230,8 +230,18 @@ func Intersection(s1, s2 []int64) (inter []int64{}) {
 
 	for _, e := range s2 {
 		if hash[e] {
-			inter = append(inter, hash[e])
+			inter = append(inter, e)
 		}
 	}
 	return
+}
+
+// Contains checks if an element is in the slice
+func Contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }

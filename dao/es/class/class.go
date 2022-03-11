@@ -14,17 +14,17 @@ type BoolQuery struct {
 	index      string
 	query      *elastic.BoolQuery
 	context    context.Context
-	pageNumber int
 	pageSize   int
+	pageNumber int
 }
 
-func NewBoolQuery(pageNumber, pageSize int) *BoolQuery {
+func NewBoolQuery(pageSize int) *BoolQuery {
 	return &BoolQuery{
 		query:      elastic.NewBoolQuery(),
 		index:      "class",
 		context:    context.Background(),
 		pageSize:   pageSize,
-		pageNumber: pageNumber,
+		pageNumber: 0,
 	}
 }
 

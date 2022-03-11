@@ -80,3 +80,44 @@ func TestRemoveTopStruct(t *testing.T) {
 		}
 	}
 }
+
+func TestIntersection(t *testing.T) {
+	tests := []struct {
+		s1           []int64
+		s2           []int64
+		intersection []int64
+	}{
+		{[]int64{2, 4, 5, 7}, []int64{2, 4, 5, 7}, []int64{2, 4, 5, 7}},
+		{[]int64{1, 3, 5, 7}, []int64{2, 4, 6, 8}, []int64{}},
+		{[]int64{4, 6, 5, 4}, []int64{4, 6}, []int64{4, 6}},
+	}
+
+	for _, tt := range tests {
+		actual := Intersection(tt.s1, tt.s2)
+		for i, ttt := range tt.intersection {
+			if actual[i] != ttt {
+				t.Errorf("TestIntersection(%+v, %+v), should be %+v, got %+v instead \n",
+					tt.s1, tt.s2, tt.intersection, actual)
+			}
+		}
+	}
+}
+
+func TestContains(t *testing.T) {
+	tests := []struct{
+		s []string
+		e string
+		res bool
+	}{
+		{[]string{"test", "test1", "test2"}, "test1", true},
+		{[]string{"test", "test1", "test2"}, "test3", false},
+		{[]string{}, "test3", false},
+	}
+
+	for _, tt := range tests {
+		if actual := Contains(tt.s, tt.e); actual != tt.res {
+			t.Errorf("TestContains(%+v, %s), should be %v, got %v instead \n",
+				tt.s, tt.e, tt.res, actual)
+		}
+	}
+}

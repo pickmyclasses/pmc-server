@@ -64,6 +64,7 @@ func HandlePagination(c *gin.Context, defaultVal string) (int, int, error) {
 	return pnInt, pSizeInt, nil
 }
 
+// GetLetterInfo gets the letters and number seperation from the given string
 func GetLetterInfo(str string) (letter, number string) {
 	var l, n []rune
 	for index, r := range []rune(str) {
@@ -108,60 +109,29 @@ func ParseString(s string, ignoreSpace bool) (letters, numbers string) {
 	return string(l), string(n)
 }
 
-// ParseDate parses a date time info to integers
-func ParseDate(dates string) []int {
-	var daysInt []int
-	if dates == "" || len(dates) == 0 {
-		return daysInt
-	}
-	dates = strings.ToLower(dates)
-	dateMap := generateDateMap()
 
-	var curStr string
-	for _, r := range dates {
-		curStr += string(r)
-		if val, ok := dateMap[curStr]; ok {
-			daysInt = append(daysInt, val)
+func ConvertOfferDate(offerDates string) []int {
+	mapping := make(map[string]int)
+	mapping["mo"] = 1
+	mapping["tu"] = 2
+	mapping["we"] = 3
+	mapping["th"] = 4
+	mapping["fr"] = 5
+
+	offerLower := []rune(strings.ToLower(offerDates))
+	res := make([]int, 0)
+	curStr := ""
+	for _, s := range offerLower {
+		if s == '-' || s == ' ' {
+			continue
+		}
+		curStr = curStr + string(s)
+		if num, found := mapping[curStr]; found {
+			res = append(res, num)
 			curStr = ""
 		}
 	}
-
-	return daysInt
-}
-
-// ParseTime parses given time string to a start and finish time
-func ParseTime(t string) (start, end string) {
-	if t == "" {
-		return
-	}
-	t = strings.ToLower(t)
-	dateMap := generateDateMap()
-	timeStr := string(t[0])
-	for i := 1; i < len(t); i++ {
-		if i != 0 && t[i-1] == 'm' && t[i] == 'm' {
-			break
-		}
-		timeStr += string(t[i])
-		if _, ok := dateMap[timeStr]; ok {
-			timeStr = ""
-		}
-	}
-	timeStrSplit := strings.Split(timeStr, "-")
-	start, end = timeStrSplit[0], timeStrSplit[1]
-	return
-}
-
-// generateDateMap generates a map to represent mapping between date and number
-func generateDateMap() map[string]int {
-	dateMap := make(map[string]int)
-	dateMap["mo"] = 1
-	dateMap["tu"] = 2
-	dateMap["we"] = 3
-	dateMap["th"] = 4
-	dateMap["fr"] = 5
-	dateMap["st"] = 6
-	dateMap["su"] = 7
-	return dateMap
+	return res
 }
 
 // GetJson gets the json object from a response

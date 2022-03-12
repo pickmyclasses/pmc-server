@@ -71,7 +71,7 @@ func Classes() {
 			isHybrid = true
 		}
 
-		offerDates := convertOfferDate(class.OfferDate)
+		offerDates := shared.ConvertOfferDate(class.OfferDate)
 
 		var translatedStartTime float32
 		if class.StartTime != "" {
@@ -103,26 +103,4 @@ func Classes() {
 	}
 }
 
-func convertOfferDate(offerDates string) []int {
-	mapping := make(map[string]int)
-	mapping["mo"] = 1
-	mapping["tu"] = 2
-	mapping["we"] = 3
-	mapping["th"] = 4
-	mapping["fr"] = 5
 
-	offerLower := []rune(strings.ToLower(offerDates))
-	res := make([]int, 0)
-	curStr := ""
-	for _, s := range offerLower {
-		if s == '-' || s == ' ' {
-			continue
-		}
-		curStr = curStr + string(s)
-		if num, found := mapping[curStr]; found {
-			res = append(res, num)
-			curStr = ""
-		}
-	}
-	return res
-}

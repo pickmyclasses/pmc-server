@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"fmt"
+
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
@@ -32,16 +34,35 @@ func GetClassByCourseID(courseID int64) (*[]model.Class, error) {
 	return &classes, nil
 }
 
-func GetClassByComponent(components []string) (*[]model.Class, error) {
+func GetClassListByComponent(components []string) (*[]model.Class, error) {
 	var classes []model.Class
-	sql := "select * from class where component "
-	if shared.Contains(components, "In Person") {
-		sql += ""
+	sql := "select * from class where component = "
+	for i, c := range components {
+		if i == len(components) - 1 {
+			sql += fmt.Sprintf("'%s'", c)
+		} else {
+			sql += fmt.Sprintf("'%s' or component = ", c)
+		}
 	}
 
+	result := postgres.DB.Raw(sql).Scan(&classes)
+	if result.Error != nil {
+		return nil, shared.InternalErr{}
+	}
 	return &classes, nil
 }
 
+//func GetClassListByOfferDate(offerDates []int) (*[]model.Class, error) {
+//
+//}
+//
+//func GetClassListByTimeslot(startTime, endTime float32) (*[]model.Class, error) {
+//
+//}
+
+//func GetClassListByProfessorNames(professorNames []string) (*[]model.Class, error) {
+//
+//}
 
 
 

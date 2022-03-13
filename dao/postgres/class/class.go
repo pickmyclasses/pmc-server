@@ -2,6 +2,7 @@ package dao
 
 import (
 	"fmt"
+	"sort"
 
 	"pmc_server/init/postgres"
 	"pmc_server/model"
@@ -38,7 +39,7 @@ func GetClassListByComponent(components []string) (*[]model.Class, error) {
 	var classes []model.Class
 	sql := "select * from class where component = "
 	for i, c := range components {
-		if i == len(components) - 1 {
+		if i == len(components)-1 {
 			sql += fmt.Sprintf("'%s'", c)
 		} else {
 			sql += fmt.Sprintf("'%s' or component = ", c)
@@ -52,10 +53,22 @@ func GetClassListByComponent(components []string) (*[]model.Class, error) {
 	return &classes, nil
 }
 
-//func GetClassListByOfferDate(offerDates []int) (*[]model.Class, error) {
-//
-//}
-//
+func GetClassListByOfferDate(offerDates []int) (*[]model.Class, error) {
+	// sort the dates first to convert to the correct format
+	sort.Slice(offerDates, func(i, j int) bool {
+		return offerDates[i] < offerDates[j]
+	})
+
+	dates := shared.ConvertSliceToDateString(offerDates)
+
+	var classes []model.Class
+	result := postgres.DB.Where("offer_date = ?", dates).Find(&classes)
+	if result.Error != nil {
+		return nil, shared.InternalErr{}
+	}
+	return &classes, nil
+}
+
 //func GetClassListByTimeslot(startTime, endTime float32) (*[]model.Class, error) {
 //
 //}
@@ -63,8 +76,3 @@ func GetClassListByComponent(components []string) (*[]model.Class, error) {
 //func GetClassListByProfessorNames(professorNames []string) (*[]model.Class, error) {
 //
 //}
-
-
-
-
-

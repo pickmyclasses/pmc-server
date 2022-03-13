@@ -14,10 +14,11 @@ func TestConvertTimestamp(t *testing.T) {
 		{"10:00am", 10},
 		{"00:00am", 0},
 		{"11:59am", 11.59},
-		{"12:00pm", 24},
+		{"12:00pm", 12},
 		{"11:59pm", 23.59},
 		{"03:00pm", 15},
 		{"04:32pm", 16.32},
+		{"12:50pm", 12.50},
 	}
 
 	for _, tt := range tests {
@@ -108,7 +109,7 @@ func TestContains(t *testing.T) {
 		s []string
 		e string
 		res bool
-	}{
+	} {
 		{[]string{"test", "test1", "test2"}, "test1", true},
 		{[]string{"test", "test1", "test2"}, "test3", false},
 		{[]string{}, "test3", false},
@@ -118,6 +119,24 @@ func TestContains(t *testing.T) {
 		if actual := Contains(tt.s, tt.e); actual != tt.res {
 			t.Errorf("TestContains(%+v, %s), should be %v, got %v instead \n",
 				tt.s, tt.e, tt.res, actual)
+		}
+	}
+}
+
+func TestConvertSliceToDateString(t *testing.T) {
+	tests := []struct{
+		s []int
+		d string
+	} {
+		{[]int{1}, "Mo"},
+		{[]int{1, 2, 3}, "MoTuWe"},
+		{[]int{1, 3, 4, 5}, "MoWeThFr"},
+	}
+
+	for _, tt := range tests {
+		if actual := ConvertSliceToDateString(tt.s); actual != tt.d {
+			t.Errorf("TestConvertSliceToDateString(%+v), should be %s, got %s instead \n",
+				tt.s, tt.d, actual)
 		}
 	}
 }

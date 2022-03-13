@@ -109,7 +109,6 @@ func ParseString(s string, ignoreSpace bool) (letters, numbers string) {
 	return string(l), string(n)
 }
 
-
 func ConvertOfferDate(offerDates string) []int {
 	mapping := make(map[string]int)
 	mapping["mo"] = 1
@@ -132,6 +131,20 @@ func ConvertOfferDate(offerDates string) []int {
 		}
 	}
 	return res
+}
+
+func ConvertSliceToDateString(dates []int) (res string) {
+	mapping := make(map[int]string)
+	mapping[1] = "Mo"
+	mapping[2] = "Tu"
+	mapping[3] = "We"
+	mapping[4] = "Th"
+	mapping[5] = "Fr"
+
+	for _, date := range dates {
+		res += mapping[date]
+	}
+	return
 }
 
 // GetJson gets the json object from a response
@@ -183,7 +196,7 @@ func ConvertTimestamp(timestamp string) (float32, error) {
 		mins += float32(first) * 0.01
 	}
 	if unicode.IsLetter(offerTime[5]) {
-		if offerTime[5] == 'p' {
+		if offerTime[5] == 'p' && !(offerTime[0] == '1' && offerTime[1] == '2') {
 			res += 12
 		}
 	}

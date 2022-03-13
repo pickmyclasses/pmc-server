@@ -10,9 +10,9 @@ func TestGetClassListByComponent(t *testing.T) {
 		t.Errorf("Init database failed %s", err)
 	}
 
-	tests := []struct{
+	tests := []struct {
 		components []string
-		count int
+		count      int
 	}{
 		{[]string{"IVC"}, 0},
 	}

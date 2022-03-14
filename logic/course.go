@@ -162,12 +162,15 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 		components = append(components, "Hybrid")
 	}
 
-	courseResultList := make([]int64, 0)
-	courseResultList = append(courseResultList, *courseFitIDList...)
+	courseResultList := make([]model.Class, 0)
 	for _, id := range *courseFitIDList {
 		classList, err := classDao.GetClassListByComponent(components, id)
 		if err != nil {
 			return nil, 0, err
+		}
+
+		for _, c := range *classList {
+			courseResultList = append(courseResultList, c)
 		}
 
 		if len(courseParam.Weekday) != 0 {
@@ -175,7 +178,8 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 			if err != nil {
 				return nil, 0, err
 			}
-			*classList = append(*classList, *newList...)
+
+			courseResultList = Intersection(*newList, courseResultList)
 		}
 
 		if courseParam.StartTime != 0 && courseParam.EndTime != 0 {
@@ -183,7 +187,7 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 			if err != nil {
 				return nil, 0, err
 			}
-			*classList = append(*classList, *newList...)
+			courseResultList = Intersection(*newList, courseResultList)
 		}
 
 		if len(courseParam.TaughtProfessor) != 0 {
@@ -191,27 +195,39 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 			if err != nil {
 				return nil, 0, err
 			}
-			*classList = append(*classList, *newList...)
-		}
-
-		for _, class := range *classList {
-			courseResultList = append(courseResultList, class.CourseID)
+			courseResultList = Intersection(*newList, courseResultList)
 		}
 	}
 
-	courseResultList = getUnion(courseResultList)
+	courseResultIDList := make([]int64, 0)
+	for _, res := range courseResultList {
+		courseResultIDList = append(courseResultIDList, res.CourseID)
+	}
 
-	return courseResultList, total, nil
+	return courseResultIDList, total, nil
 }
 
-func getUnion(strSlice []int64) []int64 {
-	allKeys := make(map[int64]bool)
-	var list []int64
-	for _, item := range strSlice {
-		if _, value := allKeys[item]; !value {
-			allKeys[item] = true
-			list = append(list, item)
+func Intersection(s1, s2 []model.Class) (courseIDInter []model.Class) {
+	hash := make(map[int64]bool)
+	for _, e := range s1 {
+		hash[e.CourseID] = true
+	}
+	for _, e := range s2 {
+		if hash[e.CourseID] {
+			courseIDInter = append(courseIDInter, e)
 		}
 	}
-	return list
+	courseIDInter = removeDups(courseIDInter)
+	return
+}
+
+func removeDups(elements []model.Class)(nodups []model.Class) {
+	encountered := make(map[int64]bool)
+	for _, element := range elements {
+		if !encountered[element.CourseID] {
+			nodups = append(nodups, element)
+			encountered[element.CourseID] = true
+		}
+	}
+	return
 }

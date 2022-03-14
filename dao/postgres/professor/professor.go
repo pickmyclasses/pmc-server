@@ -14,3 +14,7 @@ func GetProfessorList() ([]model.Professor, error) {
 	}
 	return professors, nil
 }
+
+func GetProfessorByName(name string) (model.Professor, error) {
+
+}

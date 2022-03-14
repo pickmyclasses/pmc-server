@@ -2,12 +2,17 @@ package dao
 
 import (
 	"fmt"
+	"gorm.io/gorm"
 	"sort"
 
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
 )
+
+type Class struct {
+	db *gorm.DB
+}
 
 func GetClasses(pn, pSize int) (*[]model.Class, int64) {
 	var classes []model.Class
@@ -33,6 +38,45 @@ func GetClassByCourseID(courseID int64) (*[]model.Class, error) {
 		return nil, shared.InternalErr{}
 	}
 	return &classes, nil
+}
+
+func (c *Class) FilterClassListOfCourseByComponents(components []string, courseID int64) {
+	sql := fmt.Sprintf("select * from class where course_id = %d and component = ", courseID)
+	for i, c := range components {
+		if i == len(components)-1 {
+			sql += fmt.Sprintf("'%s'", c)
+		} else {
+			sql += fmt.Sprintf("'%s' or component = ", c)
+		}
+	}
+	c.db = c.db.Raw(sql)
+}
+
+func (c *Class) FilterClassListOfCourseByOfferDates(offerDates []int, courseID int64) {
+	// sort the dates first to convert to the correct format
+	sort.Slice(offerDates, func(i, j int) bool {
+		return offerDates[i] < offerDates[j]
+	})
+	dates := shared.ConvertSliceToDateString(offerDates)
+	sql := fmt.Sprintf("course_id = %d and offer_date = ?", courseID)
+	c.db = c.db.Where(sql, dates)
+}
+
+func (c *Class) FilterClassListOfCourseByTimeslot(startTime, endTime float32, courseID int64) {
+	sql := fmt.Sprintf("course_id = %d and start_time_float >= ? and end_time_float <= ?", courseID)
+	c.db = c.db.Where(sql, startTime, endTime)
+}
+
+func (c *Class) FilterClassListOfCourseByProfessors(professorIDs []int32, courseID int64) {
+	sql := fmt.Sprintf("select * from class where course_id = %d and instructor_id = ", courseID )
+	for i, p := range professorIDs {
+		if i == len(professorIDs)-1 {
+			sql += fmt.Sprintf("%d", p)
+		} else {
+			sql += fmt.Sprintf("%d or instructor_id = ", p)
+		}
+	}
+	c.db = c.db.Raw(sql)
 }
 
 func GetClassListByComponent(components []string, courseID int64) (*[]model.Class, error) {

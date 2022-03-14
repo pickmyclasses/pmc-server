@@ -162,5 +162,8 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 		components = append(components, "Hybrid")
 	}
 
+	//classList, err := classDao.GetClassListByComponent(components, 0)
+
+
 	return *courseFitIDList, total, nil
 }

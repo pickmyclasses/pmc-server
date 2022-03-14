@@ -18,7 +18,7 @@ func TestGetClassListByComponent(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		if actual, err := GetClassListByComponent(tt.components); len(*actual) != tt.count || err != nil {
+		if actual, err := GetClassListByComponent(tt.components, 0); len(*actual) != tt.count || err != nil {
 			t.Errorf("TestGetClassListByComponent(%+v), should be %d, got %d instead \n",
 				tt.components, tt.count, len(*actual))
 		}

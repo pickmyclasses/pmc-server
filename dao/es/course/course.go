@@ -64,6 +64,7 @@ func (c *BoolQuery) DoSearch() (*[]int64, int64, error) {
 		From(c.pageNumber).
 		Size(c.pageSize).
 		Do(c.context)
+
 	if err != nil {
 		return nil, -1, shared.InternalErr{}
 	}
@@ -79,7 +80,6 @@ func (c *BoolQuery) DoSearch() (*[]int64, int64, error) {
 		}
 		esCourseIdList = append(esCourseIdList, course.ID)
 	}
-
 
 	return &esCourseIdList, total, nil
 }

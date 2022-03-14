@@ -1,2 +1,2 @@
-web: bin/pmc-server
+web: bin/pmc_server
 

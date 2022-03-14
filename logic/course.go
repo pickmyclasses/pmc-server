@@ -143,7 +143,7 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 
 	// get the courses that fit the search criteria
 	courseFitIDList, total, err := courseBoolQuery.DoSearch()
-	fmt.Println(courseFitIDList)
+
 	if err != nil {
 		return nil, -1, fmt.Errorf("error when fecthing by keywords %+v", err)
 	}
@@ -162,8 +162,56 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 		components = append(components, "Hybrid")
 	}
 
-	//classList, err := classDao.GetClassListByComponent(components, 0)
+	courseResultList := make([]int64, 0)
+	courseResultList = append(courseResultList, *courseFitIDList...)
+	for _, id := range *courseFitIDList {
+		classList, err := classDao.GetClassListByComponent(components, id)
+		if err != nil {
+			return nil, 0, err
+		}
 
+		if len(courseParam.Weekday) != 0 {
+			newList, err := classDao.GetClassListByOfferDate(courseParam.Weekday, id)
+			if err != nil {
+				return nil, 0, err
+			}
+			*classList = append(*classList, *newList...)
+		}
 
-	return *courseFitIDList, total, nil
+		if courseParam.StartTime != 0 && courseParam.EndTime != 0 {
+			newList, err := classDao.GetClassListByTimeslot(courseParam.StartTime, courseParam.EndTime, id)
+			if err != nil {
+				return nil, 0, err
+			}
+			*classList = append(*classList, *newList...)
+		}
+
+		if len(courseParam.TaughtProfessor) != 0 {
+			newList, err := classDao.GetClassListByProfessorNames(courseParam.TaughtProfessor, id)
+			if err != nil {
+				return nil, 0, err
+			}
+			*classList = append(*classList, *newList...)
+		}
+
+		for _, class := range *classList {
+			courseResultList = append(courseResultList, class.CourseID)
+		}
+	}
+
+	courseResultList = getUnion(courseResultList)
+
+	return courseResultList, total, nil
+}
+
+func getUnion(strSlice []int64) []int64 {
+	allKeys := make(map[int64]bool)
+	var list []int64
+	for _, item := range strSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
 }

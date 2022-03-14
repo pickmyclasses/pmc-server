@@ -38,8 +38,19 @@ func GetClassByCourseID(courseID int64) (*[]model.Class, error) {
 func GetClassListByComponent(components []string, courseID int64) (*[]model.Class, error) {
 	var classes []model.Class
 	var sql string
+	if len(components) == 0 {
+		if courseID != 0 {
+			result  := postgres.DB.Where("course_id = ?", courseID).Find(&classes)
+			if result.Error != nil {
+				return nil, shared.InternalErr{}
+			}
+			return &classes, nil
+		}
+		return &[]model.Class{}, nil
+	}
+
 	if courseID != 0 {
-		sql = fmt.Sprintf("select * from class where course_id = %d component = ", courseID)
+		sql = fmt.Sprintf("select * from class where course_id = %d and component = ", courseID)
 	} else {
 		sql = "select * from class where component = "
 	}

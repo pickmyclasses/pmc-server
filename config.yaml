@@ -30,7 +30,7 @@ snowflake:
   start_time: "2022-01-04"
   machine_id: 1
 elastic:
-  url: "https://search-pmc-search-jvq4ibvtwwkfg5kukvsexmll3q.us-east-1.es.amazonaws.com/"
+  url: "http://34.227.17.136:9200"
   username: "admin1"
   password: "Admin123!"
 

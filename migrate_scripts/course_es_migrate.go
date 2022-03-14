@@ -16,16 +16,14 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-func migrate() {
-	url := "https://search-pmc-search-jvq4ibvtwwkfg5kukvsexmll3q.us-east-1.es.amazonaws.com/"
-	username := "admin1"
-	password := "Admin123!"
+func CourseEs() {
+	url := "http://34.227.17.136:9200"
 	logger := log.New(os.Stdout, "pmc", log.LstdFlags)
 	client, err := elastic.NewClient(
 		elastic.SetURL(url),
 		elastic.SetSniff(false),
 		elastic.SetHealthcheck(false),
-		elastic.SetBasicAuth(username, password),
+		//elastic.SetBasicAuth(username, password),
 		elastic.SetTraceLog(logger),
 	)
 

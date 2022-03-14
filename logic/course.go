@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	courseEsDao"pmc_server/dao/es/course"
 	classDao "pmc_server/dao/postgres/class"
 	courseDao "pmc_server/dao/postgres/course"
 	reviewDao "pmc_server/dao/postgres/review"
@@ -127,76 +128,39 @@ func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	return classList, total, nil
 }
 
-func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]model.Class, int64, error) {
-	data, err := classDao.GetClassListByOfferDate([]int{2, 3})
-	if err != nil {
-		return nil, 0, err
+func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, error) {
+	courseBoolQuery := courseEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
+
+	if courseParam.Keyword != "" {
+		courseBoolQuery.QueryByKeywords(courseParam.Keyword)
+	}
+	if courseParam.MinCredit != 0 {
+		courseBoolQuery.QueryByMinCredit(courseParam.MinCredit)
+	}
+	if courseParam.MaxCredit != 0 {
+		courseBoolQuery.QueryByMaxCredit(courseParam.MaxCredit)
 	}
 
-	return *data, 0, nil
-	//courseBoolQuery := courseEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
-	//
-	//if courseParam.Keyword != "" {
-	//	courseBoolQuery.QueryByKeywords(courseParam.Keyword)
-	//}
-	//if courseParam.MinCredit != 0 {
-	//	courseBoolQuery.QueryByMinCredit(courseParam.MinCredit)
-	//}
-	//if courseParam.MaxCredit != 0 {
-	//	courseBoolQuery.QueryByMaxCredit(courseParam.MaxCredit)
-	//}
-	//
-	//// get the courses that fit the search criteria
-	//courseFitIDList, total, err := courseBoolQuery.DoSearch()
-	//if err != nil {
-	//	return nil, -1, fmt.Errorf("error when fecthing by keywords %+v", err)
-	//}
-	//
-	//classBoolQuery := classEsDao.NewBoolQuery(courseParam.PageSize)
-	//
-	//if courseParam.OfferedOnline {
-	//	classBoolQuery.QueryByIsOnline(true)
-	//}
-	//if courseParam.OfferedOffline {
-	//	classBoolQuery.QueryByIsInPerson(true)
-	//}
-	//if courseParam.OfferedHybrid {
-	//	classBoolQuery.QueryByIsHybrid(true)
-	//}
-	//if courseParam.OfferedIVC {
-	//	classBoolQuery.QueryByIsIVC(true)
-	//}
-	//
-	//if len(courseParam.Weekday) != 0 {
-	//	classBoolQuery.QueryByOfferDates(courseParam.Weekday)
-	//}
-	//if len(courseParam.TaughtProfessor) != 0 {
-	//	for _, professor := range courseParam.TaughtProfessor {
-	//		classBoolQuery.QueryByProfessor(professor)
-	//	}
-	//}
-	//
-	//var startTime float32
-	//var endTime float32
-	//if courseParam.StartTime != 0 || courseParam.EndTime != 0 {
-	//	if courseParam.StartTime == 0 {
-	//		startTime = 0
-	//	} else {
-	//		startTime = courseParam.StartTime
-	//	}
-	//	if courseParam.EndTime == 0 {
-	//		endTime = 24
-	//	} else {
-	//		endTime = courseParam.EndTime
-	//	}
-	//	classBoolQuery.QueryByOfferTime(startTime, endTime)
-	//}
-	//
-	//classFitIDList, total, err := classBoolQuery.DoSearch()
-	//
-	//intersection := shared.Intersection(*courseFitIDList, *classFitIDList)
-	//
-	////courseList := make([]dto.Course, 0)
-	//
-	//return intersection, total, nil
+	// get the courses that fit the search criteria
+	courseFitIDList, total, err := courseBoolQuery.DoSearch()
+	fmt.Println(courseFitIDList)
+	if err != nil {
+		return nil, -1, fmt.Errorf("error when fecthing by keywords %+v", err)
+	}
+
+	components := make([]string, 0)
+	if courseParam.OfferedOnline {
+		components = append(components, "Online")
+	}
+	if courseParam.OfferedOffline {
+		components = append(components, "In Person")
+	}
+	if courseParam.OfferedIVC {
+		components = append(components, "IVC")
+	}
+	if courseParam.OfferedHybrid {
+		components = append(components, "Hybrid")
+	}
+
+	return *courseFitIDList, total, nil
 }

@@ -35,9 +35,15 @@ func GetClassByCourseID(courseID int64) (*[]model.Class, error) {
 	return &classes, nil
 }
 
-func GetClassListByComponent(components []string) (*[]model.Class, error) {
+func GetClassListByComponent(components []string, courseID int64) (*[]model.Class, error) {
 	var classes []model.Class
-	sql := "select * from class where component = "
+	var sql string
+	if courseID != 0 {
+		sql = fmt.Sprintf("select * from class where course_id = %d component = ", courseID)
+	} else {
+		sql = "select * from class where component = "
+	}
+
 	for i, c := range components {
 		if i == len(components)-1 {
 			sql += fmt.Sprintf("'%s'", c)
@@ -53,7 +59,7 @@ func GetClassListByComponent(components []string) (*[]model.Class, error) {
 	return &classes, nil
 }
 
-func GetClassListByOfferDate(offerDates []int) (*[]model.Class, error) {
+func GetClassListByOfferDate(offerDates []int, courseID int64) (*[]model.Class, error) {
 	// sort the dates first to convert to the correct format
 	sort.Slice(offerDates, func(i, j int) bool {
 		return offerDates[i] < offerDates[j]
@@ -62,17 +68,71 @@ func GetClassListByOfferDate(offerDates []int) (*[]model.Class, error) {
 	dates := shared.ConvertSliceToDateString(offerDates)
 
 	var classes []model.Class
-	result := postgres.DB.Where("offer_date = ?", dates).Find(&classes)
+	var sql string
+	if courseID != 0 {
+		sql = fmt.Sprintf("course_id = %d and offer_date = ?", courseID)
+	} else {
+		sql = "offer_date = ?"
+	}
+	result := postgres.DB.Where(sql, dates).Find(&classes)
 	if result.Error != nil {
 		return nil, shared.InternalErr{}
 	}
 	return &classes, nil
 }
 
-//func GetClassListByTimeslot(startTime, endTime float32) (*[]model.Class, error) {
-//
-//}
+func GetClassListByTimeslot(startTime, endTime float32, courseID int64) (*[]model.Class, error) {
+	var classes []model.Class
+	var sql string
+	if courseID != 0 {
+		sql = fmt.Sprintf("course_id = %d and start_time_float >= ? and end_time_float <= ?", courseID)
+	} else {
+		sql = "start_time_float >= ? and end_time_float <= ?"
+	}
 
-//func GetClassListByProfessorNames(professorNames []string) (*[]model.Class, error) {
-//
-//}
+	result := postgres.DB.Where(sql, startTime, endTime).Find(&classes)
+	if result.Error != nil {
+		return nil, shared.InternalErr{}
+	}
+	return &classes, nil
+}
+
+func GetClassListByProfessorNames(professorNames []string, courseID int64) (*[]model.Class, error) {
+	var professors []int32
+	sql := "select id from professor where name = "
+	for i, c := range professorNames {
+		if i == len(professorNames)-1 {
+			sql += fmt.Sprintf("'%s'", c)
+		} else {
+			sql += fmt.Sprintf("'%s' or name = ", c)
+		}
+	}
+	result := postgres.DB.Raw(sql).Scan(&professors)
+	if result.Error != nil {
+		return nil, shared.InternalErr{}
+	}
+
+	if result.RowsAffected == 0 {
+		return &[]model.Class{}, nil
+	}
+
+
+	var classes []model.Class
+	var classFetchSql string
+
+	if courseID != 0 {
+		classFetchSql = fmt.Sprintf("select * from class where course_id = %d and instructor_id = ", courseID )
+	} else {
+		classFetchSql = "select * from class where instructor_id = "
+	}
+
+	for i, p := range professors {
+		if i == len(professorNames)-1 {
+			classFetchSql += fmt.Sprintf("%d", p)
+		} else {
+			classFetchSql += fmt.Sprintf("%d or instructor_id = ", p)
+		}
+	}
+	result = postgres.DB.Raw(classFetchSql).Scan(&classes)
+	return &classes, nil
+}

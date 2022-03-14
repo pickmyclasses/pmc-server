@@ -20,7 +20,7 @@ func Init(url, username, password string) error {
 		elastic.SetURL(url),
 		elastic.SetSniff(false),
 		elastic.SetHealthcheck(false),
-		elastic.SetBasicAuth(username, password),
+		//elastic.SetBasicAuth(username, password),
 		elastic.SetTraceLog(logger),
 	)
 	if err != nil {

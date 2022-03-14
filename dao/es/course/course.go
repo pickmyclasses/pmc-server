@@ -80,5 +80,6 @@ func (c *BoolQuery) DoSearch() (*[]int64, int64, error) {
 		esCourseIdList = append(esCourseIdList, course.ID)
 	}
 
+
 	return &esCourseIdList, total, nil
 }

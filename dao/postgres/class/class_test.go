@@ -28,27 +28,27 @@ func TestGetClassListByComponent(t *testing.T) {
 
 func TestIntersection(t *testing.T) {
 	t1 := &model.Class{
-		Base:              model.Base{},
-		CourseID:          123,
+		Base:     model.Base{},
+		CourseID: 123,
 	}
 	t2 := &model.Class{
-		Base: model.Base{},
+		Base:     model.Base{},
 		CourseID: 234,
 	}
 
 	t3 := &model.Class{
-		Base: model.Base{},
+		Base:     model.Base{},
 		CourseID: 345,
 	}
 
 	tests := []struct {
 		s1 []model.Class
 		s2 []model.Class
-		e []model.Class
+		e  []model.Class
 	}{
 		{
-			[]model.Class{ *t1, *t2},
-			[]model.Class{ *t1, *t3},
+			[]model.Class{*t1, *t2},
+			[]model.Class{*t1, *t3},
 			[]model.Class{*t1},
 		},
 	}

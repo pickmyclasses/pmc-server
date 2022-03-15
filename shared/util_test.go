@@ -105,11 +105,11 @@ func TestIntersection(t *testing.T) {
 }
 
 func TestContains(t *testing.T) {
-	tests := []struct{
-		s []string
-		e string
+	tests := []struct {
+		s   []string
+		e   string
 		res bool
-	} {
+	}{
 		{[]string{"test", "test1", "test2"}, "test1", true},
 		{[]string{"test", "test1", "test2"}, "test3", false},
 		{[]string{}, "test3", false},
@@ -124,10 +124,10 @@ func TestContains(t *testing.T) {
 }
 
 func TestConvertSliceToDateString(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		s []int
 		d string
-	} {
+	}{
 		{[]int{1}, "Mo"},
 		{[]int{1, 2, 3}, "MoTuWe"},
 		{[]int{1, 3, 4, 5}, "MoWeThFr"},

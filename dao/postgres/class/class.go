@@ -11,7 +11,7 @@ import (
 )
 
 type Class struct {
-	db *gorm.DB
+	db  *gorm.DB
 	sql string
 }
 
@@ -44,7 +44,7 @@ func (c *Class) ChainConditionAnd() {
 	c.sql += " AND "
 }
 
-func (c *Class) Query() ([]model.Class, error){
+func (c *Class) Query() ([]model.Class, error) {
 	var classList []model.Class
 	res := c.db.Where(c.sql).Find(&classList)
 	if res.Error != nil {
@@ -84,7 +84,7 @@ func GetClassListByComponent(components []string, courseID int64) (*[]model.Clas
 	var sql string
 	if len(components) == 0 {
 		if courseID != 0 {
-			result  := postgres.DB.Where("course_id = ?", courseID).Find(&classes)
+			result := postgres.DB.Where("course_id = ?", courseID).Find(&classes)
 			if result.Error != nil {
 				return nil, shared.InternalErr{}
 			}
@@ -171,12 +171,11 @@ func GetClassListByProfessorNames(professorNames []string, courseID int64) (*[]m
 		return &[]model.Class{}, nil
 	}
 
-
 	var classes []model.Class
 	var classFetchSql string
 
 	if courseID != 0 {
-		classFetchSql = fmt.Sprintf("select * from class where course_id = %d and instructor_id = ", courseID )
+		classFetchSql = fmt.Sprintf("select * from class where course_id = %d and instructor_id = ", courseID)
 	} else {
 		classFetchSql = "select * from class where instructor_id = "
 	}

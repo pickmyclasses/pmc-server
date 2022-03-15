@@ -16,4 +16,5 @@ type Course struct {
 	MinCredit          float64       `json:"minCredit"`
 	Classes            []model.Class `json:"classes"`       // The classes (sessions) of the given course
 	OverallRating      float32       `json:"overallRating"` // The overall rating of the class
+	Tags               []model.Tag   `json:"tags"`
 }

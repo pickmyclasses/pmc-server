@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"strconv"
 
-	courseEsDao"pmc_server/dao/es/course"
+	courseEsDao "pmc_server/dao/es/course"
 	classDao "pmc_server/dao/postgres/class"
 	courseDao "pmc_server/dao/postgres/course"
 	reviewDao "pmc_server/dao/postgres/review"
+	tagDao "pmc_server/dao/postgres/tag"
 	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
@@ -102,6 +103,8 @@ func GetCourseInfo(id string) (*dto.Course, error) {
 		minCredit = 0.0
 	}
 
+	tagList, err := tagDao.GetTagListByCourseID(course.ID)
+
 	return &dto.Course{
 		CourseID:           course.ID,
 		IsHonor:            course.IsHonor,
@@ -116,6 +119,7 @@ func GetCourseInfo(id string) (*dto.Course, error) {
 		MinCredit:          minCredit,
 		Classes:            *classList,
 		OverallRating:      rating.OverAllRating,
+		Tags:               tagList,
 	}, nil
 }
 

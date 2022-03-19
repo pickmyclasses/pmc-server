@@ -1,16 +1,11 @@
 package dao
 
 import (
-	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"testing"
 )
 
 func TestGetClassListByComponent(t *testing.T) {
-	if err := postgres.Init(); err != nil {
-		t.Errorf("Init database failed %s", err)
-	}
-
 	tests := []struct {
 		components []string
 		count      int
@@ -53,6 +48,6 @@ func TestIntersection(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-
+		t.Error(tt.s2)
 	}
 }

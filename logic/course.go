@@ -9,6 +9,7 @@ import (
 	courseDao "pmc_server/dao/postgres/course"
 	reviewDao "pmc_server/dao/postgres/review"
 	tagDao "pmc_server/dao/postgres/tag"
+	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
@@ -132,7 +133,7 @@ func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	return classList, total, nil
 }
 
-func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, error) {
+func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int64, error) {
 	courseBoolQuery := courseEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
 
 	if courseParam.Keyword != "" {
@@ -152,19 +153,154 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 		return nil, -1, fmt.Errorf("error when fecthing by keywords %+v", err)
 	}
 
-	components := make([]string, 0)
-	if courseParam.OfferedOnline {
-		components = append(components, "Online")
-	}
-	if courseParam.OfferedOffline {
-		components = append(components, "In Person")
-	}
-	if courseParam.OfferedIVC {
-		components = append(components, "IVC")
-	}
-	if courseParam.OfferedHybrid {
-		components = append(components, "Hybrid")
+	// only check for the filter parameters when there was actually a filter on
+	// this is for saving time from checking the parameters
+	if courseParam.HasFilter {
+		classQuery := classDao.NewQuery(postgres.DB)
+
+		if len(*courseFitIDList) != 0 {
+			for _, id := range *courseFitIDList {
+				classQuery.FilterByCourseID(id)
+			}
+		}
+
+		components := make([]string, 0)
+		if courseParam.OfferedOnline {
+			components = append(components, "Online")
+		}
+		if courseParam.OfferedOffline {
+			components = append(components, "In Person")
+		}
+		if courseParam.OfferedIVC {
+			components = append(components, "IVC")
+		}
+		if courseParam.OfferedHybrid {
+			components = append(components, "Hybrid")
+		}
+
+		for _, component := range components {
+			classQuery.FilterByComponent(component)
+		}
+
+		if courseParam.StartTime != 0 && courseParam.EndTime != 0 {
+			classQuery.FilterByTimeslot(courseParam.StartTime, courseParam.EndTime)
+		}
+
+		if len(courseParam.Weekday) != 0 {
+			classQuery.FilterByOfferDates(courseParam.Weekday)
+		}
+
+		classList, err := classQuery.Do()
+		if err != nil {
+			return nil, 0, err
+		}
+
+		classFitCourseIDList := make([]int64, 0)
+		for _, class := range classList {
+			classFitCourseIDList = append(classFitCourseIDList, class.CourseID)
+		}
+
+		// No search keyword input
+		if courseParam.Keyword == "" {
+			courseDtoList, err := buildCourseDto(classFitCourseIDList)
+			if err != nil {
+				return nil, 0, err
+			}
+			return courseDtoList, total, nil
+		} else {
+			finalCourseIDList := intersection(classFitCourseIDList, *courseFitIDList)
+			courseDtoList, err := buildCourseDto(finalCourseIDList)
+			if err != nil {
+				return nil, 0, err
+			}
+
+			return courseDtoList, total, nil
+		}
 	}
 
-	return *courseFitIDList, total, nil
+	courseDtoList, err := buildCourseDto(*courseFitIDList)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return courseDtoList, total, nil
+}
+
+func buildCourseDto(idList []int64) ([]dto.Course, error) {
+	courseDtoList := make([]dto.Course, 0)
+	for _, id := range idList {
+		course, err := courseDao.GetCourseByID(int(id))
+		if err != nil {
+			return nil, shared.InternalErr{}
+		}
+
+		classList, err := classDao.GetClassByCourseID(id)
+		if err != nil {
+			return nil, shared.InternalErr{}
+		}
+
+		var maxCredit float64
+		var minCredit float64
+		if max, err := strconv.ParseFloat(course.MaxCredit, 32); err == nil {
+			maxCredit = max
+		}
+		if min, err := strconv.ParseFloat(course.MinCredit, 32); err == nil {
+			minCredit = min
+		}
+
+		rating, err := reviewDao.GetCourseOverallRating(id)
+		if err != nil {
+			return nil, shared.InternalErr{}
+		}
+
+		tags, err := tagDao.GetTagListByCourseID(id)
+		if err != nil {
+			return nil, shared.InternalErr{}
+		}
+
+		courseDto := dto.Course{
+			CourseID: id,
+			IsHonor:            course.IsHonor,
+			FixedCredit:        course.FixedCredit,
+			DesignationCatalog: course.DesignationCatalog,
+			Description:        course.Description,
+			Prerequisites:      course.Prerequisites,
+			Title:              course.Title,
+			CatalogCourseName:  course.CatalogCourseName,
+			Component:          course.Component,
+			MaxCredit:          maxCredit,
+			MinCredit:          minCredit,
+			Classes:            *classList,
+			OverallRating:      rating.OverAllRating,
+			Tags:               tags,
+		}
+		courseDtoList = append(courseDtoList, courseDto)
+	}
+
+	return courseDtoList, nil
+}
+
+func intersection(s1, s2 []int64) (inter []int64) {
+	hash := make(map[int64]bool)
+	for _, e := range s1 {
+		hash[e] = true
+	}
+	for _, e := range s2 {
+		if hash[e] {
+			inter = append(inter, e)
+		}
+	}
+	inter = removeDups(inter)
+	return
+}
+
+func removeDups(elements []int64)(nodups []int64) {
+	encountered := make(map[int64]bool)
+	for _, element := range elements {
+		if !encountered[element] {
+			nodups = append(nodups, element)
+			encountered[element] = true
+		}
+	}
+	return
 }

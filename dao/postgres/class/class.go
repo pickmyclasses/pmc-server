@@ -2,51 +2,49 @@ package dao
 
 import (
 	"fmt"
-	"gorm.io/gorm"
 	"sort"
 
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
+
+	"gorm.io/gorm"
 )
 
-type Class struct {
+type Query struct {
 	db  *gorm.DB
-	sql string
 }
 
-func (c *Class) FilterByCourseID(courseID int64) {
-	c.sql += fmt.Sprintf(" course_id = %d ", courseID)
+func NewQuery(db *gorm.DB) *Query {
+	return &Query{
+		db:  db,
+	}
 }
 
-func (c *Class) FilterByComponent(component string) {
-	c.sql += fmt.Sprintf(" component = %s ", component)
+func (c *Query) FilterByCourseID(courseID int64) {
+	c.db = c.db.Where("course_id = ?", courseID)
 }
 
-func (c *Class) FilterByOfferDates(offerDates []int) {
+func (c *Query) FilterByComponent(component string) {
+	c.db = c.db.Where("component = %s", component)
+}
+
+func (c *Query) FilterByOfferDates(offerDates []int) {
 	sort.Slice(offerDates, func(i, j int) bool {
 		return offerDates[i] < offerDates[j]
 	})
 
 	dates := shared.ConvertSliceToDateString(offerDates)
-	c.sql += fmt.Sprintf(" offer_date = %s ", dates)
+	c.db = c.db.Where("offer_date = %s ", dates)
 }
 
-func (c *Class) FilterByTimeslot(startTime, endTime float32) {
-	c.sql += fmt.Sprintf(" start_time_float >= %f and end_time_float <= %f", startTime, endTime)
+func (c *Query) FilterByTimeslot(startTime, endTime float32) {
+	c.db = c.db.Where("start_time_float >= %f and end_time_float <= %f", startTime, endTime)
 }
 
-func (c *Class) ChainConditionOr() {
-	c.sql += " OR "
-}
-
-func (c *Class) ChainConditionAnd() {
-	c.sql += " AND "
-}
-
-func (c *Class) Query() ([]model.Class, error) {
+func (c *Query) Do() ([]model.Class, error) {
 	var classList []model.Class
-	res := c.db.Where(c.sql).Find(&classList)
+	res := c.db.Find(&classList)
 	if res.Error != nil {
 		return nil, shared.InternalErr{}
 	}

@@ -37,6 +37,7 @@ type CourseFilterParams struct {
 	RankByRatingLowToHigh bool     `json:"rankByRatingLowToHigh"` // Rank the courses by the given rating low to high
 	PageNumber            int      `json:"pageNumber"`            // The current page of the search result, default 0
 	PageSize              int      `json:"pageSize"`              // The current page size of the search result, default 10
+	HasFilter             bool     `json:"has_filter"`            // Check if the parameter has a filter at all
 }
 
 type ClassParams struct {

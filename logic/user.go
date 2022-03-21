@@ -21,6 +21,7 @@ func Register(param *model.RegisterParams) error {
 	}
 
 	userID := libs.GenID()
+
 	return dao.InsertUser(&model.User{
 		UserID:    userID,
 		Email:     param.Email,

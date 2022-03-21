@@ -259,7 +259,7 @@ func buildCourseDto(idList []int64) ([]dto.Course, error) {
 		}
 
 		courseDto := dto.Course{
-			CourseID: id,
+			CourseID:           id,
 			IsHonor:            course.IsHonor,
 			FixedCredit:        course.FixedCredit,
 			DesignationCatalog: course.DesignationCatalog,
@@ -294,7 +294,7 @@ func intersection(s1, s2 []int64) (inter []int64) {
 	return
 }
 
-func removeDups(elements []int64)(nodups []int64) {
+func removeDups(elements []int64) (nodups []int64) {
 	encountered := make(map[int64]bool)
 	for _, element := range elements {
 		if !encountered[element] {

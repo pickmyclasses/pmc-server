@@ -12,12 +12,12 @@ import (
 )
 
 type Query struct {
-	db  *gorm.DB
+	db *gorm.DB
 }
 
 func NewQuery(db *gorm.DB) *Query {
 	return &Query{
-		db:  db,
+		db: db,
 	}
 }
 

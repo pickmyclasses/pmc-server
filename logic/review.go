@@ -57,6 +57,14 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 			UserID:      review.UserID,
 			Username:    username,
 			CreatedAt:   review.CreatedAt,
+			LikedCount: review.LikeCount,
+			DislikedCount: review.DislikeCount,
+			HourSpentMoreThanCredit: review.HourSpentBeyondCredit,
+			HourSpentLessThanCredit: review.HourSpentLessThanCredit,
+			GradeReceived: review.GradeReceived,
+			IsExamHeavy: review.ExamHeavy,
+			IsHomeworkHeavy: review.HomeworkHeavy,
+			ExtraCreditOffered: review.ExtraCreditOffered,
 		}
 
 		reviewRsp.Reviews = append(reviewRsp.Reviews, reviewDto)
@@ -105,6 +113,12 @@ func PostCourseReview(review dto.Review, courseID int64) error {
 		UserID:       review.UserID,
 		LikeCount:    0,
 		DislikeCount: 0,
+		HourSpentBeyondCredit: review.HourSpentMoreThanCredit,
+		HourSpentLessThanCredit: review.HourSpentLessThanCredit,
+		GradeReceived: review.GradeReceived,
+		ExamHeavy: review.IsExamHeavy,
+		HomeworkHeavy: review.IsHomeworkHeavy,
+		ExtraCreditOffered: review.ExtraCreditOffered,
 	}
 
 	err = reviewDao.CreateCourseReview(*reviewRec)

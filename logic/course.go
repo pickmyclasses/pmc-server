@@ -9,7 +9,6 @@ import (
 	courseDao "pmc_server/dao/postgres/course"
 	reviewDao "pmc_server/dao/postgres/review"
 	tagDao "pmc_server/dao/postgres/tag"
-	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
@@ -133,7 +132,7 @@ func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	return classList, total, nil
 }
 
-func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int64, error) {
+func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, error) {
 	courseBoolQuery := courseEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
 
 	if courseParam.Keyword != "" {
@@ -148,82 +147,86 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 
 	// get the courses that fit the search criteria
 	courseFitIDList, total, err := courseBoolQuery.DoSearch()
-
-	if err != nil {
-		return nil, -1, fmt.Errorf("error when fecthing by keywords %+v", err)
-	}
-
-	// only check for the filter parameters when there was actually a filter on
-	// this is for saving time from checking the parameters
-	if courseParam.HasFilter {
-		classQuery := classDao.NewQuery(postgres.DB)
-
-		if len(*courseFitIDList) != 0 {
-			for _, id := range *courseFitIDList {
-				classQuery.FilterByCourseID(id)
-			}
-		}
-
-		components := make([]string, 0)
-		if courseParam.OfferedOnline {
-			components = append(components, "Online")
-		}
-		if courseParam.OfferedOffline {
-			components = append(components, "In Person")
-		}
-		if courseParam.OfferedIVC {
-			components = append(components, "IVC")
-		}
-		if courseParam.OfferedHybrid {
-			components = append(components, "Hybrid")
-		}
-
-		for _, component := range components {
-			classQuery.FilterByComponent(component)
-		}
-
-		if courseParam.StartTime != 0 && courseParam.EndTime != 0 {
-			classQuery.FilterByTimeslot(courseParam.StartTime, courseParam.EndTime)
-		}
-
-		if len(courseParam.Weekday) != 0 {
-			classQuery.FilterByOfferDates(courseParam.Weekday)
-		}
-
-		classList, err := classQuery.Do()
-		if err != nil {
-			return nil, 0, err
-		}
-
-		classFitCourseIDList := make([]int64, 0)
-		for _, class := range classList {
-			classFitCourseIDList = append(classFitCourseIDList, class.CourseID)
-		}
-
-		// No search keyword input
-		if courseParam.Keyword == "" {
-			courseDtoList, err := buildCourseDto(classFitCourseIDList)
-			if err != nil {
-				return nil, 0, err
-			}
-			return courseDtoList, total, nil
-		} else {
-			finalCourseIDList := intersection(classFitCourseIDList, *courseFitIDList)
-			courseDtoList, err := buildCourseDto(finalCourseIDList)
-			if err != nil {
-				return nil, 0, err
-			}
-
-			return courseDtoList, total, nil
-		}
-	}
-
-	courseDtoList, err := buildCourseDto(*courseFitIDList)
 	if err != nil {
 		return nil, 0, err
 	}
+	return *courseFitIDList, total, nil
 
-	return courseDtoList, total, nil
+	//if err != nil {
+	//	return nil, -1, fmt.Errorf("error when fecthing by keywords %+v", err)
+	//}
+	//
+	//// only check for the filter parameters when there was actually a filter on
+	//// this is for saving time from checking the parameters
+	//if courseParam.HasFilter {
+	//	classQuery := classDao.NewQuery(postgres.DB)
+	//
+	//	if len(*courseFitIDList) != 0 {
+	//		for _, id := range *courseFitIDList {
+	//			classQuery.FilterByCourseID(id)
+	//		}
+	//	}
+	//
+	//	components := make([]string, 0)
+	//	if courseParam.OfferedOnline {
+	//		components = append(components, "Online")
+	//	}
+	//	if courseParam.OfferedOffline {
+	//		components = append(components, "In Person")
+	//	}
+	//	if courseParam.OfferedIVC {
+	//		components = append(components, "IVC")
+	//	}
+	//	if courseParam.OfferedHybrid {
+	//		components = append(components, "Hybrid")
+	//	}
+	//
+	//	for _, component := range components {
+	//		classQuery.FilterByComponent(component)
+	//	}
+	//
+	//	if courseParam.StartTime != 0 && courseParam.EndTime != 0 {
+	//		classQuery.FilterByTimeslot(courseParam.StartTime, courseParam.EndTime)
+	//	}
+	//
+	//	if len(courseParam.Weekday) != 0 {
+	//		classQuery.FilterByOfferDates(courseParam.Weekday)
+	//	}
+	//
+	//	classList, err := classQuery.Do()
+	//	if err != nil {
+	//		return nil, 0, err
+	//	}
+	//
+	//	classFitCourseIDList := make([]int64, 0)
+	//	for _, class := range classList {
+	//		classFitCourseIDList = append(classFitCourseIDList, class.CourseID)
+	//	}
+	//
+	//	// No search keyword input
+	//	if courseParam.Keyword == "" {
+	//		courseDtoList, err := buildCourseDto(classFitCourseIDList)
+	//		if err != nil {
+	//			return nil, 0, err
+	//		}
+	//		return courseDtoList, total, nil
+	//	} else {
+	//		finalCourseIDList := intersection(classFitCourseIDList, *courseFitIDList)
+	//		courseDtoList, err := buildCourseDto(finalCourseIDList)
+	//		if err != nil {
+	//			return nil, 0, err
+	//		}
+	//
+	//		return courseDtoList, total, nil
+	//	}
+	//}
+	//
+	//courseDtoList, err := buildCourseDto(*courseFitIDList)
+	//if err != nil {
+	//	return nil, 0, err
+	//}
+	//
+	//return courseDtoList, total, nil
 }
 
 func buildCourseDto(idList []int64) ([]dto.Course, error) {

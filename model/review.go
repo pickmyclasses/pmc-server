@@ -12,10 +12,9 @@ type Review struct {
 	UserID                  int64   `gorm:"column:user_id" json:"userID"`
 	LikeCount               int32   `gorm:"column:like_count" json:"likeCount"`
 	DislikeCount            int32   `gorm:"column:dislike_count" json:"dislikeCount"`
-	HourSpentBeyondCredit  bool    `gorm:"hour_spent_beyond_credit" json:"hourSpentBeyondCredit"`
+	HourSpent  int    `gorm:"hour_spent" json:"hourSpent"`
 	GradeReceived           string  `gorm:"grade_received" json:"gradeReceived"`
 	ExamHeavy               bool    `gorm:"exam_heavy" json:"examHeavy"`
 	HomeworkHeavy           bool    `gorm:"homework_heavy" json:"homeworkHeavy"`
 	ExtraCreditOffered      bool    `gorm:"extra_credit_offered" json:"ExtraCreditOffered"`
-	HourSpentLessThanCredit bool    `gorm:"hour_spent_less_than_credit" json:"hourSpentLessThanCredit"`
 }

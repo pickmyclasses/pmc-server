@@ -21,8 +21,7 @@ type Review struct {
 	CreatedAt               time.Time `json:"createdAt"`
 	LikedCount              int32     `json:"likedCount"`
 	DislikedCount           int32     `json:"dislikedCount"`
-	HourSpentMoreThanCredit bool      `json:"hourSpentMoreThanCredit"`
-	HourSpentLessThanCredit bool      `json:"hourSpentLessThanCredit"`
+	HourSpent int      `json:"hourSpent"`
 	GradeReceived           string    `json:"gradeReceived"`
 	IsExamHeavy             bool      `json:"isExamHeavy"`
 	IsHomeworkHeavy         bool      `json:"isHomeworkHeavy"`

@@ -20,8 +20,8 @@ type Review struct {
 	Username                string    `json:"username"`
 	CreatedAt               time.Time `json:"createdAt"`
 	LikedCount              int32     `json:"likedCount"`
-	DislikedCount           int32     `json:"disliked_count"`
-	HourSpentMoreThanCredit bool      `json:"hourSpentBeyondCredit"`
+	DislikedCount           int32     `json:"dislikedCount"`
+	HourSpentMoreThanCredit bool      `json:"hourSpentMoreThanCredit"`
 	HourSpentLessThanCredit bool      `json:"hourSpentLessThanCredit"`
 	GradeReceived           string    `json:"gradeReceived"`
 	IsExamHeavy             bool      `json:"isExamHeavy"`

@@ -28,7 +28,7 @@ func GetTagByID(id int32) (*model.Tag, error) {
 
 func GetTagListByCourseID(courseID int64) ([]model.Tag, error) {
 	var tags []model.Tag
-	res := postgres.DB.Where("course_id = ?", courseID).Find(&tags)
+	res := postgres.DB.Order("vote_count desc").Where("course_id = ?", courseID).Find(&tags)
 	if res.Error != nil {
 		return nil, shared.InternalErr{}
 	}

@@ -1,6 +1,7 @@
 package tag
 
 import (
+	"fmt"
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
@@ -40,8 +41,9 @@ func CreateTagByCourseID(courseID int64, tagContent string, tagType int32) error
 	res := postgres.DB.Where("course_id = ? and name = ?", courseID, tagContent).Find(&existingTag)
 	if res.RowsAffected != 0 {
 		existingTag.VoteCount += 1
-		res = postgres.DB.Update("vote_count", existingTag.VoteCount)
+		res = postgres.DB.Model(&existingTag).Update("vote_count", existingTag.VoteCount)
 		if res.Error != nil || res.RowsAffected == 0 {
+			fmt.Println(res.Error.Error())
 			return shared.InternalErr{}
 		}
 		return nil

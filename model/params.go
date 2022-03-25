@@ -72,7 +72,6 @@ type DeleteScheduleParams struct {
 }
 
 type CreateTagParam struct {
-	CourseID int64  `json:"courseID"` // The course ID
 	Content  string `json:"content"`  // The content of the tag
 	Type int32 `json:"type"`
 }

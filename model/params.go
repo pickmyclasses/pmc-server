@@ -74,10 +74,10 @@ type DeleteScheduleParams struct {
 type CreateTagParam struct {
 	CourseID int64  `json:"courseID"` // The course ID
 	Content  string `json:"content"`  // The content of the tag
+	Type int32 `json:"type"`
 }
 
 type VoteTagParam struct {
 	TagID  int32 `json:"tagID"`  // The Tag ID
 	UserID int64 `json:"userID"` // The user ID
-	Upvote bool  `json:"upvote"` // Check if the vote is an upvote or down vote, 1 for up, 0 for down
 }

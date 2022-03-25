@@ -35,13 +35,25 @@ func GetTagListByCourseID(courseID int64) ([]model.Tag, error) {
 }
 
 func CreateTagByCourseID(courseID int64, tagContent string, tagType int32) error {
+	// if the same tag for the same course already exist, just upvote for the tag
+	var existingTag model.Tag
+	res := postgres.DB.Where("course_id = ? and name = ?", courseID, tagContent).Find(&existingTag)
+	if res.RowsAffected != 0 {
+		existingTag.VoteCount += 1
+		res = postgres.DB.Update("vote_count", existingTag.VoteCount)
+		if res.Error != nil || res.RowsAffected == 0 {
+			return shared.InternalErr{}
+		}
+		return nil
+	}
+
 	tag := &model.Tag{
 		Name:      tagContent,
 		CourseID:  courseID,
 		VoteCount: 1,
 		Type: tagType,
 	}
-	res := postgres.DB.Create(&tag)
+	res = postgres.DB.Create(&tag)
 	if res.Error != nil || res.RowsAffected == 0 {
 		return shared.InternalErr{}
 	}

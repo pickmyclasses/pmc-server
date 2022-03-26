@@ -10,4 +10,5 @@ type ClassInfo struct {
 	Rating     float32      `json:"rating"`
 	ClassData  model.Class  `json:"classData"`
 	CourseData model.Course `json:"courseData"`
+	CourseTags []model.Tag `json:"courseTags"`
 }

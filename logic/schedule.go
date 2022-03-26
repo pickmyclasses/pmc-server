@@ -4,6 +4,7 @@ import (
 	classDao "pmc_server/dao/postgres/class"
 	courseDao "pmc_server/dao/postgres/course"
 	dao "pmc_server/dao/postgres/schedule"
+	tagDao "pmc_server/dao/postgres/tag"
 	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
@@ -70,9 +71,14 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 		if err != nil {
 			return nil, err
 		}
+		tagList, err := tagDao.GetTagListByCourseID(class.CourseID)
+		if err != nil {
+			return nil, err
+		}
 		scheduleClassInfo := &dto.ClassInfo{
 			ClassData:  *class,
 			CourseData: *course,
+			CourseTags: tagList,
 		}
 		scheduleRes.ScheduledClassList = append(scheduleRes.ScheduledClassList, *scheduleClassInfo)
 	}

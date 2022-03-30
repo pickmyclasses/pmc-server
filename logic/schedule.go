@@ -3,6 +3,7 @@ package logic
 import (
 	classDao "pmc_server/dao/postgres/class"
 	courseDao "pmc_server/dao/postgres/course"
+	reviewDao "pmc_server/dao/postgres/review"
 	dao "pmc_server/dao/postgres/schedule"
 	tagDao "pmc_server/dao/postgres/tag"
 	"pmc_server/model"
@@ -75,10 +76,19 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		rating, err := reviewDao.GetCourseOverallRating(class.CourseID)
+		if err != nil {
+			return nil, err
+		}
+
 		scheduleClassInfo := &dto.ClassInfo{
 			ClassData:  *class,
-			CourseData: *course,
-			CourseTags: tagList,
+			CourseInfo: dto.CourseInfo{
+				OverallRating: rating.OverAllRating,
+				CourseData: *course,
+				CourseTags: tagList,
+			},
 		}
 		scheduleRes.ScheduledClassList = append(scheduleRes.ScheduledClassList, *scheduleClassInfo)
 	}

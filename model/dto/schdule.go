@@ -7,8 +7,12 @@ type Schedule struct {
 }
 
 type ClassInfo struct {
-	Rating     float32      `json:"rating"`
 	ClassData  model.Class  `json:"classData"`
-	CourseData model.Course `json:"courseData"`
-	CourseTags []model.Tag `json:"courseTags"`
+	CourseInfo CourseInfo `json:"courseData"`
+}
+
+type CourseInfo struct {
+	OverallRating float32 `json:"overallRating"`
+	CourseData model.Course `json:"courses"`
+	CourseTags []model.Tag `json:"tags"`
 }

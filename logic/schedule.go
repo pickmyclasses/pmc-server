@@ -29,12 +29,16 @@ func CreateSchedule(param model.PostScheduleParams) error {
 		return shared.ContentNotFoundErr{}
 	}
 
-	exist, err = dao.CheckIfScheduleExist(param.ClassID, param.UserID, param.SemesterID)
+	id, err := dao.CheckIfScheduleExist(param.ClassID, param.UserID, param.SemesterID)
 	if err != nil {
 		return err
 	}
+	// upsert the schedule
 	if exist {
-		return shared.ResourceConflictErr{}
+		err = dao.UpdateScheduleByID(id, param.ClassID, param.SemesterID)
+		if err != nil {
+			return err
+		}
 	}
 
 	err = dao.CreateSchedule(param.ClassID, param.UserID, param.SemesterID)
@@ -62,6 +66,7 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 
 	scheduleRes := &dto.Schedule{
 		ScheduledClassList: make([]dto.ClassInfo, 0),
+		CustomEvents: make([]dto.CustomEvent, 0),
 	}
 
 	for _, schedule := range scheduleList {
@@ -117,6 +122,20 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 			},
 		}
 		scheduleRes.ScheduledClassList = append(scheduleRes.ScheduledClassList, *scheduleClassInfo)
+	}
+
+	customEventList, err := dao.GetCustomEventByUserID(param.UserID)
+	for _, event := range customEventList {
+		customEvent := &dto.CustomEvent{
+			ID: int32(event.ID),
+			Title:       event.Title,
+			Description: event.Description,
+			Color:       event.Color,
+			Days:        event.Days,
+			StartTime:   event.StartTime,
+			EndTime:     event.EndTime,
+		}
+		scheduleRes.CustomEvents = append(scheduleRes.CustomEvents, *customEvent)
 	}
 
 	return scheduleRes, nil

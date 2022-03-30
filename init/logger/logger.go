@@ -108,7 +108,7 @@ func GinRecovery(stack bool) gin.HandlerFunc {
 						zap.Any("error", err),
 						zap.String("request", string(httpRequest)),
 					)
-					c.Error(err.(error))
+					c.JSON(http.StatusInternalServerError, err)
 					c.Abort()
 					return
 				}

@@ -30,18 +30,18 @@ func CheckIfClassExist(classID int64) (bool, error) {
 	return true, nil
 }
 
-func CheckIfScheduleExist(classID, userID, semesterID int64) (bool, error) {
+func CheckIfScheduleExist(classID, userID, semesterID int64) (int64, error) {
 	var schedule model.Schedule
 	res := postgres.DB.
 		Where("user_id = ? and class_id = ? and semester_id = ?", userID, classID, semesterID).
 		Find(&schedule)
 	if res.Error != nil {
-		return false, shared.InternalErr{}
+		return -1, shared.InternalErr{}
 	}
 	if res.RowsAffected == 0 {
-		return false, nil
+		return -1, nil
 	}
-	return true, nil
+	return schedule.ID, nil
 }
 
 func CreateSchedule(classID, userID, semesterID int64) error {
@@ -64,6 +64,16 @@ func GetScheduleByUserID(userID int64) ([]model.Schedule, error) {
 		return nil, shared.InternalErr{}
 	}
 	return schedule, nil
+}
+
+func UpdateScheduleByID(id int64, classID, semesterID int64) error {
+	res := postgres.DB.Model(&model.Schedule{}).Where("id = ?", id).
+		Update("class_id", classID).
+		Update("semester_id", semesterID)
+	if res.Error != nil {
+		return shared.InternalErr{}
+	}
+	return nil
 }
 
 func DeleteUserSchedule(userID, semesterID, classID int64) error {

@@ -58,6 +58,15 @@ func SetUp(mode string) *gin.Engine {
 		// for professors
 		r.GET("/professor/list", controller.GetProfessorListHandler)
 
+		// for university
+		r.GET("/university/list", controller.GetUniversityList)
+		r.GET("/university/building/list", controller.GetUniversityBuildings)
+		r.GET("/university/building", controller.GetUniversityBuildingByID)
+
+		// for major roadmap
+		r.GET("/major/list", controller.GetMajorList)
+		r.GET("/major/:id", controller.GetMajorByID)
+
 		// for testing
 		r.GET("/ping", auth.JWT(), func(c *gin.Context) {
 			c.String(http.StatusOK, "pong")

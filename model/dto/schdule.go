@@ -13,6 +13,6 @@ type ClassInfo struct {
 
 type CourseInfo struct {
 	OverallRating float32 `json:"overallRating"`
-	CourseData model.Course `json:"courses"`
+	CourseData model.Course `json:"courseInfo"`
 	CourseTags []model.Tag `json:"tags"`
 }

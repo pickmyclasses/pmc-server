@@ -59,6 +59,8 @@ type PostScheduleParams struct {
 	ClassID    int64 `json:"classID"`    // Class ID
 	SemesterID int64 `json:"semesterID"` // Semester ID
 	UserID     int64 `json:"userID"`     // Student ID
+	IsNew bool `json:"isNew"` // Check if upsert
+	Type int `json:"type"` // Check if the schedule is a custom event or class event, 1 for
 }
 
 type GetScheduleParams struct {

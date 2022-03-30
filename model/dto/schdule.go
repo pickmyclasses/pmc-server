@@ -3,7 +3,7 @@ package dto
 import "pmc_server/model"
 
 type Schedule struct {
-	ScheduledClassList []ClassInfo `json:"scheduledClass"`
+	ScheduledClassList []ClassInfo `json:"scheduledClasses"`
 	CustomEvents []CustomEvent `json:"customEvents"`
 }
 

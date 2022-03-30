@@ -153,7 +153,7 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 	return *courseFitIDList, total, nil
 
 	//if err != nil {
-	//	return nil, -1, fmt.Errorf("error when fecthing by keywords %+v", err)
+	//	return nil, -1, fmt.Errorf("error when fetching by keywords %+v", err)
 	//}
 	//
 	//// only check for the filter parameters when there was actually a filter on

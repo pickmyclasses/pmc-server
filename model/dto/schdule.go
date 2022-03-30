@@ -7,12 +7,6 @@ type Schedule struct {
 }
 
 type ClassInfo struct {
-	ClassData  model.Class  `json:"classData"`
-	CourseInfo CourseInfo `json:"courseData"`
-}
-
-type CourseInfo struct {
-	OverallRating float32 `json:"overallRating"`
-	CourseData model.Course `json:"courseInfo"`
-	CourseTags []model.Tag `json:"tags"`
+	ClassData  model.Class `json:"classData"`
+	CourseInfo Course  `json:"course"`
 }

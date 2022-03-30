@@ -72,8 +72,8 @@ type DeleteScheduleParams struct {
 }
 
 type CreateTagParam struct {
-	Content  string `json:"content"`  // The content of the tag
-	Type int32 `json:"type"`
+	Content string `json:"content"` // The content of the tag
+	Type    int32  `json:"type"`
 }
 
 type VoteTagParam struct {

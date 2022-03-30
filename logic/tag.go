@@ -46,7 +46,7 @@ func VoteTag(tagID int32, userID int64) error {
 
 	err = dao.VoteForTagByID(tagID, userID)
 	if err != nil {
-		return  err
+		return err
 	}
 
 	return nil

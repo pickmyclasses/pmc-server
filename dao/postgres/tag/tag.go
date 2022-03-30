@@ -53,7 +53,7 @@ func CreateTagByCourseID(courseID int64, tagContent string, tagType int32) error
 		Name:      tagContent,
 		CourseID:  courseID,
 		VoteCount: 1,
-		Type: tagType,
+		Type:      tagType,
 	}
 	res = postgres.DB.Create(&tag)
 	if res.Error != nil || res.RowsAffected == 0 {
@@ -65,7 +65,7 @@ func CreateTagByCourseID(courseID int64, tagContent string, tagType int32) error
 func VoteForTagByID(tagID int32, userID int64) error {
 	userVotedTag := &model.UserVotedTag{
 		UserID: userID,
-		TagID: tagID,
+		TagID:  tagID,
 	}
 	res := postgres.DB.Create(&userVotedTag)
 	if res.Error != nil {

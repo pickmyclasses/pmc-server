@@ -9,6 +9,7 @@ import (
 	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
+	"strconv"
 )
 
 func CreateSchedule(param model.PostScheduleParams) error {
@@ -82,12 +83,37 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 			return nil, err
 		}
 
+		maxCredit, err := strconv.ParseFloat(course.MaxCredit, 32)
+		if err != nil {
+			maxCredit = 0.0
+		}
+		minCredit, err := strconv.ParseFloat(course.MinCredit, 32)
+		if err != nil {
+			minCredit = 0.0
+		}
+
+		classList, err := classDao.GetClassByCourseID(class.CourseID)
+		if err != nil {
+			return nil, err
+		}
+
 		scheduleClassInfo := &dto.ClassInfo{
-			ClassData:  *class,
-			CourseInfo: dto.CourseInfo{
-				OverallRating: rating.OverAllRating,
-				CourseData: *course,
-				CourseTags: tagList,
+			ClassData: *class,
+			CourseInfo: dto.Course{
+				CourseID:           course.ID,
+				IsHonor:            course.IsHonor,
+				FixedCredit:        course.FixedCredit,
+				DesignationCatalog: course.DesignationCatalog,
+				Description:        course.Description,
+				Prerequisites:      course.Prerequisites,
+				Title:              course.Title,
+				CatalogCourseName:  course.CatalogCourseName,
+				Component:          course.Component,
+				MaxCredit:          maxCredit,
+				MinCredit:          minCredit,
+				Classes:            *classList,
+				OverallRating:      rating.OverAllRating,
+				Tags:               tagList,
 			},
 		}
 		scheduleRes.ScheduledClassList = append(scheduleRes.ScheduledClassList, *scheduleClassInfo)

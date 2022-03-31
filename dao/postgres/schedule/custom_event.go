@@ -38,7 +38,7 @@ func CreateCustomEventByUserID(userID, semesterID int64, title, description,
 
 func CheckIfCustomEventExist(id int64) (bool, error) {
 	var event model.CustomEvent
-	res := postgres.DB.Where("id = ?", id).Find(&event)
+	res := postgres.DB.Where("id = ?", id).First(&event)
 	if res.Error != nil {
 		return false, shared.InternalErr{}
 	}
@@ -46,9 +46,12 @@ func CheckIfCustomEventExist(id int64) (bool, error) {
 	return res.RowsAffected == 0, nil
 }
 
-func UpdateCustomEventByID(userID, semesterID int64, title, description,
+func UpdateCustomEventByID(eventID, userID, semesterID int64, title, description,
 	color string, days []int64, startTime, endTime int32, kind string) error {
-	event := &model.CustomEvent{
+	var event model.CustomEvent
+	res := postgres.DB.Where("id = ?", eventID).First(&event)
+
+	event = model.CustomEvent{
 		Title:       title,
 		Description: description,
 		Color:       color,
@@ -59,7 +62,7 @@ func UpdateCustomEventByID(userID, semesterID int64, title, description,
 		SemesterID:  semesterID,
 		Kind: kind,
 	}
-	res := postgres.DB.Save(&event)
+	res = postgres.DB.Save(&event)
 	if res.Error != nil || res.RowsAffected == 0 {
 		return shared.InternalErr{}
 	}

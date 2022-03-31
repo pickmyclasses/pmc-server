@@ -55,12 +55,6 @@ type ReviewParams struct {
 	Recommended bool    `json:"recommended" binding:"required"` // Is the course recommended by the user
 }
 
-type PostScheduleParams struct {
-	ClassID    int64 `json:"classID"`    // Class ID
-	SemesterID int64 `json:"semesterID"` // Semester ID
-	UserID     int64 `json:"userID"`     // Student ID
-}
-
 type PostCustomEventParams struct {
 	Title       string  `json:"title"`
 	Description string  `json:"description"`
@@ -74,7 +68,6 @@ type PostCustomEventParams struct {
 type PostEventParam struct {
 	IsNew      bool  `json:"isNew"`
 	UserID     int64 `json:"userID"`
-	SemesterID int64 `json:"semesterID"`
 	ClassID     int64   `json:"classID"`
 	Event      PostCustomEventParams `json:"customEvent"`
 	Kind string `json:"kind"`
@@ -87,7 +80,7 @@ type GetScheduleParams struct {
 type DeleteScheduleParams struct {
 	UserID     int64 `json:"userID"`     // Student ID
 	ClassID    int64 `json:"classID"`    // Class ID
-	SemesterID int64 `json:"semesterID"` // Semester ID
+	EventID int64 `json:"eventID"`
 }
 
 type CreateTagParam struct {

@@ -2,14 +2,12 @@ package controller
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"pmc_server/logic"
 	"pmc_server/model"
 	"pmc_server/shared"
 	. "pmc_server/shared"
-	"strconv"
-
-	"github.com/gin-gonic/gin"
 )
 
 func AddUserScheduleHandler(c *gin.Context) {
@@ -68,15 +66,16 @@ func GetUserScheduleHandler(c *gin.Context) {
 
 func DeleteUserScheduleHandler(c *gin.Context) {
 	scheduleType := c.Query("type")
-	id, err := strconv.Atoi(c.Query("id"))
-	if err != nil {
+
+	var param model.DeleteScheduleParams
+	if err := c.ShouldBindJSON(&param); err != nil {
 		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
 	switch scheduleType {
 	case "class":
-		err = logic.DeleteSchedule(int64(id))
+		err := logic.DeleteSchedule(param.UserID, param.ClassID)
 		if err != nil {
 			_ = c.Error(err)
 			return
@@ -86,7 +85,7 @@ func DeleteUserScheduleHandler(c *gin.Context) {
 			MESSAGE: SUCCESS,
 		})
 	case "custom-event":
-		err = logic.DeleteCustomEvent(int64(id))
+		err := logic.DeleteCustomEvent(param.EventID)
 		if err != nil {
 			_ = c.Error(err)
 			return

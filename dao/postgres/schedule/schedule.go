@@ -76,10 +76,11 @@ func UpdateScheduleByID(id int64, classID, semesterID int64) error {
 	return nil
 }
 
-func DeleteUserSchedule(id int64) error {
+func DeleteUserSchedule(userID, classID int64) error {
 	var schedule model.Schedule
+	// TODO: fix the semester ID
 	res := postgres.DB.
-		Where("id = ?", id).
+		Where("user_id = ? and class_id = ? and semester_id = ?", userID, classID, 2).
 		First(&schedule)
 
 	if res.RowsAffected == 0 {

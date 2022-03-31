@@ -29,19 +29,19 @@ func CreateSchedule(param model.PostEventParam) error {
 		return shared.ContentNotFoundErr{}
 	}
 
-	id, err := dao.CheckIfScheduleExist(param.ClassID, param.UserID, param.SemesterID)
+	id, err := dao.CheckIfScheduleExist(param.ClassID, param.UserID, 2)
 	if err != nil {
 		return err
 	}
 	// upsert the schedule
 	if exist {
-		err = dao.UpdateScheduleByID(id, param.ClassID, param.SemesterID)
+		err = dao.UpdateScheduleByID(id, param.ClassID, 2)
 		if err != nil {
 			return err
 		}
 	}
 
-	err = dao.CreateSchedule(param.ClassID, param.UserID, param.SemesterID)
+	err = dao.CreateSchedule(param.ClassID, param.UserID, 2)
 	if err != nil {
 		return err
 	}
@@ -142,8 +142,8 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 	return scheduleRes, nil
 }
 
-func DeleteSchedule(id int64) error {
-	err := dao.DeleteUserSchedule(id)
+func DeleteSchedule(userID, classID int64) error {
+	err := dao.DeleteUserSchedule(userID, classID)
 	if err != nil {
 		return err
 	}
@@ -171,7 +171,7 @@ func CreateCustomEvent(param model.PostEventParam) error {
 			return shared.ContentNotFoundErr{}
 		}
 
-		err = dao.UpdateCustomEventByID(param.UserID, param.SemesterID, param.Event.Title, param.Event.Description,
+		err = dao.UpdateCustomEventByID(param.Event.EventID, param.UserID, 2, param.Event.Title, param.Event.Description,
 			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime, param.Kind)
 
 		if err != nil {
@@ -179,7 +179,7 @@ func CreateCustomEvent(param model.PostEventParam) error {
 		}
 		return nil
 	} else {
-		err = dao.CreateCustomEventByUserID(param.UserID, param.SemesterID, param.Event.Title, param.Event.Description,
+		err = dao.CreateCustomEventByUserID(param.UserID, 2, param.Event.Title, param.Event.Description,
 			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime, param.Kind)
 		if err != nil {
 			return err

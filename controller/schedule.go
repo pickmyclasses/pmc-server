@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"pmc_server/logic"
@@ -31,7 +30,6 @@ func AddUserScheduleHandler(c *gin.Context) {
 			MESSAGE: SUCCESS,
 		})
 	case "custom-event":
-		fmt.Println(param)
 		err := logic.CreateCustomEvent(param)
 		if err != nil {
 			_ = c.Error(err)

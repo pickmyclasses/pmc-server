@@ -80,7 +80,7 @@ type GetScheduleParams struct {
 type DeleteScheduleParams struct {
 	UserID     int64 `json:"userID"`     // Student ID
 	ClassID    int64 `json:"classID"`    // Class ID
-	EventID int64 `json:"eventID"`
+	EventID int64 `json:"id"`
 }
 
 type CreateTagParam struct {

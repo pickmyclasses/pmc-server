@@ -1,6 +1,8 @@
 package schedule
 
 import (
+	"github.com/lib/pq"
+
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
@@ -43,26 +45,21 @@ func CheckIfCustomEventExist(id int64) (bool, error) {
 		return false, shared.InternalErr{}
 	}
 
-	return res.RowsAffected == 0, nil
+	return res.RowsAffected != 0, nil
 }
 
 func UpdateCustomEventByID(eventID, userID, semesterID int64, title, description,
 	color string, days []int64, startTime, endTime int32, kind string) error {
-	var event model.CustomEvent
-	res := postgres.DB.Where("id = ?", eventID).First(&event)
 
-	event = model.CustomEvent{
-		Title:       title,
-		Description: description,
-		Color:       color,
-		Days:        days,
-		StartTime:   startTime,
-		EndTime:     endTime,
-		UserID:      userID,
-		SemesterID:  semesterID,
-		Kind: kind,
-	}
-	res = postgres.DB.Save(&event)
+	res := postgres.DB.Model(&model.CustomEvent{}).Where("id = ?", eventID).Updates(map[string]interface{}{
+		"title"	: title,
+		"description": description,
+		"color": color,
+		"days": pq.Int64Array(days),
+		"start_time": startTime,
+		"end_time": endTime,
+		"kind": kind,
+	})
 	if res.Error != nil || res.RowsAffected == 0 {
 		return shared.InternalErr{}
 	}

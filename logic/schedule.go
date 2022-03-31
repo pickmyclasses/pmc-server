@@ -172,7 +172,7 @@ func CreateCustomEvent(param model.PostEventParam) error {
 		}
 
 		err = dao.UpdateCustomEventByID(param.Event.EventID, param.UserID, 2, param.Event.Title, param.Event.Description,
-			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime, param.Kind)
+			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime, param.Event.Kind)
 
 		if err != nil {
 			return err
@@ -180,7 +180,7 @@ func CreateCustomEvent(param model.PostEventParam) error {
 		return nil
 	} else {
 		err = dao.CreateCustomEventByUserID(param.UserID, 2, param.Event.Title, param.Event.Description,
-			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime, param.Kind)
+			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime, param.Event.Kind)
 		if err != nil {
 			return err
 		}

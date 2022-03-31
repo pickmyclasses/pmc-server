@@ -63,6 +63,7 @@ type PostCustomEventParams struct {
 	StartTime   int32   `json:"startTime"`
 	EndTime     int32   `json:"endTime"`
 	EventID     int64   `json:"id"`
+	Kind string `json:"kind"`
 }
 
 type PostEventParam struct {
@@ -70,7 +71,6 @@ type PostEventParam struct {
 	UserID     int64 `json:"userID"`
 	ClassID     int64   `json:"classID"`
 	Event      PostCustomEventParams `json:"customEvent"`
-	Kind string `json:"kind"`
 }
 
 type GetScheduleParams struct {

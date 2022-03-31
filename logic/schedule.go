@@ -134,6 +134,7 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 			Days:        event.Days,
 			StartTime:   event.StartTime,
 			EndTime:     event.EndTime,
+			Kind: event.Kind,
 		}
 		scheduleRes.CustomEvents = append(scheduleRes.CustomEvents, *customEvent)
 	}
@@ -171,7 +172,7 @@ func CreateCustomEvent(param model.PostEventParam) error {
 		}
 
 		err = dao.UpdateCustomEventByID(param.UserID, param.SemesterID, param.Event.Title, param.Event.Description,
-			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime)
+			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime, param.Kind)
 
 		if err != nil {
 			return err
@@ -179,7 +180,7 @@ func CreateCustomEvent(param model.PostEventParam) error {
 		return nil
 	} else {
 		err = dao.CreateCustomEventByUserID(param.UserID, param.SemesterID, param.Event.Title, param.Event.Description,
-			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime)
+			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime, param.Kind)
 		if err != nil {
 			return err
 		}

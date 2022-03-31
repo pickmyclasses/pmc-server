@@ -95,5 +95,8 @@ func DeleteUserScheduleHandler(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			MESSAGE: SUCCESS,
 		})
+	default:
+		_ = c.Error(shared.ParamInsufficientErr{})
+		return
 	}
 }

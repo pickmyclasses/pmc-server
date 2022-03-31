@@ -77,6 +77,7 @@ type PostEventParam struct {
 	SemesterID int64 `json:"semesterID"`
 	ClassID     int64   `json:"classID"`
 	Event      PostCustomEventParams `json:"customEvent"`
+	Kind string `json:"kind"`
 }
 
 type GetScheduleParams struct {

@@ -12,4 +12,5 @@ type CustomEvent struct {
 	EndTime     int32   `gorm:"column:end_time"`
 	UserID      int64   `gorm:"column:user_id"`
 	SemesterID  int64   `gorm:"column:semester_id"`
+	Kind string `gorm:"kind"`
 }

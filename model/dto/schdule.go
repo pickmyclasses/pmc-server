@@ -20,4 +20,5 @@ type CustomEvent struct {
 	Days        []int64 `json:"days"`
 	StartTime   int32   `json:"startTime"`
 	EndTime     int32   `json:"endTime"`
+	Kind string `json:"kind"`
 }

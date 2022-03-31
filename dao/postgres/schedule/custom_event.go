@@ -6,7 +6,7 @@ import (
 	"pmc_server/shared"
 )
 
-func GetCustomEventByUserID(userID  int64) ([]model.CustomEvent, error) {
+func GetCustomEventByUserID(userID int64) ([]model.CustomEvent, error) {
 	var events []model.CustomEvent
 	res := postgres.DB.Where("user_id = ?", userID).Find(&events)
 	if res.Error != nil {
@@ -16,19 +16,20 @@ func GetCustomEventByUserID(userID  int64) ([]model.CustomEvent, error) {
 }
 
 func CreateCustomEventByUserID(userID, semesterID int64, title, description,
-	color string, days []int32, startTime, endTime int32) error {
-	res := postgres.DB.Create(&model.CustomEvent{
+	color string, days []int64, startTime, endTime int32) error {
+	event := model.CustomEvent{
 		Title:       title,
 		Description: description,
 		Color:       color,
 		Days:        days,
 		StartTime:   startTime,
 		EndTime:     endTime,
-		UserID: userID,
-		SemesterID: semesterID,
-	})
+		UserID:      userID,
+		SemesterID:  semesterID,
+	}
+	res := postgres.DB.Create(&event)
 
-	if res.Error != nil || res.RowsAffected == 0{
+	if res.Error != nil || res.RowsAffected == 0 {
 		return shared.InternalErr{}
 	}
 	return nil
@@ -45,7 +46,7 @@ func CheckIfCustomEventExist(id int64) (bool, error) {
 }
 
 func UpdateCustomEventByID(userID, semesterID int64, title, description,
-	color string, days []int32, startTime, endTime int32) error {
+	color string, days []int64, startTime, endTime int32) error {
 	event := &model.CustomEvent{
 		Title:       title,
 		Description: description,

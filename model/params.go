@@ -59,8 +59,24 @@ type PostScheduleParams struct {
 	ClassID    int64 `json:"classID"`    // Class ID
 	SemesterID int64 `json:"semesterID"` // Semester ID
 	UserID     int64 `json:"userID"`     // Student ID
-	IsNew bool `json:"isNew"` // Check if upsert
-	Type int `json:"type"` // Check if the schedule is a custom event or class event, 1 for
+}
+
+type PostCustomEventParams struct {
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Color       string  `json:"color"`
+	Days        []int64 `json:"days"`
+	StartTime   int32   `json:"startTime"`
+	EndTime     int32   `json:"endTime"`
+	EventID     int64   `json:"id"`
+}
+
+type PostEventParam struct {
+	IsNew      bool  `json:"isNew"`
+	UserID     int64 `json:"userID"`
+	SemesterID int64 `json:"semesterID"`
+	ClassID     int64   `json:"classID"`
+	Event      PostCustomEventParams `json:"customEvent"`
 }
 
 type GetScheduleParams struct {

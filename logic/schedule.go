@@ -12,7 +12,7 @@ import (
 	"strconv"
 )
 
-func CreateSchedule(param model.PostScheduleParams) error {
+func CreateSchedule(param model.PostEventParam) error {
 	exist, err := dao.CheckIfUserExist(param.UserID)
 	if err != nil {
 		return err
@@ -66,7 +66,7 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 
 	scheduleRes := &dto.Schedule{
 		ScheduledClassList: make([]dto.ClassInfo, 0),
-		CustomEvents: make([]dto.CustomEvent, 0),
+		CustomEvents:       make([]dto.CustomEvent, 0),
 	}
 
 	for _, schedule := range scheduleList {
@@ -127,7 +127,7 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 	customEventList, err := dao.GetCustomEventByUserID(param.UserID)
 	for _, event := range customEventList {
 		customEvent := &dto.CustomEvent{
-			ID: int32(event.ID),
+			ID:          int32(event.ID),
 			Title:       event.Title,
 			Description: event.Description,
 			Color:       event.Color,
@@ -147,4 +147,42 @@ func DeleteSchedule(param model.DeleteScheduleParams) error {
 		return err
 	}
 	return nil
+}
+
+func CreateCustomEvent(param model.PostEventParam) error {
+	exist, err := dao.CheckIfUserExist(param.UserID)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		return shared.ContentNotFoundErr{}
+	}
+
+	if !param.IsNew {
+		if param.Event.EventID == 0 {
+			return shared.ParamIncompatibleErr{}
+		}
+		exist, err := dao.CheckIfCustomEventExist(param.Event.EventID)
+		if err != nil {
+			return err
+		}
+		if !exist {
+			return shared.ContentNotFoundErr{}
+		}
+
+		err = dao.UpdateCustomEventByID(param.UserID, param.SemesterID, param.Event.Title, param.Event.Description,
+			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime)
+
+		if err != nil {
+			return err
+		}
+		return nil
+	} else {
+		err = dao.CreateCustomEventByUserID(param.UserID, param.SemesterID, param.Event.Title, param.Event.Description,
+			param.Event.Color, param.Event.Days, param.Event.StartTime, param.Event.EndTime)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
 }

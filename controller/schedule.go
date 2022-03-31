@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"pmc_server/logic"
 	"pmc_server/model"
@@ -12,21 +14,44 @@ import (
 )
 
 func AddUserScheduleHandler(c *gin.Context) {
-	var param model.PostScheduleParams
-	if err := c.ShouldBindJSON(&param); err != nil {
+	scheduleTypeParam := c.Query("type")
+	scheduleType, err := strconv.Atoi(scheduleTypeParam)
+	if err != nil {
 		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
-	err := logic.CreateSchedule(param)
-	if err != nil {
-		_ = c.Error(err)
+	var param model.PostEventParam
+	if err := c.Bind(&param); err != nil {
+		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		MESSAGE: SUCCESS,
-	})
+	switch scheduleType {
+	case 1:
+		err := logic.CreateSchedule(param)
+		if err != nil {
+			_ = c.Error(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			MESSAGE: SUCCESS,
+		})
+	case 2:
+		fmt.Println(param)
+		err := logic.CreateCustomEvent(param)
+		if err != nil {
+			_ = c.Error(err)
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			MESSAGE: SUCCESS,
+		})
+	default:
+		_ = c.Error(shared.ParamInsufficientErr{})
+		return
+	}
 }
 
 func GetUserScheduleHandler(c *gin.Context) {

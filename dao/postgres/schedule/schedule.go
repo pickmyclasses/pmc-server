@@ -76,10 +76,10 @@ func UpdateScheduleByID(id int64, classID, semesterID int64) error {
 	return nil
 }
 
-func DeleteUserSchedule(userID, semesterID, classID int64) error {
+func DeleteUserSchedule(id int64) error {
 	var schedule model.Schedule
 	res := postgres.DB.
-		Where("user_id = ? AND class_id = ? AND semester_id = ?", userID, classID, semesterID).
+		Where("id = ?", id).
 		First(&schedule)
 
 	if res.RowsAffected == 0 {
@@ -91,7 +91,6 @@ func DeleteUserSchedule(userID, semesterID, classID int64) error {
 	}
 
 	res = postgres.DB.
-		Where("user_id = ? AND class_id = ? AND semester_id = ?", userID, classID, semesterID).
 		Delete(&schedule)
 
 	if res.Error != nil || res.RowsAffected == 0 {

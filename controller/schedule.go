@@ -7,6 +7,7 @@ import (
 	"pmc_server/model"
 	"pmc_server/shared"
 	. "pmc_server/shared"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -66,19 +67,33 @@ func GetUserScheduleHandler(c *gin.Context) {
 }
 
 func DeleteUserScheduleHandler(c *gin.Context) {
-	var param model.DeleteScheduleParams
-	if err := c.ShouldBindJSON(&param); err != nil {
+	scheduleType := c.Query("type")
+	id, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
 		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
-	err := logic.DeleteSchedule(param)
-	if err != nil {
-		_ = c.Error(err)
-		return
-	}
+	switch scheduleType {
+	case "class":
+		err = logic.DeleteSchedule(int64(id))
+		if err != nil {
+			_ = c.Error(err)
+			return
+		}
 
-	c.JSON(http.StatusOK, gin.H{
-		MESSAGE: SUCCESS,
-	})
+		c.JSON(http.StatusOK, gin.H{
+			MESSAGE: SUCCESS,
+		})
+	case "custom-event":
+		err = logic.DeleteCustomEvent(int64(id))
+		if err != nil {
+			_ = c.Error(err)
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			MESSAGE: SUCCESS,
+		})
+	}
 }

@@ -63,3 +63,26 @@ func UpdateCustomEventByID(userID, semesterID int64, title, description,
 	}
 	return nil
 }
+
+func DeleteCustomEvent(id int64) error {
+	var event model.CustomEvent
+	res := postgres.DB.
+		Where("id = ?", id).
+		First(&event)
+
+	if res.RowsAffected == 0 {
+		return shared.ContentNotFoundErr{}
+	}
+
+	if res.Error != nil {
+		return shared.InternalErr{}
+	}
+
+	res = postgres.DB.
+		Delete(&event)
+
+	if res.Error != nil || res.RowsAffected == 0 {
+		return shared.InternalErr{}
+	}
+	return nil
+}

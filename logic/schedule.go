@@ -141,8 +141,8 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 	return scheduleRes, nil
 }
 
-func DeleteSchedule(param model.DeleteScheduleParams) error {
-	err := dao.DeleteUserSchedule(param.UserID, param.SemesterID, param.ClassID)
+func DeleteSchedule(id int64) error {
+	err := dao.DeleteUserSchedule(id)
 	if err != nil {
 		return err
 	}
@@ -185,4 +185,12 @@ func CreateCustomEvent(param model.PostEventParam) error {
 		}
 		return nil
 	}
+}
+
+func DeleteCustomEvent(id int64) error {
+	err := dao.DeleteCustomEvent(id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

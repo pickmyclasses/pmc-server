@@ -2,9 +2,10 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"pmc_server/logic"
-	. "pmc_server/shared"
+	"pmc_server/shared"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,6 +26,24 @@ func GetProfessorListHandler(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		DATA: professorList,
+		shared.DATA: professorList,
+	})
+}
+
+func GetProfessorListByCourseID(ctx *gin.Context) {
+	var courseID int
+	var err error
+	if courseID, err = strconv.Atoi(ctx.Param("id")); err != nil || courseID == 0 {
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
+		return
+	}
+	professorList, err := logic.GetProfessorListByCourseID(int64(courseID))
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		shared.DATA: professorList,
 	})
 }

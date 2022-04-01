@@ -6,4 +6,5 @@ type User struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Role      int32  `json:"role"`
+	CollegeID int32 `json:"collegeID"`
 }

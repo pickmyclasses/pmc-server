@@ -1,6 +1,8 @@
 package dto
 
-import "time"
+import (
+	"time"
+)
 
 type ReviewList struct {
 	Total         int64    `json:"total"`         // The total number of reviews of the course
@@ -26,4 +28,6 @@ type Review struct {
 	IsExamHeavy        bool      `json:"isExamHeavy"`
 	IsHomeworkHeavy    bool      `json:"isHomeworkHeavy"`
 	ExtraCreditOffered bool      `json:"extraCreditOffered"`
+	ClassSemester Semester `json:"classSemester"`
+	ClassProfessor string `json:"classProfessor"`
 }

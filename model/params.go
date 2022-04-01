@@ -92,3 +92,7 @@ type VoteTagParam struct {
 	TagID  int32 `json:"tagID"`  // The Tag ID
 	UserID int64 `json:"userID"` // The user ID
 }
+
+type SemesterParam struct {
+	CollegeID int32 `json:"collegeID"`
+}

@@ -59,11 +59,13 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/professor/list", controller.GetProfessorListHandler)
 
 		// for university
-		r.GET("/university/list", controller.GetUniversityList)
-		r.GET("/university/building/list", controller.GetUniversityBuildings)
-		r.GET("/university/building", controller.GetUniversityBuildingByID)
+		r.GET("/college/list", controller.GetCollegeList)
+		r.GET("/college/:id", controller.GetCollegeByID)
+		r.GET("/college/:id/building/list", controller.GetCollegeBuildings)
+		r.GET("/college/:id/building", controller.GetCollegeBuildingByID)
+		r.GET("/college/:id/semester/list", controller.GetCollegeSemesterList)
 
-		// for major roadmap
+		// for major
 		r.GET("/major/list", controller.GetMajorList)
 		r.GET("/major/:id", controller.GetMajorByID)
 

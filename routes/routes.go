@@ -35,6 +35,7 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/course/list", controller.GetCourseListHandler)
 		r.GET("/course/:id", controller.GetCourseByIDHandler)
 		r.GET("/course/:id/class", controller.GetClassesOfCourseHandler)
+		r.GET("/course/:id/professor/list", controller.GetProfessorListByCourseID)
 
 		// for course search
 		r.POST("/course/search", controller.GetCoursesBySearchHandler)

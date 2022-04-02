@@ -74,7 +74,6 @@ func GetReviewsByCourseID(courseID, pn, pSize int) ([]model.Review, error) {
 	}
 
 	return reviewList, nil
-
 }
 
 func GetReviewByID(reviewID int) (*model.Review, error) {

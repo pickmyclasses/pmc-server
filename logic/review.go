@@ -4,7 +4,11 @@ import (
 	"fmt"
 	"strconv"
 
+	classDao "pmc_server/dao/postgres/class"
+	collegeDao "pmc_server/dao/postgres/college"
+	historyDao "pmc_server/dao/postgres/history"
 	reviewDao "pmc_server/dao/postgres/review"
+	semesterDao "pmc_server/dao/postgres/semester"
 	userDao "pmc_server/dao/postgres/user"
 	"pmc_server/model"
 	"pmc_server/model/dto"
@@ -66,6 +70,32 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 			ExtraCreditOffered: review.ExtraCreditOffered,
 		}
 
+		userCourseHistory, err := historyDao.GetUserCourseHistoryByID(review.UserID, review.CourseID)
+		if err != nil {
+			return nil, err
+		}
+
+		semester, err := semesterDao.GetSemesterByID(userCourseHistory.SemesterID)
+		if err != nil {
+			return nil, err
+		}
+
+		college, err := collegeDao.GetCollegeByID(semester.CollegeID)
+		if err != nil {
+			return nil, err
+		}
+		reviewDto.ClassSemester = dto.Semester{
+			CollegeName: college.Name,
+			Year:        semester.Year,
+			Season:      semester.Season,
+		}
+
+		class, err := classDao.GetClassInfoByID(int(userCourseHistory.ClassID))
+		if err != nil {
+			return nil, err
+		}
+
+		reviewDto.ClassProfessor = class.Instructors
 		reviewRsp.Reviews = append(reviewRsp.Reviews, reviewDto)
 	}
 
@@ -82,6 +112,13 @@ func GetReviewByID(reviewID string) (*model.Review, error) {
 }
 
 func PostCourseReview(review dto.Review, courseID int64) error {
+	userCourseHistory, err := historyDao.CheckIfCourseInUserCourseHistory(review.UserID, courseID)
+	if err != nil {
+		return err
+	}
+	if !userCourseHistory {
+		return shared.NoPreviousRecordErr{}
+	}
 	// check old overall rating value
 	rating, err := reviewDao.GetCourseOverallRating(courseID)
 	if err != nil {

@@ -98,3 +98,15 @@ func (err InternalErr) Error() string {
 func (err InternalErr) Code() int {
 	return http.StatusInternalServerError
 }
+
+// NoPreviousRecordErr represents an error when user
+// has not provide needed info yet to the database
+type NoPreviousRecordErr struct {}
+
+func (err NoPreviousRecordErr) Error() string {
+	return NoPreviousRecordExistErr
+}
+
+func (err NoPreviousRecordErr) Code() int {
+	return http.StatusMethodNotAllowed
+}

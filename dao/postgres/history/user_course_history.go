@@ -6,13 +6,22 @@ import (
 	"pmc_server/shared"
 )
 
-func GetUserCourseHistory(userID int64)  ([]model.UserCourseHistory, error) {
+func GetUserCourseHistoryList(userID int64)  ([]model.UserCourseHistory, error) {
 	var courseHistoryList []model.UserCourseHistory
 	res := postgres.DB.Where("user_id = ?", userID).Find(&courseHistoryList)
 	if res.Error != nil {
 		return nil, shared.InternalErr{}
 	}
 	return courseHistoryList, nil
+}
+
+func GetUserCourseHistoryByID(userID, courseID int64) (*model.UserCourseHistory, error) {
+	var courseHistory model.UserCourseHistory
+	res := postgres.DB.Where("user_id = ? and course_id = ?", userID, courseID).First(&courseHistory)
+	if res.Error != nil {
+		return nil, shared.InternalErr{}
+	}
+	return &courseHistory, nil
 }
 
 func CreateSingleUserCourseHistory(userID, courseID, classID int64, semesterID int32) error{
@@ -31,7 +40,7 @@ func CreateSingleUserCourseHistory(userID, courseID, classID int64, semesterID i
 
 func DeleteSingleUserCourseHistory(userID, courseID int64, semesterID int32) error {
 	var history model.UserCourseHistory
-	res := postgres.DB.Where("user_id = ?, course_id = ?, semester_id = ?", userID, courseID, semesterID).First(&history)
+	res := postgres.DB.Where("user_id = ? and course_id = ? and semester_id = ?", userID, courseID, semesterID).First(&history)
 	if res.Error != nil {
 		return shared.InternalErr{}
 	}
@@ -43,4 +52,13 @@ func DeleteSingleUserCourseHistory(userID, courseID int64, semesterID int32) err
 		return shared.InternalErr{}
 	}
 	return nil
+}
+
+func CheckIfCourseInUserCourseHistory(userID, courseID int64) (bool, error) {
+	var history model.UserCourseHistory
+	res := postgres.DB.Where("user_id = ? and course_id = ?", userID, courseID).First(&history)
+	if res.Error != nil {
+		return false, shared.InternalErr{}
+	}
+	return res.RowsAffected != 0, nil
 }

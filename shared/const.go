@@ -14,6 +14,7 @@ const InternalServerErr = "internal error occurred"
 const UserNotFoundErr = "user info does not exist"
 const ResourceAlreadyExistErr = "data already exist, please try another one"
 const InfoMismatchErr = "input data doesn't match"
+const NoPreviousRecordExistErr = "user has not provided needed information yet"
 
 const MAX = 10e10
 

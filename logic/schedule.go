@@ -55,7 +55,7 @@ func CreateSchedule(param model.PostEventParam) error {
 	}
 
 	// TODO: fix this semesterID
-	err = historyDao.CreateSingleUserCourseHistory(param.UserID, class.CourseID, 2)
+	err = historyDao.CreateSingleUserCourseHistory(param.UserID, class.CourseID, param.ClassID, 2)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"errors"
+	"gorm.io/gorm"
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
@@ -58,7 +60,10 @@ func CheckIfCourseInUserCourseHistory(userID, courseID int64) (bool, error) {
 	var history model.UserCourseHistory
 	res := postgres.DB.Where("user_id = ? and course_id = ?", userID, courseID).First(&history)
 	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
 		return false, shared.InternalErr{}
 	}
-	return res.RowsAffected != 0, nil
+	return true, nil
 }

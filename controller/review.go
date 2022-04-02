@@ -98,7 +98,9 @@ func PostCourseReviewHandler(c *gin.Context) {
 
 	err = logic.PostCourseReview(param, int64(courseIDInt))
 	if err != nil {
-		_ = c.Error(err)
+		c.JSON(http.StatusMethodNotAllowed, gin.H{
+			ERROR: NoPreviousRecordExistErr,
+		})
 		return
 	}
 

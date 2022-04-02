@@ -26,3 +26,20 @@ func GetCollegeSemesterList(collegeID int32) ([]dto.Semester, error) {
 	}
 	return semesterDtoList, nil
 }
+
+func GetCollegeList() ([]dto.College, error) {
+	collegeList, err := dao.GetCollegeList()
+	if err != nil {
+		return nil, err
+	}
+
+	collegeDtoList := make([]dto.College, 0)
+	for _, college := range collegeList {
+		collegeDto := dto.College{
+			Name: college.Name,
+			ID:   int32(college.ID),
+		}
+		collegeDtoList = append(collegeDtoList, collegeDto)
+	}
+	return collegeDtoList, nil
+}

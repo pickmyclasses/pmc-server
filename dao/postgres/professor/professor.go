@@ -23,4 +23,3 @@ func GetProfessorByName(name string) (*model.Professor, error) {
 	}
 	return &professor, nil
 }
-

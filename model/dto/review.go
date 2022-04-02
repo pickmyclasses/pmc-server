@@ -28,6 +28,6 @@ type Review struct {
 	IsExamHeavy        bool      `json:"isExamHeavy"`
 	IsHomeworkHeavy    bool      `json:"isHomeworkHeavy"`
 	ExtraCreditOffered bool      `json:"extraCreditOffered"`
-	ClassSemester Semester `json:"classSemester"`
-	ClassProfessor string `json:"classProfessor"`
+	ClassSemester      Semester  `json:"classSemester"`
+	ClassProfessor     string    `json:"classProfessor"`
 }

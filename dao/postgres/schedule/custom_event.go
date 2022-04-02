@@ -28,7 +28,7 @@ func CreateCustomEventByUserID(userID, semesterID int64, title, description,
 		EndTime:     endTime,
 		UserID:      userID,
 		SemesterID:  semesterID,
-		Kind: kind,
+		Kind:        kind,
 	}
 	res := postgres.DB.Create(&event)
 
@@ -52,13 +52,13 @@ func UpdateCustomEventByID(eventID, userID, semesterID int64, title, description
 	color string, days []int64, startTime, endTime int32, kind string) error {
 
 	res := postgres.DB.Model(&model.CustomEvent{}).Where("id = ?", eventID).Updates(map[string]interface{}{
-		"title"	: title,
+		"title":       title,
 		"description": description,
-		"color": color,
-		"days": pq.Int64Array(days),
-		"start_time": startTime,
-		"end_time": endTime,
-		"kind": kind,
+		"color":       color,
+		"days":        pq.Int64Array(days),
+		"start_time":  startTime,
+		"end_time":    endTime,
+		"kind":        kind,
 	})
 	if res.Error != nil || res.RowsAffected == 0 {
 		return shared.InternalErr{}

@@ -6,6 +6,14 @@ import (
 	"pmc_server/shared"
 )
 
+func GetCollegeList() ([]model.College, error) {
+	var collegeList []model.College
+	res := postgres.DB.Find(&collegeList)
+	if res.Error != nil {
+		return nil, shared.InternalErr{}
+	}
+	return collegeList, nil
+}
 func GetCollegeSemesterList(collegeID int32) ([]model.Semester, error) {
 	var semesterList []model.Semester
 	res := postgres.DB.Where("college_id = ?", collegeID).Find(&semesterList)

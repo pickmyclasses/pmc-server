@@ -28,8 +28,6 @@ func Register(param *model.RegisterParams) error {
 		FirstName: param.FirstName,
 		LastName:  param.LastName,
 		Password:  param.Password,
-		//FIXME: this needs to be changed in the future
-		College: model.College{Name: "University of Utah"},
 	})
 }
 

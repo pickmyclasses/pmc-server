@@ -134,7 +134,7 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 			Days:        event.Days,
 			StartTime:   event.StartTime,
 			EndTime:     event.EndTime,
-			Kind: event.Kind,
+			Kind:        event.Kind,
 		}
 		scheduleRes.CustomEvents = append(scheduleRes.CustomEvents, *customEvent)
 	}

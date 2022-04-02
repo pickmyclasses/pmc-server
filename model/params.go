@@ -63,14 +63,14 @@ type PostCustomEventParams struct {
 	StartTime   int32   `json:"startTime"`
 	EndTime     int32   `json:"endTime"`
 	EventID     int64   `json:"id"`
-	Kind string `json:"kind"`
+	Kind        string  `json:"kind"`
 }
 
 type PostEventParam struct {
-	IsNew      bool  `json:"isNew"`
-	UserID     int64 `json:"userID"`
-	ClassID     int64   `json:"classID"`
-	Event      PostCustomEventParams `json:"customEvent"`
+	IsNew   bool                  `json:"isNew"`
+	UserID  int64                 `json:"userID"`
+	ClassID int64                 `json:"classID"`
+	Event   PostCustomEventParams `json:"customEvent"`
 }
 
 type GetScheduleParams struct {
@@ -78,8 +78,8 @@ type GetScheduleParams struct {
 }
 
 type DeleteScheduleParams struct {
-	UserID     int64 `json:"userID"`     // Student ID
-	ClassID    int64 `json:"classID"`    // Class ID
+	UserID  int64 `json:"userID"`  // Student ID
+	ClassID int64 `json:"classID"` // Class ID
 	EventID int64 `json:"id"`
 }
 

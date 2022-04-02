@@ -11,7 +11,14 @@ import (
 )
 
 func GetCollegeList(ctx *gin.Context) {
-
+	collegeList, err := logic.GetCollegeList()
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		shared.DATA: collegeList,
+	})
 }
 
 func GetCollegeByID(ctx *gin.Context) {
@@ -41,6 +48,6 @@ func GetCollegeSemesterList(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		shared.DATA:  semesterList,
+		shared.DATA: semesterList,
 	})
 }

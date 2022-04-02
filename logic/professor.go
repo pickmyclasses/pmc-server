@@ -4,6 +4,7 @@ import (
 	classDao "pmc_server/dao/postgres/class"
 	dao "pmc_server/dao/postgres/professor"
 	"pmc_server/model/dto"
+	"strings"
 )
 
 func GetProfessorList() ([]dto.Professor, error) {
@@ -27,13 +28,22 @@ func GetProfessorListByCourseID(courseID int64) ([]dto.Professor, error) {
 		return nil, err
 	}
 
-	professorList := make([]dto.Professor, 0)
+	professorList := make(map[dto.Professor]bool, 0)
 	for _, class := range *classList {
 		if class.Instructors != "" {
-			professor := dto.Professor{ProfessorName: class.Instructors}
-			professorList = append(professorList, professor)
+			professor := dto.Professor{
+				ProfessorName: strings.TrimSpace(class.Instructors),
+			}
+			professorList[professor] = true
 		}
 	}
 
-	return professorList, nil
+	// remove dups
+	keys := make([]dto.Professor, len(professorList))
+	i := 0
+	for k := range professorList {
+		keys[i] = k
+		i++
+	}
+	return keys, nil
 }

@@ -1,4 +1,4 @@
-package schedule
+package dao
 
 import (
 	"pmc_server/init/postgres"

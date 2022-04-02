@@ -1,12 +1,14 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
 	"pmc_server/logic"
 	"pmc_server/model"
 	"pmc_server/shared"
 	. "pmc_server/shared"
+
+	"github.com/gin-gonic/gin"
 )
 
 func AddUserScheduleHandler(c *gin.Context) {

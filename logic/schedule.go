@@ -1,15 +1,17 @@
 package logic
 
 import (
+	"strconv"
+
 	classDao "pmc_server/dao/postgres/class"
 	courseDao "pmc_server/dao/postgres/course"
+	historyDao "pmc_server/dao/postgres/history"
 	reviewDao "pmc_server/dao/postgres/review"
 	dao "pmc_server/dao/postgres/schedule"
 	tagDao "pmc_server/dao/postgres/tag"
 	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
-	"strconv"
 )
 
 func CreateSchedule(param model.PostEventParam) error {
@@ -45,6 +47,19 @@ func CreateSchedule(param model.PostEventParam) error {
 	if err != nil {
 		return err
 	}
+
+	// update user course history
+	class, err := classDao.GetClassInfoByID(int(param.ClassID))
+	if err != nil {
+		return err
+	}
+
+	// TODO: fix this semesterID
+	err = historyDao.CreateSingleUserCourseHistory(param.UserID, class.CourseID, 2)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -144,6 +159,16 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 
 func DeleteSchedule(userID, classID int64) error {
 	err := dao.DeleteUserSchedule(userID, classID)
+	if err != nil {
+		return err
+	}
+
+	class, err := classDao.GetClassInfoByID(int(classID))
+	if err != nil {
+		return err
+	}
+	// TODO: fix this semesterID
+	err = historyDao.DeleteSingleUserCourseHistory(userID, class.CourseID, 2)
 	if err != nil {
 		return err
 	}

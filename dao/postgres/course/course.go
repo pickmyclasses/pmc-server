@@ -1,4 +1,4 @@
-package course
+package dao
 
 import (
 	"pmc_server/shared"

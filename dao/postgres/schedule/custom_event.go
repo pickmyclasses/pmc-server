@@ -1,4 +1,4 @@
-package schedule
+package dao
 
 import (
 	"github.com/lib/pq"

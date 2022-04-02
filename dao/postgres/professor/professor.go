@@ -1,4 +1,4 @@
-package professor
+package dao
 
 import (
 	"pmc_server/init/postgres"

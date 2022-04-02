@@ -28,6 +28,7 @@ func Register(param *model.RegisterParams) error {
 		FirstName: param.FirstName,
 		LastName:  param.LastName,
 		Password:  param.Password,
+		CollegeID: int64(param.CollegeID),
 	})
 }
 

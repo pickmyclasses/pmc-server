@@ -4,7 +4,7 @@ type RegisterParams struct {
 	Email      string `json:"email"`      // User Email
 	FirstName  string `json:"firstName"`  // User first name
 	LastName   string `json:"lastName"`   // User Last name
-	College    string `json:"college"`    // User college, this is restricted to UofU now
+	CollegeID    int32 `json:"college"`    // User college, this is restricted to UofU now
 	Password   string `json:"password"`   // User provided password, will be encrypted
 	RePassword string `json:"rePassword"` // User reentered password, to make sure they match
 }

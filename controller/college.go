@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetCollegeList(ctx *gin.Context) {
+func GetCollegeListHandler(ctx *gin.Context) {
 	collegeList, err := logic.GetCollegeList()
 	if err != nil {
 		_ = ctx.Error(err)
@@ -21,19 +21,19 @@ func GetCollegeList(ctx *gin.Context) {
 	})
 }
 
-func GetCollegeByID(ctx *gin.Context) {
+func GetCollegeByIDHandler(ctx *gin.Context) {
 
 }
 
-func GetCollegeBuildings(ctx *gin.Context) {
+func GetCollegeBuildingsHandler(ctx *gin.Context) {
 
 }
 
-func GetCollegeBuildingByID(ctx *gin.Context) {
+func GetCollegeBuildingByIDHandler(ctx *gin.Context) {
 
 }
 
-func GetCollegeSemesterList(ctx *gin.Context) {
+func GetCollegeSemesterListHandler(ctx *gin.Context) {
 	var collegeID int
 	var err error
 	if collegeID, err = strconv.Atoi(ctx.Param("id")); err != nil || collegeID == 0 {

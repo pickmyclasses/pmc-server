@@ -60,16 +60,17 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/professor/list", controller.GetProfessorListHandler)
 
 		// for university
-		r.GET("/college/list", controller.GetCollegeList)
-		r.GET("/college/:id", controller.GetCollegeByID)
-		r.GET("/college/:id/building/list", controller.GetCollegeBuildings)
-		r.GET("/college/:id/building", controller.GetCollegeBuildingByID)
-		r.GET("/college/:id/semester/list", controller.GetCollegeSemesterList)
+		r.GET("/college/list", controller.GetCollegeListHandler)
+		r.GET("/college/:id", controller.GetCollegeByIDHandler)
+		r.GET("/college/:id/building/list", controller.GetCollegeBuildingsHandler)
+		r.GET("/college/:id/building", controller.GetCollegeBuildingByIDHandler)
+		r.GET("/college/:id/semester/list", controller.GetCollegeSemesterListHandler)
 
 		// for major
-		r.GET("/college/:id/major/list", controller.GetMajorList)
-		r.GET("/college/:id/major/:id", controller.GetMajorByID)
-		r.POST("/college/:id/major", controller.CreateMajor)
+		r.GET("/college/:id/major/list", controller.GetMajorListHandler)
+		r.GET("/college/:id/major/:id", controller.GetMajorByIDHandler)
+		r.POST("/college/:id/major", controller.CreateMajorHandler)
+		r.POST("/college/:id/emphasis", controller.CreateEmphasisHandler)
 
 		// for testing
 		r.GET("/ping", auth.JWT(), func(c *gin.Context) {

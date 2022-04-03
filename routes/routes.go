@@ -67,8 +67,9 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/college/:id/semester/list", controller.GetCollegeSemesterList)
 
 		// for major
-		r.GET("/major/list", controller.GetMajorList)
-		r.GET("/major/:id", controller.GetMajorByID)
+		r.GET("/college/:id/major/list", controller.GetMajorList)
+		r.GET("/college/:id/major/:id", controller.GetMajorByID)
+		r.POST("/college/:id/major", controller.CreateMajor)
 
 		// for testing
 		r.GET("/ping", auth.JWT(), func(c *gin.Context) {

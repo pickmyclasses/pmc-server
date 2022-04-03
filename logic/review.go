@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strconv"
 
-	classDao "pmc_server/dao/postgres/class"
 	collegeDao "pmc_server/dao/postgres/college"
 	historyDao "pmc_server/dao/postgres/history"
 	reviewDao "pmc_server/dao/postgres/review"
@@ -90,12 +89,11 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 			Season:      semester.Season,
 		}
 
-		class, err := classDao.GetClassInfoByID(int(userCourseHistory.ClassID))
 		if err != nil {
 			return nil, err
 		}
 
-		reviewDto.ClassProfessor = class.Instructors
+		reviewDto.ClassProfessor =userCourseHistory.ProfessorName
 		reviewRsp.Reviews = append(reviewRsp.Reviews, reviewDto)
 	}
 
@@ -111,7 +109,14 @@ func GetReviewByID(reviewID string) (*model.Review, error) {
 	return reviewDao.GetReviewByID(idInt)
 }
 
-func PostCourseReview(review dto.Review, courseID int64) error {
+func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) error {
+	if extraInfoNeeded {
+		// TODO: fix the semesterID here
+		err := historyDao.CreateSingleUserCourseHistory(review.UserID, review.CourseID, 2, review.ClassProfessor)
+		if err != nil {
+			return err
+		}
+	}
 	userCourseHistory, err := historyDao.CheckIfCourseInUserCourseHistory(review.UserID, courseID)
 	if err != nil {
 		return err

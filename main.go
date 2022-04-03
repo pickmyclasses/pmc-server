@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"pmc_server/init/aura"
 	"pmc_server/init/es"
 	"syscall"
 	"time"
@@ -68,6 +69,11 @@ func main() {
 	if err = es.Init(viper.GetString("elastic.url"), viper.GetString("elastic.username"), viper.GetString("elastic.password")); err != nil {
 		fmt.Printf("Init res failed %+v", err)
 		return
+	}
+
+	// init neo4j
+	if err = aura.Init(viper.GetString("auradb.uri"), viper.GetString("auradb.username"), viper.GetString("auradb.password")); err != nil {
+		fmt.Printf("Init neo4j failed %+v", err)
 	}
 
 	// init router

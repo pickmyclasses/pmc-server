@@ -96,7 +96,13 @@ func PostCourseReviewHandler(c *gin.Context) {
 		return
 	}
 
-	err = logic.PostCourseReview(param, int64(courseIDInt))
+	extraInfoNeeded := false
+	if param.ClassSemester.Season != "" && param.ClassSemester.Year != 0 {
+		extraInfoNeeded = true
+	}
+
+	err = logic.PostCourseReview(param, int64(courseIDInt), extraInfoNeeded)
+
 	if err != nil {
 		c.JSON(http.StatusMethodNotAllowed, gin.H{
 			ERROR: NoPreviousRecordExistErr,

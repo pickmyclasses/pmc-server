@@ -8,7 +8,7 @@ import (
 	"pmc_server/shared"
 )
 
-func GetUserCourseHistoryList(userID int64)  ([]model.UserCourseHistory, error) {
+func GetUserCourseHistoryList(userID int64) ([]model.UserCourseHistory, error) {
 	var courseHistoryList []model.UserCourseHistory
 	res := postgres.DB.Where("user_id = ?", userID).Find(&courseHistoryList)
 	if res.Error != nil {
@@ -26,12 +26,12 @@ func GetUserCourseHistoryByID(userID, courseID int64) (*model.UserCourseHistory,
 	return &courseHistory, nil
 }
 
-func CreateSingleUserCourseHistory(userID, courseID, classID int64, semesterID int32) error{
+func CreateSingleUserCourseHistory(userID, courseID int64, semesterID int32, professorName string) error {
 	history := model.UserCourseHistory{
 		UserID:     userID,
 		CourseID:   courseID,
 		SemesterID: semesterID,
-		ClassID: classID,
+		ProfessorName:    professorName,
 	}
 	res := postgres.DB.Create(&history)
 	if res.Error != nil {

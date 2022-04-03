@@ -101,7 +101,7 @@ func (err InternalErr) Code() int {
 
 // NoPreviousRecordErr represents an error when user
 // has not provide needed info yet to the database
-type NoPreviousRecordErr struct {}
+type NoPreviousRecordErr struct{}
 
 func (err NoPreviousRecordErr) Error() string {
 	return NoPreviousRecordExistErr

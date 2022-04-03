@@ -13,6 +13,7 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/lib/pq v1.10.4
 	github.com/natefinch/lumberjack v2.0.0+incompatible
+	github.com/neo4j/neo4j-go-driver/v4 v4.4.1 // indirect
 	github.com/olivere/elastic/v7 v7.0.31
 	github.com/onsi/ginkgo v1.16.5 // indirect
 	github.com/onsi/gomega v1.17.0 // indirect

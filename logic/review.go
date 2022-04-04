@@ -93,7 +93,7 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 			return nil, err
 		}
 
-		reviewDto.ClassProfessor =userCourseHistory.ProfessorName
+		reviewDto.ClassProfessor = userCourseHistory.ProfessorName
 		reviewRsp.Reviews = append(reviewRsp.Reviews, reviewDto)
 	}
 

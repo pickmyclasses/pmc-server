@@ -51,8 +51,8 @@ func CreateMajorHandler(ctx *gin.Context) {
 }
 
 type CreateEmphasisParam struct {
-	Name string `json:"name"`
-	TotalCredit int32 `json:"totalCredit"`
+	Name          string `json:"name"`
+	TotalCredit   int32  `json:"totalCredit"`
 	MainMajorName string `json:"mainMajorName"`
 }
 

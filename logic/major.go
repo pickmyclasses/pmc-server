@@ -20,7 +20,7 @@ func CreateMajor(collegeID int, name string, degreeHour, minMajorHour int32, emp
 	return entity, nil
 }
 
-func CreateEmphasis(collegeID int32, name string,  majorName string, totalCredit int32) (string, error) {
+func CreateEmphasis(collegeID int32, name string, majorName string, totalCredit int32) (string, error) {
 	insertion := major.EmphasisInsertion{
 		Emphasis: major.Emphasis{
 			Name:          name,

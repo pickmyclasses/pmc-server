@@ -2,6 +2,7 @@ package logic
 
 import (
 	"fmt"
+	"pmc_server/dao/aura/course"
 	"strconv"
 
 	courseEsDao "pmc_server/dao/es/course"
@@ -306,4 +307,21 @@ func removeDups(elements []int64) (nodups []int64) {
 		}
 	}
 	return
+}
+
+func InsertCourseSet(name, relation, majorName string, totalCredits int32) (string, error) {
+	insertion := course.InsertSet{
+		Set: course.Set{
+			Name:         name,
+			Relation:     relation,
+			MajorName:    majorName,
+			TotalCredits: totalCredits,
+		},
+	}
+
+	courseSet, err := insertion.InsertCourseSet()
+	if err != nil {
+		return "", err
+	}
+	return courseSet, nil
 }

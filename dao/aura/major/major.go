@@ -54,10 +54,10 @@ func (m *Insertion) insertMajorFn(tx neo4j.Transaction) (interface{}, error) {
 }
 
 type Emphasis struct {
-	Name string
-	TotalCredit int32
+	Name          string
+	TotalCredit   int32
 	MainMajorName string
-	CollegeID int32
+	CollegeID     int32
 }
 
 type EmphasisInsertion struct {
@@ -75,14 +75,14 @@ func (m EmphasisInsertion) InsertEmphasis() (string, error) {
 }
 
 func (m *EmphasisInsertion) insertEmphasisFn(tx neo4j.Transaction) (interface{}, error) {
-	records, err := tx.Run("MATCH (m:Major) WHERE m.name = $major_name " +
-		"CREATE (e:Emphasis)-[:SUB_OF]->(m) SET e.name = $name, e.total_credit = $total_credit, " +
+	records, err := tx.Run("MATCH (m:Major) WHERE m.name = $major_name "+
+		"CREATE (e:Emphasis)-[:SUB_OF]->(m) SET e.name = $name, e.total_credit = $total_credit, "+
 		"e.college_id = $college_id RETURN e.name",
 		map[string]interface{}{
-		"major_name": m.Emphasis.MainMajorName,
-		"name": m.Emphasis.Name,
-		"total_credit": m.Emphasis.TotalCredit,
-		"college_id": m.Emphasis.CollegeID,
+			"major_name":   m.Emphasis.MainMajorName,
+			"name":         m.Emphasis.Name,
+			"total_credit": m.Emphasis.TotalCredit,
+			"college_id":   m.Emphasis.CollegeID,
 		})
 
 	if err != nil {
@@ -90,7 +90,6 @@ func (m *EmphasisInsertion) insertEmphasisFn(tx neo4j.Transaction) (interface{},
 	}
 
 	record, err := records.Single()
-	fmt.Println(record)
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +98,8 @@ func (m *EmphasisInsertion) insertEmphasisFn(tx neo4j.Transaction) (interface{},
 }
 
 type DegreeType struct {
-	Name string
-	Major string
+	Name      string
+	Major     string
 	CollegeID int32
 }
 
@@ -119,11 +118,11 @@ func (m DegreeInsertion) InsertDegreeType() (string, error) {
 }
 
 func (m *DegreeInsertion) insertDegreeTypeFn(tx neo4j.Transaction) (interface{}, error) {
-	records, err := tx.Run("MATCH (m:Major) WHERE m.name = $major_name " +
+	records, err := tx.Run("MATCH (m:Major) WHERE m.name = $major_name "+
 		"CREATE (d:DegreeType)<-[HAS_DEGREE]-(m) SET d.name = $name, d.college_id = $college_id RETURN d.name",
 		map[string]interface{}{
 			"major_name": m.Type.Major,
-			"name": m.Type.Name,
+			"name":       m.Type.Name,
 			"college_id": m.Type.CollegeID,
 		})
 	if err != nil {
@@ -138,5 +137,3 @@ func (m *DegreeInsertion) insertDegreeTypeFn(tx neo4j.Transaction) (interface{},
 
 	return record.Values[0], nil
 }
-
-

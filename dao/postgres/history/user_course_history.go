@@ -28,10 +28,10 @@ func GetUserCourseHistoryByID(userID, courseID int64) (*model.UserCourseHistory,
 
 func CreateSingleUserCourseHistory(userID, courseID int64, semesterID int32, professorName string) error {
 	history := model.UserCourseHistory{
-		UserID:     userID,
-		CourseID:   courseID,
-		SemesterID: semesterID,
-		ProfessorName:    professorName,
+		UserID:        userID,
+		CourseID:      courseID,
+		SemesterID:    semesterID,
+		ProfessorName: professorName,
 	}
 	res := postgres.DB.Create(&history)
 	if res.Error != nil {

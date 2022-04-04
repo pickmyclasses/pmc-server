@@ -124,3 +124,28 @@ func GetCoursesBySearchHandler(c *gin.Context) {
 		TOTAL: total,
 	})
 }
+
+type CreateCourseSetParam struct {
+	Name         string `json:"name"`
+	Relation     string `json:"relation"`
+	MajorName    string `json:"majorName"`
+	TotalCredits int32 `json:"totalCredits"`
+}
+
+func CreateCourseSetHandler(c *gin.Context) {
+	var param CreateCourseSetParam
+	if err := c.ShouldBindJSON(&param); err != nil {
+		_ = c.Error(shared.ParamInsufficientErr{})
+		return
+	}
+
+	courseSet, err := logic.InsertCourseSet(param.Name, param.Relation, param.MajorName, param.TotalCredits)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		DATA:  courseSet,
+	})
+}

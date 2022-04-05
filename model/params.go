@@ -96,3 +96,13 @@ type VoteTagParam struct {
 type SemesterParam struct {
 	CollegeID int32 `json:"collegeID"`
 }
+
+type CreateBatchCourseInSetParam struct {
+	CourseNameList []string `json:"courseNameList"`
+	TargetName string `json:"targetName"`
+	SetName string `json:"setName"`
+	RelationToTarget string `json:"relationToTarget"`
+	LinkedToMajor bool `json:"linkedToMajor"`
+	CourseRequiredInSet int32 `json:"courseRequiredInSet"`
+}
+

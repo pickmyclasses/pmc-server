@@ -68,3 +68,34 @@ type InsertEntity struct {
 	Entity Entity
 }
 
+func (s InsertEntity) Insert() (string, error) {
+	session := aura.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+	result, err := session.WriteTransaction(s.InsertFn)
+	if err != nil {
+		return "", err
+	}
+	return result.(string), nil
+}
+
+func (s *InsertEntity) InsertFn(tx neo4j.Transaction) (interface{}, error) {
+	command := "MATCH (c:CourseSet) WHERE c.name = $set_name " +
+		"CREATE (s:Course)<-[:INCLUDES]-(c) SET s.name = $name, s.id = $id " +
+		"RETURN s.name"
+	records, err := tx.Run(command, map[string]interface{}{
+		"set_name": s.Entity.SetName,
+		"name": s.Entity.Name,
+		"id": s.Entity.ID,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	record, err := records.Single()
+	if err != nil {
+		return nil, err
+	}
+
+	return record.Values[0], nil
+}

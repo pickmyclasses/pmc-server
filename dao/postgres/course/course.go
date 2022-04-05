@@ -2,6 +2,7 @@ package dao
 
 import (
 	"pmc_server/shared"
+	"strings"
 
 	"pmc_server/init/postgres"
 	"pmc_server/model"
@@ -42,4 +43,13 @@ func GetClassListByCourseID(id int) (*[]model.Class, int64) {
 	var classes []model.Class
 	res := postgres.DB.Where("course_id = ?", id).Find(&classes)
 	return &classes, res.RowsAffected
+}
+
+func GetCourseByCatalogName(catalogName string) (*model.Course, error) {
+	var course model.Course
+	result := postgres.DB.Where("catalog_course_name", strings.TrimSpace(catalogName)).First(&course)
+	if result.Error != nil {
+		return nil, shared.InternalErr{}
+	}
+	return &course, nil
 }

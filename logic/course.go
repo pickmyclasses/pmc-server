@@ -309,19 +309,52 @@ func removeDups(elements []int64) (nodups []int64) {
 	return
 }
 
-func InsertCourseSet(name, relation, majorName string, totalCredits int32) (string, error) {
-	insertion := course.InsertSet{
+type CourseInfo struct {
+	Name string
+	SetName string
+}
+
+func InsertCoursesToSet(courseInfoList []string, targetName, setName, relationToTarget string,
+	linkedToMajor bool, courseRequiredInSet int32) ([]string, error) {
+	// first insert the set
+	setInsertion := course.InsertSet{
 		Set: course.Set{
-			Name:         name,
-			Relation:     relation,
-			MajorName:    majorName,
-			TotalCredits: totalCredits,
+			Name:          setName,
+			Relation:       relationToTarget,
+			TargetName:     targetName,
+			CourseRequired: courseRequiredInSet,
+			LinkedToMajor:  linkedToMajor,
 		},
 	}
 
-	courseSet, err := insertion.InsertCourseSet()
+	_, err := setInsertion.InsertCourseSet()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return courseSet, nil
+
+	resList := make([]string, 0)
+	// insert courses into set
+	for _, courseName := range courseInfoList {
+		courseEntity, err := courseDao.GetCourseByCatalogName(courseName)
+		// normally this won't cause any error as long as the course exist
+		// if the course doesn't exist, we can't really do anything about it
+		if err != nil {
+			continue
+		}
+		entityInsertion := course.InsertEntity{
+			Entity: course.Entity{
+				Name:   courseName,
+				ID:     courseEntity.ID,
+				SetName: setName,
+			},
+		}
+
+		entity, err := entityInsertion.Insert()
+		if err != nil {
+			return nil, err
+		}
+		resList = append(resList, entity)
+	}
+
+	return resList, nil
 }

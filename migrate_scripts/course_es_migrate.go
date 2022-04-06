@@ -76,6 +76,7 @@ func CourseEs() {
 			Title:              course.Title,
 			Description:        course.Description,
 			CatalogCourseName: 	fmt.Sprintf("%s %s", letter, number),
+			CatalogName: letter,
 			Prerequisites:      course.Prerequisites,
 			Component:          course.Component,
 			MaxCredit:          float32(maxCredit),

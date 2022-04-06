@@ -6,6 +6,7 @@ type Course struct {
 	Title              string  `json:"title"`
 	Description        string  `json:"description"`
 	CatalogCourseName string  `json:"catalog_course_name"`
+	CatalogName string `json:"catalog_name"`
 	Prerequisites      string  `json:"prerequisites"`
 	Component          string  `json:"component"`
 	MaxCredit          float32 `json:"max_credit"`
@@ -36,6 +37,9 @@ func (Course) GetMapping() string {
             "catalog_course_name":{
                "type":"text"
             },
+			"catalog_name":{
+ 				"type":"text"
+			}
             "prerequisites":{
                "type":"text"
             },

@@ -36,7 +36,7 @@ func NewBoolQuery(pageNum, pageSize int) *BoolQuery {
 }
 
 func (c *BoolQuery) QueryByKeywords(keywords string) {
-	fields := []string{"title^2.0", "description^1.0", "designation_catalog^2.0", "catalog_course_name^2.0"}
+	fields := []string{"title", "description", "designation_catalog", "catalog_course_name"}
 	for _, s := range keywords {
 		if unicode.IsDigit(s) {
 			fields = []string{"title4.0", "description^1.0", "designation_catalog^2.0", "catalog_course_name^3.0"}

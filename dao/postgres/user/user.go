@@ -90,8 +90,8 @@ func GetUserHistoryCourseList(userID int64) ([]int64, error) {
 
 func AddUserHistoryCourse(userID, courseID int64) error {
 	history := model.UserCourseHistory{
-		UserID:        userID,
-		CourseID:      courseID,
+		UserID:   userID,
+		CourseID: courseID,
 	}
 
 	result := postgres.DB.Model(&model.UserCourseHistory{}).Create(&history)
@@ -103,8 +103,8 @@ func AddUserHistoryCourse(userID, courseID int64) error {
 
 func RemoveUserHistoryCourse(userID, courseID int64) error {
 	history := model.UserCourseHistory{
-		UserID:        userID,
-		CourseID:      courseID,
+		UserID:   userID,
+		CourseID: courseID,
 	}
 	result := postgres.DB.Delete(&history)
 	if result.Error != nil {

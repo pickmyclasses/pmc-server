@@ -165,7 +165,7 @@ func (r *Read) findAllFn(tx neo4j.Transaction) (interface{}, error) {
 	majorList := make([]Entity, 0)
 	for res.Next() {
 		var major Entity
-		if name, ok :=  res.Record().Values[3].(string); ok {
+		if name, ok := res.Record().Values[3].(string); ok {
 			major.Name = name
 		}
 		if degreeHour, ok := res.Record().Values[0].(int64); ok {
@@ -202,7 +202,7 @@ func (r ReadEmphasis) FindAllEmphasisesOfAMajor() ([]Entity, error) {
 }
 
 func (r *ReadEmphasis) findAllEmphasisesFn(tx neo4j.Transaction) (interface{}, error) {
-	res, err := tx.Run("MATCH (m:Major {name: $major_name, college_id: $college_id})<-[:SUB_OF]-(emphasis) " +
+	res, err := tx.Run("MATCH (m:Major {name: $major_name, college_id: $college_id})<-[:SUB_OF]-(emphasis) "+
 		"RETURN emphasis.name",
 		map[string]interface{}{
 			"major_name": r.MajorName,

@@ -235,7 +235,7 @@ func SeparateLettersAndNums(word string) string {
 		if s >= 'A' && s <= 'Z' {
 			res = append(res, s)
 		}
-		if s >= 'a' && s <= 'z'{
+		if s >= 'a' && s <= 'z' {
 			res = append(res, s)
 		}
 		if unicode.IsSpace(s) {

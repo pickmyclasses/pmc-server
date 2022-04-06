@@ -85,7 +85,7 @@ func GetUserHistoryHandler(c *gin.Context) {
 
 type HistoryParam struct {
 	CourseID int64 `json:"courseID"`
-	UserID int64 `json:"userID"`
+	UserID   int64 `json:"userID"`
 }
 
 func AddUserHistoryHandler(c *gin.Context) {

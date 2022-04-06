@@ -143,9 +143,9 @@ func TestConvertSliceToDateString(t *testing.T) {
 
 func TestParseString(t *testing.T) {
 	tests := []struct {
-		origin string
+		origin  string
 		letters string
-		number string
+		number  string
 	}{
 		{"CS4400", "CS", "4400"},
 		{"HE EDU310", "HE EDU", "310"},
@@ -163,9 +163,9 @@ func TestParseString(t *testing.T) {
 
 func TestSeparateLettersAndNums(t *testing.T) {
 	tests := []struct {
-		origin string
+		origin    string
 		converted string
-	} {
+	}{
 		{"CS4400", "CS 4400"},
 		{"CS 4000", "CS 4000"},
 		{"Math 2210", "Math 2210"},

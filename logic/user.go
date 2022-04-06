@@ -55,7 +55,7 @@ func Login(param *model.LoginParams) (*dto.User, error) {
 	}, nil
 }
 
-func GetUserHistoryCourseList(userID int64) ([]int64, error)  {
+func GetUserHistoryCourseList(userID int64) ([]int64, error) {
 	historyCourseList, err := dao.GetUserHistoryCourseList(userID)
 	if err != nil {
 		return nil, err

@@ -117,13 +117,21 @@ func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) e
 			return err
 		}
 	}
-	userCourseHistory, err := historyDao.CheckIfCourseInUserCourseHistory(review.UserID, courseID)
+	userCourseHistoryExist, err := historyDao.CheckIfCourseInUserCourseHistory(review.UserID, courseID)
 	if err != nil {
 		return err
 	}
-	if !userCourseHistory {
+	if !userCourseHistoryExist {
 		return shared.NoPreviousRecordErr{}
 	}
+	history, err := historyDao.GetUserCourseHistoryByID(review.UserID, courseID)
+	if err != nil {
+		return err
+	}
+	if history.ProfessorName == "" || history.SemesterID == 0 {
+		return shared.NoPreviousRecordErr{}
+	}
+
 	// check old overall rating value
 	rating, err := reviewDao.GetCourseOverallRating(courseID)
 	if err != nil {

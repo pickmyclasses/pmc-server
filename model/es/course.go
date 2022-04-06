@@ -5,8 +5,8 @@ type Course struct {
 	DesignationCatalog string  `json:"designation_catalog"`
 	Title              string  `json:"title"`
 	Description        string  `json:"description"`
-	CatalogCourseName string  `json:"catalog_course_name"`
-	CatalogName string `json:"catalog_name"`
+	CatalogCourseName  string  `json:"catalog_course_name"`
+	CatalogName        string  `json:"catalog_name"`
 	Prerequisites      string  `json:"prerequisites"`
 	Component          string  `json:"component"`
 	MaxCredit          float32 `json:"max_credit"`

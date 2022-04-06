@@ -160,3 +160,24 @@ func TestParseString(t *testing.T) {
 		}
 	}
 }
+
+func TestSeparateLettersAndNums(t *testing.T) {
+	tests := []struct {
+		origin string
+		converted string
+	} {
+		{"CS4400", "CS 4400"},
+		{"CS 4000", "CS 4000"},
+		{"Math 2210", "Math 2210"},
+		{"Math2210", "Math 2210"},
+		{"EP SN5000", "EP SN 5000"},
+		{"ESL1", "ESL 1"},
+	}
+
+	for _, tt := range tests {
+		if actual := SeparateLettersAndNums(tt.origin); actual != tt.converted {
+			t.Errorf("TestSeparateLettersAndNums(%+v), should be %s, got %s instead \n",
+				tt.origin, tt.converted, actual)
+		}
+	}
+}

@@ -228,3 +228,31 @@ func Contains(s []string, e string) bool {
 	}
 	return false
 }
+
+func SeparateLettersAndNums(word string) string {
+	var res []rune
+	for idx, s := range word {
+		if s >= 'A' && s <= 'Z' {
+			res = append(res, s)
+		}
+		if s >= 'a' && s <= 'z'{
+			res = append(res, s)
+		}
+		if unicode.IsSpace(s) {
+			res = append(res, s)
+		}
+		if s >= '0' && s <= '9' {
+			if idx == 0 {
+				res = append(res, s)
+			} else {
+				if !unicode.IsSpace(rune(word[idx-1])) && !unicode.IsDigit(rune(word[idx-1])) {
+					res = append(res, ' ')
+					res = append(res, s)
+				} else {
+					res = append(res, s)
+				}
+			}
+		}
+	}
+	return string(res)
+}

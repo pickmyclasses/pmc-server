@@ -3,8 +3,6 @@ package logic
 import (
 	"fmt"
 	"pmc_server/dao/aura/course"
-	"strconv"
-
 	courseEsDao "pmc_server/dao/es/course"
 	classDao "pmc_server/dao/postgres/class"
 	courseDao "pmc_server/dao/postgres/course"
@@ -13,6 +11,7 @@ import (
 	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
+	"strconv"
 )
 
 func GetCourseList(pn, pSize int) ([]dto.Course, int64, error) {
@@ -137,7 +136,8 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 	courseBoolQuery := courseEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
 
 	if courseParam.Keyword != "" {
-		courseBoolQuery.QueryByKeywords(courseParam.Keyword)
+		keyword := shared.SeparateLettersAndNums(courseParam.Keyword)
+		courseBoolQuery.QueryByKeywords(keyword)
 	}
 	if courseParam.MinCredit != 0 {
 		courseBoolQuery.QueryByMinCredit(courseParam.MinCredit)

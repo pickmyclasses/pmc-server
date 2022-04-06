@@ -132,7 +132,7 @@ func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	return classList, total, nil
 }
 
-func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, error) {
+func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int64, error) {
 	courseBoolQuery := courseEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
 
 	if courseParam.Keyword != "" {
@@ -151,7 +151,13 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 	if err != nil {
 		return nil, 0, err
 	}
-	return *courseFitIDList, total, nil
+
+	courseDtoList, err := buildCourseDto(*courseFitIDList)
+	if err != nil {
+		return nil, -1, err
+	}
+
+	return courseDtoList, total, nil
 
 	//if err != nil {
 	//	return nil, -1, fmt.Errorf("error when fetching by keywords %+v", err)
@@ -233,7 +239,7 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]int64, int64, e
 func buildCourseDto(idList []int64) ([]dto.Course, error) {
 	courseDtoList := make([]dto.Course, 0)
 	for _, id := range idList {
-		course, err := courseDao.GetCourseByID(int(id))
+		courseByID, err := courseDao.GetCourseByID(int(id))
 		if err != nil {
 			return nil, shared.InternalErr{}
 		}
@@ -245,10 +251,10 @@ func buildCourseDto(idList []int64) ([]dto.Course, error) {
 
 		var maxCredit float64
 		var minCredit float64
-		if max, err := strconv.ParseFloat(course.MaxCredit, 32); err == nil {
+		if max, err := strconv.ParseFloat(courseByID.MaxCredit, 32); err == nil {
 			maxCredit = max
 		}
-		if min, err := strconv.ParseFloat(course.MinCredit, 32); err == nil {
+		if min, err := strconv.ParseFloat(courseByID.MinCredit, 32); err == nil {
 			minCredit = min
 		}
 
@@ -264,14 +270,14 @@ func buildCourseDto(idList []int64) ([]dto.Course, error) {
 
 		courseDto := dto.Course{
 			CourseID:           id,
-			IsHonor:            course.IsHonor,
-			FixedCredit:        course.FixedCredit,
-			DesignationCatalog: course.DesignationCatalog,
-			Description:        course.Description,
-			Prerequisites:      course.Prerequisites,
-			Title:              course.Title,
-			CatalogCourseName:  course.CatalogCourseName,
-			Component:          course.Component,
+			IsHonor:            courseByID.IsHonor,
+			FixedCredit:        courseByID.FixedCredit,
+			DesignationCatalog: courseByID.DesignationCatalog,
+			Description:        courseByID.Description,
+			Prerequisites:      courseByID.Prerequisites,
+			Title:              courseByID.Title,
+			CatalogCourseName:  courseByID.CatalogCourseName,
+			Component:          courseByID.Component,
 			MaxCredit:          maxCredit,
 			MinCredit:          minCredit,
 			Classes:            *classList,

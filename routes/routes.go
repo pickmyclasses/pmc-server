@@ -25,6 +25,9 @@ func SetUp(mode string) *gin.Engine {
 		// for user
 		r.POST("/register", controller.RegisterHandler)
 		r.POST("/login", controller.LoginHandler)
+		r.POST("/user/history", controller.AddUserHistoryHandler)
+		r.GET("/user/history", controller.GetUserHistoryHandler)
+		r.PUT("/user/history", controller.RemoveUserHistoryHandler)
 
 		// for schedule
 		r.POST("/schedule", controller.AddUserScheduleHandler)

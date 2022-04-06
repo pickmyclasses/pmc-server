@@ -54,3 +54,27 @@ func Login(param *model.LoginParams) (*dto.User, error) {
 		CollegeID: int32(user.CollegeID),
 	}, nil
 }
+
+func GetUserHistoryCourseList(userID int64) ([]int64, error)  {
+	historyCourseList, err := dao.GetUserHistoryCourseList(userID)
+	if err != nil {
+		return nil, err
+	}
+	return historyCourseList, nil
+}
+
+func AddUserCourseHistory(userID, courseID int64) error {
+	err := dao.AddUserHistoryCourse(userID, courseID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func RemoveUserCourseHistory(userID, courseID int64) error {
+	err := dao.RemoveUserHistoryCourse(userID, courseID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

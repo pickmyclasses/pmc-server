@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"pmc_server/logic"
 	"pmc_server/model"
@@ -60,5 +61,65 @@ func LoginHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		DATA: userInfo,
+	})
+}
+
+func GetUserHistoryHandler(c *gin.Context) {
+	userID := c.Param("id")
+	userIDInt, err := strconv.Atoi(userID)
+	if err != nil {
+		_ = c.Error(shared.ParamIncompatibleErr{})
+		return
+	}
+
+	history, err := logic.GetUserHistoryCourseList(int64(userIDInt))
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		DATA: history,
+	})
+}
+
+type HistoryParam struct {
+	CourseID int64 `json:"courseID"`
+	UserID int64 `json:"userID"`
+}
+
+func AddUserHistoryHandler(c *gin.Context) {
+	var param HistoryParam
+	if err := c.ShouldBindJSON(&param); err != nil {
+		_ = c.Error(shared.ParamInsufficientErr{})
+		return
+	}
+
+	err := logic.AddUserCourseHistory(param.UserID, param.CourseID)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
+	})
+}
+
+func RemoveUserHistoryHandler(c *gin.Context) {
+	var param HistoryParam
+	if err := c.ShouldBindJSON(&param); err != nil {
+		_ = c.Error(shared.ParamInsufficientErr{})
+		return
+	}
+
+	err := logic.RemoveUserCourseHistory(param.UserID, param.CourseID)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
 	})
 }

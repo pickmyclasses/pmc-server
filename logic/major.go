@@ -36,3 +36,19 @@ func CreateEmphasis(collegeID int32, name string, majorName string, totalCredit 
 	}
 	return emphasis, nil
 }
+
+type MajorDto struct {
+	Name string `json:"name"`
+	
+}
+
+func GetMajorList(collegeID int32) ([]major.Entity, error) {
+	reader := major.Read{
+		CollegeID: collegeID,
+	}
+	majorList, err := reader.FindAll()
+	if err != nil {
+		return nil, err
+	}
+	return majorList, nil
+}

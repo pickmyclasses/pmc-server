@@ -9,7 +9,22 @@ import (
 )
 
 func GetMajorListHandler(ctx *gin.Context) {
+	id := ctx.Param("id")
+	collegeID, err := strconv.Atoi(id)
+	if err != nil {
+		_ = ctx.Error(shared.ParamInsufficientErr{})
+		return
+	}
 
+	majorList, err := logic.GetMajorList(int32(collegeID))
+	if err != nil {
+		_ = ctx.Error(shared.InternalErr{})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		shared.DATA: majorList,
+	})
 }
 
 func GetMajorByIDHandler(ctx *gin.Context) {
@@ -32,17 +47,13 @@ func CreateMajorHandler(ctx *gin.Context) {
 	}
 	var param CreateParams
 	if err := ctx.ShouldBindJSON(&param); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			shared.ERROR: err,
-		})
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
 		return
 	}
 
 	major, err := logic.CreateMajor(collegeID, param.Name, param.DegreeHour, param.MinMajorHour, param.EmphasisRequired)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			shared.ERROR: err,
-		})
+		_ = ctx.Error(shared.InternalErr{})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
@@ -66,17 +77,13 @@ func CreateEmphasisHandler(ctx *gin.Context) {
 
 	var param CreateEmphasisParam
 	if err := ctx.ShouldBindJSON(&param); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			shared.ERROR: err,
-		})
+		ctx.Error(shared.ParamIncompatibleErr{})
 		return
 	}
 
 	emphasis, err := logic.CreateEmphasis(int32(collegeID), param.Name, param.MainMajorName, param.TotalCredit)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			shared.ERROR: err,
-		})
+		_ = ctx.Error(err)
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{

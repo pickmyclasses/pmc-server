@@ -310,7 +310,7 @@ func removeDups(elements []int64) (nodups []int64) {
 }
 
 type CourseInfo struct {
-	Name string
+	Name    string
 	SetName string
 }
 
@@ -319,7 +319,7 @@ func InsertCoursesToSet(courseInfoList []string, targetName, setName, relationTo
 	// first insert the set
 	setInsertion := course.InsertSet{
 		Set: course.Set{
-			Name:          setName,
+			Name:           setName,
 			Relation:       relationToTarget,
 			TargetName:     targetName,
 			CourseRequired: courseRequiredInSet,
@@ -343,8 +343,8 @@ func InsertCoursesToSet(courseInfoList []string, targetName, setName, relationTo
 		}
 		entityInsertion := course.InsertEntity{
 			Entity: course.Entity{
-				Name:   courseName,
-				ID:     courseEntity.ID,
+				Name:    courseName,
+				ID:      courseEntity.ID,
 				SetName: setName,
 			},
 		}

@@ -7,11 +7,11 @@ import (
 )
 
 type Set struct {
-	Name         string
-	Relation     string
-	TargetName    string
+	Name           string
+	Relation       string
+	TargetName     string
 	CourseRequired int32
-	LinkedToMajor bool
+	LinkedToMajor  bool
 }
 
 type InsertSet struct {
@@ -31,7 +31,7 @@ func (s InsertSet) InsertCourseSet() (string, error) {
 func (s *InsertSet) InsertCourseSetFn(tx neo4j.Transaction) (interface{}, error) {
 	target := ""
 	if s.Set.LinkedToMajor {
-		target = "Major"
+		target = "Degree"
 	} else {
 		target = "CourseSet"
 	}
@@ -40,9 +40,9 @@ func (s *InsertSet) InsertCourseSetFn(tx neo4j.Transaction) (interface{}, error)
 		"RETURN s.name", target, s.Set.Relation)
 	records, err := tx.Run(command,
 		map[string]interface{}{
-			"target_name":    s.Set.TargetName,
-			"relation":      s.Set.Relation,
-			"name":          s.Set.Name,
+			"target_name":     s.Set.TargetName,
+			"relation":        s.Set.Relation,
+			"name":            s.Set.Name,
 			"course_required": s.Set.CourseRequired,
 		})
 
@@ -59,8 +59,8 @@ func (s *InsertSet) InsertCourseSetFn(tx neo4j.Transaction) (interface{}, error)
 }
 
 type Entity struct {
-	Name string
-	ID int64
+	Name    string
+	ID      int64
 	SetName string
 }
 
@@ -84,8 +84,8 @@ func (s *InsertEntity) InsertFn(tx neo4j.Transaction) (interface{}, error) {
 		"RETURN s.name"
 	records, err := tx.Run(command, map[string]interface{}{
 		"set_name": s.Entity.SetName,
-		"name": s.Entity.Name,
-		"id": s.Entity.ID,
+		"name":     s.Entity.Name,
+		"id":       s.Entity.ID,
 	})
 
 	if err != nil {

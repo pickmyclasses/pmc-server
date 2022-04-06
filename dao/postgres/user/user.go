@@ -74,3 +74,41 @@ func GetUserByID(userID int64) (*model.User, error) {
 	}
 	return &user, nil
 }
+
+func GetUserHistoryCourseList(userID int64) ([]int64, error) {
+	var historyList []model.UserCourseHistory
+	result := postgres.DB.Where("user_id = ?", userID).Find(&historyList)
+	if result.Error != nil {
+		return nil, shared.InternalErr{}
+	}
+	courseIDList := make([]int64, 0)
+	for _, history := range historyList {
+		courseIDList = append(courseIDList, history.CourseID)
+	}
+	return courseIDList, nil
+}
+
+func AddUserHistoryCourse(userID, courseID int64) error {
+	history := model.UserCourseHistory{
+		UserID:        userID,
+		CourseID:      courseID,
+	}
+
+	result := postgres.DB.Model(&model.UserCourseHistory{}).Create(&history)
+	if result.Error != nil {
+		return shared.InternalErr{}
+	}
+	return nil
+}
+
+func RemoveUserHistoryCourse(userID, courseID int64) error {
+	history := model.UserCourseHistory{
+		UserID:        userID,
+		CourseID:      courseID,
+	}
+	result := postgres.DB.Delete(&history)
+	if result.Error != nil {
+		return shared.InternalErr{}
+	}
+	return nil
+}

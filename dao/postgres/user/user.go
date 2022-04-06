@@ -102,13 +102,20 @@ func AddUserHistoryCourse(userID, courseID int64) error {
 }
 
 func RemoveUserHistoryCourse(userID, courseID int64) error {
-	history := model.UserCourseHistory{
-		UserID:   userID,
-		CourseID: courseID,
-	}
-	result := postgres.DB.Delete(&history)
+	var history model.UserCourseHistory
+	result := postgres.DB.Where("user_id = ? and course_id = ?", userID, courseID).Delete(&history)
 	if result.Error != nil {
 		return shared.InternalErr{}
 	}
 	return nil
+}
+
+func CheckUserHistoryCourseAlreadyExist(userID, courseID int64, professorName string, semesterID int32) (bool, error) {
+	var history model.UserCourseHistory
+	res := postgres.DB.Where("user_id = ? and course_id = ? and professor_name = ? and semester_id = ?",
+		userID, courseID, professorName, semesterID).First(&history)
+	if res.Error != nil {
+		return false, nil
+	}
+	return res.RowsAffected != 0, nil
 }

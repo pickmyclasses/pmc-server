@@ -2,8 +2,12 @@ package logic
 
 import (
 	"errors"
+	courseDao "pmc_server/dao/postgres/course"
+	reviewDao "pmc_server/dao/postgres/review"
+	tagDao "pmc_server/dao/postgres/tag"
 	"pmc_server/dao/postgres/user"
 	"pmc_server/model/dto"
+	"strconv"
 
 	"pmc_server/libs/jwt"
 	libs "pmc_server/libs/snowflake"
@@ -55,12 +59,56 @@ func Login(param *model.LoginParams) (*dto.User, error) {
 	}, nil
 }
 
-func GetUserHistoryCourseList(userID int64) ([]int64, error) {
+func GetUserHistoryCourseList(userID int64) ([]dto.Course, error) {
 	historyCourseList, err := dao.GetUserHistoryCourseList(userID)
 	if err != nil {
 		return nil, err
 	}
-	return historyCourseList, nil
+
+	courseDtoList := make([]dto.Course, 0)
+	for _, c := range historyCourseList {
+		course, err := courseDao.GetCourseByID(int(c))
+		if err != nil {
+			return nil, err
+		}
+		classList, _ := courseDao.GetClassListByCourseID(int(c))
+		rating, err := reviewDao.GetCourseOverallRating(c)
+		if err != nil {
+			return nil, err
+		}
+
+		tags, err := tagDao.GetTagListByCourseID(c)
+		if err != nil {
+			return nil, err
+		}
+		maxCreditF, err := strconv.ParseFloat(course.MaxCredit, 32)
+		if err != nil {
+			maxCreditF = 0
+		}
+		minCreditF, err := strconv.ParseFloat(course.MinCredit, 32)
+		if err != nil {
+			minCreditF = 0
+		}
+		courseDto := dto.Course{
+			CourseID:           course.ID,
+			IsHonor:            course.IsHonor,
+			FixedCredit:        course.FixedCredit,
+			DesignationCatalog: course.DesignationCatalog,
+			Description:        course.Description,
+			Prerequisites:      course.Prerequisites,
+			Title:              course.Title,
+			CatalogCourseName:  course.CatalogCourseName,
+			Component:          course.Component,
+			MaxCredit:          maxCreditF,
+			MinCredit:          minCreditF,
+			Classes:            *classList,
+			OverallRating:      rating.OverAllRating,
+			Tags:               tags,
+		}
+
+		courseDtoList = append(courseDtoList, courseDto)
+	}
+	return courseDtoList, nil
 }
 
 func AddUserCourseHistory(userID, courseID int64) error {

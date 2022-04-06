@@ -37,8 +37,8 @@ func NewBoolQuery(pageNum, pageSize int) *BoolQuery {
 func (c *BoolQuery) QueryByKeywords(keywords string) {
 	c.query = c.query.
 		Must(elastic.NewMultiMatchQuery(keywords,
-			"title", "description", "designation_catalog", "catalog_course_name_letter",
-			"catalog_course_name_number").Fuzziness("AUTO"))
+			"title4.0", "description^1.0", "designation_catalog^1.0", "catalog_course_name_letter^4.0",
+			"catalog_course_name_number^3.0").Fuzziness("AUTO"))
 }
 
 func (c *BoolQuery) QueryByMinCredit(minCredit float32) {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"pmc_server/shared"
 	"strconv"
 
 	"pmc_server/model"
@@ -67,12 +68,15 @@ func CourseEs() {
 		var rating model.OverAllRating
 		_ = db.Where("course_id = ?", course.ID).First(&rating)
 
+		letter, number := shared.ParseString(course.CatalogCourseName, false)
+
 		esCourse := esModel.Course{
 			ID:                 course.ID,
 			DesignationCatalog: course.DesignationCatalog,
 			Title:              course.Title,
 			Description:        course.Description,
-			CatalogCourseName:  course.CatalogCourseName,
+			CatalogCourseNameLetter: 	letter,
+			CatalogCourseNameNumber: number,
 			Prerequisites:      course.Prerequisites,
 			Component:          course.Component,
 			MaxCredit:          float32(maxCredit),

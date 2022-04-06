@@ -64,7 +64,7 @@ func HandlePagination(c *gin.Context, defaultVal string) (int, int, error) {
 	return pnInt, pSizeInt, nil
 }
 
-// GetLetterInfo gets the letters and number seperation from the given string
+// GetLetterInfo gets the letters and number separation from the given string
 func GetLetterInfo(str string) (letter, number string) {
 	var l, n []rune
 	for index, r := range []rune(str) {

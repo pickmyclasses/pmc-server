@@ -140,3 +140,23 @@ func TestConvertSliceToDateString(t *testing.T) {
 		}
 	}
 }
+
+func TestParseString(t *testing.T) {
+	tests := []struct {
+		origin string
+		letters string
+		number string
+	}{
+		{"CS4400", "CS", "4400"},
+		{"HE EDU310", "HE EDU", "310"},
+		{"Math2210", "Math", "2210"},
+		{"CS5500", "CS", "5500"},
+	}
+
+	for _, tt := range tests {
+		if l, n := ParseString(tt.origin, false); l != tt.letters || n != tt.number {
+			t.Errorf("TestParseString(%+v), received letters %s and numbers %s \n",
+				tt.origin, l, n)
+		}
+	}
+}

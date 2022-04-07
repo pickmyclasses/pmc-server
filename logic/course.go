@@ -336,6 +336,7 @@ func InsertCoursesToSet(courseInfoList []string, targetName, setName, relationTo
 
 	_, err := setInsertion.InsertCourseSet()
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 

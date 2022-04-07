@@ -81,6 +81,12 @@ func GetCourseAverageLoad(courseID int64) (*CourseLoad, error) {
 	count := 0
 	var gradeTotal float32
 	// average score for the course
+	if len(reviewList) == 0 {
+		return &CourseLoad{
+			CourseAverageGrade: 0,
+			MajorAverageGrade:  0,
+		}, nil
+	}
 	for _, review := range reviewList {
 		count++
 		numberGrade, err := getCourseNumberGrade(review.GradeReceived)

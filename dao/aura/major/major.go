@@ -152,7 +152,7 @@ func (r Read) FindAll() ([]Entity, error) {
 }
 
 func (r *Read) findAllFn(tx neo4j.Transaction) (interface{}, error) {
-	res, err := tx.Run("MATCH (m:Major {college_id : $college_id}) "+
+	res, err := tx.Run("MATCH (m:Major {college_id : $college_id})"+
 		"RETURN m.degree_hour, m.emphasis_required, m.min_major_hour, m.name",
 		map[string]interface{}{
 			"college_id": r.CollegeID,
@@ -165,6 +165,7 @@ func (r *Read) findAllFn(tx neo4j.Transaction) (interface{}, error) {
 	majorList := make([]Entity, 0)
 	for res.Next() {
 		var major Entity
+		major.CollegeID = int(r.CollegeID)
 		if name, ok := res.Record().Values[3].(string); ok {
 			major.Name = name
 		}
@@ -189,7 +190,7 @@ type ReadEmphasis struct {
 	MajorName string
 }
 
-func (r ReadEmphasis) FindAllEmphasisesOfAMajor() ([]Entity, error) {
+func (r ReadEmphasis) FindAllEmphasisesOfAMajor() ([]Emphasis, error) {
 	session := aura.Driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
 
@@ -198,15 +199,15 @@ func (r ReadEmphasis) FindAllEmphasisesOfAMajor() ([]Entity, error) {
 		return nil, err
 	}
 
-	return result.([]Entity), nil
+	return result.([]Emphasis), nil
 }
 
 func (r *ReadEmphasis) findAllEmphasisesFn(tx neo4j.Transaction) (interface{}, error) {
-	res, err := tx.Run("MATCH (m:Major {name: $major_name, college_id: $college_id})<-[:SUB_OF]-(emphasis) "+
-		"RETURN emphasis.name",
+	res, err := tx.Run("MATCH (m:Major {college_id: $college_id, name: $major_name})<-[:SUB_OF]-(emphasis) "+
+		" RETURN emphasis.name, emphasis.total_credit",
 		map[string]interface{}{
-			"major_name": r.MajorName,
 			"college_id": r.CollegeID,
+			"major_name": r.MajorName,
 		})
 
 	if err != nil {
@@ -219,6 +220,11 @@ func (r *ReadEmphasis) findAllEmphasisesFn(tx neo4j.Transaction) (interface{}, e
 		if name, ok := res.Record().Values[0].(string); ok {
 			emphasis.Name = name
 		}
+		if totalCredit, ok := res.Record().Values[1].(int32); ok {
+			emphasis.TotalCredit = totalCredit
+		}
+		emphasis.CollegeID = r.CollegeID
+		emphasis.MainMajorName = r.MajorName
 		emphasisList = append(emphasisList, emphasis)
 	}
 

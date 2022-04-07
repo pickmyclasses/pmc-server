@@ -71,7 +71,7 @@ func CreateEmphasisHandler(ctx *gin.Context) {
 	id := ctx.Param("id")
 	collegeID, err := strconv.Atoi(id)
 	if err != nil {
-		_ = ctx.Error(shared.ParamInsufficientErr{})
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
 		return
 	}
 
@@ -88,5 +88,29 @@ func CreateEmphasisHandler(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		shared.DATA: emphasis,
+	})
+}
+
+func GetMajorEmphasisHandler(ctx *gin.Context) {
+	id := ctx.Param("id")
+	collegeID, err := strconv.Atoi(id)
+	if err != nil {
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
+		return
+	}
+
+	major := ctx.Query("major")
+	if err != nil {
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
+		return
+	}
+
+	emphasisList, err := logic.GetMajorEmphasisList(int32(collegeID), major)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		shared.DATA: emphasisList,
 	})
 }

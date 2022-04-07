@@ -37,10 +37,6 @@ func CreateEmphasis(collegeID int32, name string, majorName string, totalCredit 
 	return emphasis, nil
 }
 
-type MajorDto struct {
-	Name string `json:"name"`
-}
-
 func GetMajorList(collegeID int32) ([]major.Entity, error) {
 	reader := major.Read{
 		CollegeID: collegeID,
@@ -50,4 +46,16 @@ func GetMajorList(collegeID int32) ([]major.Entity, error) {
 		return nil, err
 	}
 	return majorList, nil
+}
+
+func GetMajorEmphasisList(collegeID int32, majorName string) ([]major.Emphasis, error) {
+	reader := major.ReadEmphasis{
+		CollegeID: collegeID,
+		MajorName: majorName,
+	}
+	emphasisList, err := reader.FindAllEmphasisesOfAMajor()
+	if err != nil {
+		return nil, err
+	}
+	return emphasisList, nil
 }

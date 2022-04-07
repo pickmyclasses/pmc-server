@@ -76,6 +76,7 @@ func SetUp(mode string) *gin.Engine {
 		r.POST("/college/:id/major", controller.CreateMajorHandler)
 		r.POST("/college/:id/emphasis", controller.CreateEmphasisHandler)
 		r.GET("/college/:id/emphasis", controller.GetMajorEmphasisHandler)
+		r.GET("/major/course/list", controller.GetMajorCourseSetHandler)
 
 		// for stats
 		r.GET("/stats/course/:id/professor/rank", controller.GetCourseProfessorRankingHandler)

@@ -2,6 +2,7 @@ package logic
 
 import (
 	"pmc_server/dao/aura/major"
+	"pmc_server/model/dto"
 )
 
 func CreateMajor(collegeID int, name string, degreeHour, minMajorHour int32, emphasisRequired bool) (string, error) {
@@ -38,12 +39,12 @@ func CreateEmphasis(collegeID int32, name string, majorName string, totalCredit 
 }
 
 type MajorDto struct {
-	CollegeID        int
-	Name             string
-	DegreeHour       int32
-	MinMajorHour     int32
-	EmphasisRequired bool
-	EmphasisList     []string
+	CollegeID        int      `json:"collegeID"`
+	Name             string   `json:"name"`
+	DegreeHour       int32    `json:"degreeHour"`
+	MinMajorHour     int32    `json:"minMajorHour"`
+	EmphasisRequired bool     `json:"emphasisRequired"`
+	EmphasisList     []string `json:"emphasisList"`
 }
 
 func GetMajorList(collegeID int32) ([]MajorDto, error) {
@@ -95,4 +96,14 @@ func GetMajorEmphasisList(collegeID int32, majorName string) ([]major.Emphasis, 
 		return nil, err
 	}
 	return emphasisList, nil
+}
+
+type CourseSet struct {
+	SetName    string       `json:"setName"`
+	CourseList []dto.Course `json:"courseList"`
+	SubSets    []CourseSet  `json:"subSets"`
+}
+
+func GetCourseSetListByMajor(majorName string) ([]CourseSet, error) {
+	return nil, nil
 }

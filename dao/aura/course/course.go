@@ -99,3 +99,30 @@ func (s *InsertEntity) InsertFn(tx neo4j.Transaction) (interface{}, error) {
 
 	return record.Values[0], nil
 }
+
+type Reader struct {
+	SetName       string
+	RelationToSet string
+}
+
+type ReadList struct {
+	Reader Reader
+}
+
+func (r ReadList) ReadAll() ([]int64, error) {
+	session := aura.Driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+	result, err := session.WriteTransaction(r.ReadAllFn)
+	if err != nil {
+		return nil, err
+	}
+	return result.([]int64), nil
+}
+
+func (r *ReadList) ReadAllFn(tx neo4j.Transaction) (interface{}, error) {
+	command := "MATCH "
+	tx.Run(command, map[string]interface{}{
+		"set_name": r.Reader.SetName,
+	})
+	return nil, nil
+}

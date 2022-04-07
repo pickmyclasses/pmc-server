@@ -2,6 +2,9 @@ package logic
 
 import (
 	"fmt"
+	historyDao "pmc_server/dao/postgres/history"
+	"strconv"
+
 	"pmc_server/dao/aura/course"
 	courseEsDao "pmc_server/dao/es/course"
 	classDao "pmc_server/dao/postgres/class"
@@ -11,7 +14,6 @@ import (
 	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
-	"strconv"
 )
 
 func GetCourseList(pn, pSize int) ([]dto.Course, int64, error) {
@@ -363,4 +365,63 @@ func InsertCoursesToSet(courseInfoList []string, targetName, setName, relationTo
 	}
 
 	return resList, nil
+}
+
+type ProfessorRanking struct {
+	Name   string  `json:"name"`
+	Rating float32 `json:"rating"`
+}
+
+func GetProfessorRankingByCourseID(courseID int64) ([]ProfessorRanking, error) {
+	classList, err := classDao.GetClassByCourseID(courseID)
+	if err != nil {
+		return nil, err
+	}
+
+	reviewList, err := reviewDao.GetReviewListByCourseID(courseID)
+	if err != nil {
+		return nil, err
+	}
+
+	historyList, err := historyDao.GetUserHistoryByCourseID(courseID)
+
+	type mapping struct {
+		ClassID       int64
+		Rating        float32
+		ProfessorName string
+	}
+	var count int32
+	mappingList := make([]mapping, 0)
+	for _, history := range historyList {
+		if history.ProfessorName != "" && history.SemesterID != 0 {
+			for _, class := range *classList {
+				if class.Instructors == history.ProfessorName {
+					var rating float32
+					for _, review := range reviewList {
+						if review.UserID == history.UserID {
+							rating += review.Rating
+							count++
+							m := mapping{
+								ClassID:       class.ID,
+								Rating:        rating,
+								ProfessorName: class.Instructors,
+							}
+							mappingList = append(mappingList, m)
+						}
+					}
+				}
+				count = 0
+			}
+		}
+	}
+
+	rankingList := make([]ProfessorRanking, 0)
+	for _, m := range mappingList {
+		r := ProfessorRanking{
+			Name:   m.ProfessorName,
+			Rating: m.Rating,
+		}
+		rankingList = append(rankingList, r)
+	}
+	return rankingList, nil
 }

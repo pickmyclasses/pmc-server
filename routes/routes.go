@@ -38,7 +38,7 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/course/list", controller.GetCourseListHandler)
 		r.GET("/course/:id", controller.GetCourseByIDHandler)
 		r.GET("/course/:id/class", controller.GetClassesOfCourseHandler)
-		r.GET("/course/:id/professor/list", controller.GetProfessorListByCourseID)
+		r.GET("/course/:id/professor/list", controller.GetProfessorListByCourseIDHandler)
 
 		// for course search
 		r.POST("/course/search", controller.GetCoursesBySearchHandler)
@@ -59,6 +59,7 @@ func SetUp(mode string) *gin.Engine {
 		r.POST("/course/:id/tag", controller.CreateTagByCourseIDHandler)
 		r.PUT("/course/:id/tag", controller.VoteTagHandler)
 		r.POST("/course/set", controller.CreateBatchCourseInSetHandler)
+		r.GET("/course/:id/professor/rank", controller.GetCourseProfessorRankingHandler)
 
 		// for professors
 		r.GET("/professor/list", controller.GetProfessorListHandler)

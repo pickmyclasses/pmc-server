@@ -67,3 +67,12 @@ func CheckIfCourseInUserCourseHistory(userID, courseID int64) (bool, error) {
 	}
 	return true, nil
 }
+
+func GetUserHistoryByCourseID(courseID int64) ([]model.UserCourseHistory, error) {
+	var history []model.UserCourseHistory
+	res := postgres.DB.Where("course_id = ?", courseID).Find(&history)
+	if res.Error != nil {
+		return nil, shared.InternalErr{}
+	}
+	return history, nil
+}

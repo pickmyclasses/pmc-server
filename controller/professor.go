@@ -30,7 +30,7 @@ func GetProfessorListHandler(ctx *gin.Context) {
 	})
 }
 
-func GetProfessorListByCourseID(ctx *gin.Context) {
+func GetProfessorListByCourseIDHandler(ctx *gin.Context) {
 	var courseID int
 	var err error
 	if courseID, err = strconv.Atoi(ctx.Param("id")); err != nil || courseID == 0 {

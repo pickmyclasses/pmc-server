@@ -36,6 +36,8 @@ func NewBoolQuery(pageNum, pageSize int) *BoolQuery {
 }
 
 func (c *BoolQuery) QueryByKeywords(keywords string) {
+	// change the weights when there is only string
+	// something like cs 5000 should have heavier weights on title than description
 	fields := []string{"title^1.5", "description^1.0", "designation_catalog^1.5", "catalog_course_name^1.5"}
 	for _, s := range keywords {
 		if unicode.IsDigit(s) {

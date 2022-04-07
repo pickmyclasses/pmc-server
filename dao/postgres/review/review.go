@@ -76,6 +76,15 @@ func GetReviewsByCourseID(courseID, pn, pSize int) ([]model.Review, error) {
 	return reviewList, nil
 }
 
+func GetReviewListByCourseID(courseID int64) ([]model.Review, error) {
+	var reviewList []model.Review
+	res := postgres.DB.Where("course_id = ?", courseID).Find(&reviewList)
+	if res.Error != nil {
+		return nil, shared.InternalErr{}
+	}
+	return reviewList, nil
+}
+
 func GetReviewByID(reviewID int) (*model.Review, error) {
 	var review model.Review
 	result := postgres.DB.Where("id = ?", reviewID).First(&review)

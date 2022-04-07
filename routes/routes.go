@@ -59,7 +59,6 @@ func SetUp(mode string) *gin.Engine {
 		r.POST("/course/:id/tag", controller.CreateTagByCourseIDHandler)
 		r.PUT("/course/:id/tag", controller.VoteTagHandler)
 		r.POST("/course/set", controller.CreateBatchCourseInSetHandler)
-		r.GET("/course/:id/professor/rank", controller.GetCourseProfessorRankingHandler)
 
 		// for professors
 		r.GET("/professor/list", controller.GetProfessorListHandler)
@@ -76,6 +75,10 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/college/:id/major/:id", controller.GetMajorByIDHandler)
 		r.POST("/college/:id/major", controller.CreateMajorHandler)
 		r.POST("/college/:id/emphasis", controller.CreateEmphasisHandler)
+
+		// for stats
+		r.GET("/stats/course/:id/professor/rank", controller.GetCourseProfessorRankingHandler)
+		r.GET("/stats/course/:id/load", controller.GetCourseAverageLoadHandler)
 
 		// for testing
 		r.GET("/ping", auth.JWT(), func(c *gin.Context) {

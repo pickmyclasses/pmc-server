@@ -30,7 +30,7 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 		return nil, err
 	}
 
-	reviewList, err := reviewDao.GetReviewsByCourseID(idInt, pn, pSize)
+	reviewList, err := reviewDao.GetPaginatedReviewsByCourseID(idInt, pn, pSize)
 	if err != nil {
 		return nil, err
 	}

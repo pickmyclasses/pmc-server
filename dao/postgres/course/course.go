@@ -53,3 +53,13 @@ func GetCourseByCatalogName(catalogName string) (*model.Course, error) {
 	}
 	return &course, nil
 }
+
+func GetCourseListByMajorName(majorName string) ([]model.Course, error) {
+	var courseList []model.Course
+	majorName = majorName + "%"
+	res := postgres.DB.Where("catalog_course_name LIKE ?", majorName).Find(&courseList)
+	if res.Error != nil {
+		return nil, shared.InternalErr{}
+	}
+	return courseList, nil
+}

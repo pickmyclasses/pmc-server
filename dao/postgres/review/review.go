@@ -62,7 +62,7 @@ func GetReviewTotalByCourseID(courseID int) (int64, error) {
 	return total, nil
 }
 
-func GetReviewsByCourseID(courseID, pn, pSize int) ([]model.Review, error) {
+func GetPaginatedReviewsByCourseID(courseID, pn, pSize int) ([]model.Review, error) {
 	var reviewList []model.Review
 
 	res := postgres.DB.Scopes(Paginate(pn, pSize)).Where("course_id = ?", courseID).Find(&reviewList)
@@ -121,4 +121,13 @@ func UpdateCourseReview(review model.ReviewParams) error {
 		return shared.InternalErr{}
 	}
 	return nil
+}
+
+func GetReviewOfUserForACourse(userID, courseID int64) (*model.Review, error) {
+	var review model.Review
+	res := postgres.DB.Where("course_id = ? and user_id = ?", courseID, userID).First(&review)
+	if res.Error != nil {
+		return nil, shared.InternalErr{}
+	}
+	return &review, nil
 }

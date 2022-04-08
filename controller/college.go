@@ -13,11 +13,11 @@ import (
 // GetCollegeListHandler API for getting the list of the college we have in database
 // @Summary Use this API to fetch the entire list of colleges
 // @Description This API will only be used for registration
-// @Tags Admin
+// @Tags College
 // @Accept application/json
 // @Produce application/json
 // @Success 200 {string} ok
-// @Router /admin/user/list [get]
+// @Router /college/list [get]
 func GetCollegeListHandler(ctx *gin.Context) {
 	collegeList, err := logic.GetCollegeList()
 	if err != nil {
@@ -29,18 +29,55 @@ func GetCollegeListHandler(ctx *gin.Context) {
 	})
 }
 
+// GetCollegeByIDHandler API for getting the college entity by its ID
+// @Summary Use this API to fetch college entity by collegeID
+// @Description This API will be used for fetching a college entity
+// @Tags College
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} ok
+// @Param id query int true "college id"
+// @Router /college/:id [get]
 func GetCollegeByIDHandler(ctx *gin.Context) {
 
 }
 
+// GetCollegeBuildingsHandler API for getting the list of the building list in a college
+// @Summary Use this API to fetch the entire list of buildings in the college
+// @Description This API will be used for Google Map api for fetching the building address data
+// @Tags College
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} ok
+// @Param id query int true "college id"
+// @Router /college/:id/building/list [get]
 func GetCollegeBuildingsHandler(ctx *gin.Context) {
 
 }
 
+// GetCollegeBuildingByIDHandler API for getting the building entity in a college
+// @Summary Use this API to fetch a building entity by its ID
+// @Description This API will be used for fetching a building details (address, name, ect)
+// @Tags College
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} ok
+// @Param id query int true "college id"
+// @Query building_id int true "building id"
+// @Router /college/:id/building [get]
 func GetCollegeBuildingByIDHandler(ctx *gin.Context) {
 
 }
 
+// GetCollegeSemesterListHandler API for getting the list of the semesters of a college
+// @Summary Use this API to fetch the entire list of semesters by college ID
+// @Description This API will be used for fetching list of semesters
+// @Tags College
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} ok
+// @Param id query int true "college id"
+// @Router /college/:id/semester/list [get]
 func GetCollegeSemesterListHandler(ctx *gin.Context) {
 	var collegeID int
 	var err error

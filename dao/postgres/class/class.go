@@ -11,16 +11,19 @@ import (
 	"gorm.io/gorm"
 )
 
+// Query defines an entity for fetching classes
 type Query struct {
 	db *gorm.DB
 }
 
+// NewQuery gives a new Query object
 func NewQuery(db *gorm.DB) *Query {
 	return &Query{
 		db: db,
 	}
 }
 
+//
 func (c *Query) FilterByCourseID(courseID int64) {
 	c.db = c.db.Where("course_id = ?", courseID)
 }

@@ -6,6 +6,7 @@ import (
 	"pmc_server/shared"
 )
 
+// FindAllUsers find the list of the users (only for admin)
 func FindAllUsers() ([]model.User, error) {
 	var users []model.User
 	resp := postgres.DB.Find(&users)

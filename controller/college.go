@@ -10,6 +10,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetCollegeListHandler API for getting the list of the college we have in database
+// @Summary Use this API to fetch the entire list of colleges
+// @Description This API will only be used for registration
+// @Tags Admin
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} ok
+// @Router /admin/user/list [get]
 func GetCollegeListHandler(ctx *gin.Context) {
 	collegeList, err := logic.GetCollegeList()
 	if err != nil {

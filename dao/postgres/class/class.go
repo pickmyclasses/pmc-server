@@ -12,6 +12,7 @@ import (
 )
 
 // Query defines an entity for fetching classes
+// this query is mostly for the filter function
 type Query struct {
 	db *gorm.DB
 }
@@ -23,15 +24,17 @@ func NewQuery(db *gorm.DB) *Query {
 	}
 }
 
-//
+// FilterByCourseID filters out the classes with the given course ID
 func (c *Query) FilterByCourseID(courseID int64) {
 	c.db = c.db.Where("course_id = ?", courseID)
 }
 
+// FilterByComponent filters out the classes with the given component (IVC, In person, ect)
 func (c *Query) FilterByComponent(component string) {
 	c.db = c.db.Where("component = %s", component)
 }
 
+// FilterByOfferDates filters out the classes with the given dates
 func (c *Query) FilterByOfferDates(offerDates []int) {
 	sort.Slice(offerDates, func(i, j int) bool {
 		return offerDates[i] < offerDates[j]
@@ -41,10 +44,12 @@ func (c *Query) FilterByOfferDates(offerDates []int) {
 	c.db = c.db.Where("offer_date = %s ", dates)
 }
 
+// FilterByTimeslot filters out the classes with the given start/end time
 func (c *Query) FilterByTimeslot(startTime, endTime float32) {
 	c.db = c.db.Where("start_time_float >= %f and end_time_float <= %f", startTime, endTime)
 }
 
+// Do start the query with the given filters
 func (c *Query) Do() ([]model.Class, error) {
 	var classList []model.Class
 	res := c.db.Find(&classList)
@@ -54,6 +59,8 @@ func (c *Query) Do() ([]model.Class, error) {
 	return classList, nil
 }
 
+// GetClasses gives the entire list of class entities
+// this API should only be used with page number and page size for pagination
 func GetClasses(pn, pSize int) (*[]model.Class, int64) {
 	var classes []model.Class
 	total := postgres.DB.Find(&classes).RowsAffected
@@ -62,7 +69,8 @@ func GetClasses(pn, pSize int) (*[]model.Class, int64) {
 	return &classes, total
 }
 
-func GetClassInfoByID(id int) (*model.Class, error) {
+// GetClassByID gives a class list with the given class ID
+func GetClassByID(id int) (*model.Class, error) {
 	var class model.Class
 	result := postgres.DB.Where("id = ?", id).First(&class)
 	if result.Error != nil {
@@ -71,6 +79,7 @@ func GetClassInfoByID(id int) (*model.Class, error) {
 	return &class, nil
 }
 
+// GetClassByCourseID gives the entire list of classes associated with the given course ID
 func GetClassByCourseID(courseID int64) (*[]model.Class, error) {
 	var classes []model.Class
 	result := postgres.DB.Where("course_id = ?", courseID).Find(&classes)
@@ -80,6 +89,8 @@ func GetClassByCourseID(courseID int64) (*[]model.Class, error) {
 	return &classes, nil
 }
 
+// GetClassListByComponent gives the class list by the given component and course ID
+// component can be an empty list
 func GetClassListByComponent(components []string, courseID int64) (*[]model.Class, error) {
 	var classes []model.Class
 	var sql string
@@ -115,6 +126,7 @@ func GetClassListByComponent(components []string, courseID int64) (*[]model.Clas
 	return &classes, nil
 }
 
+// GetClassListByOfferDate give the class list with the given dates and the course ID
 func GetClassListByOfferDate(offerDates []int, courseID int64) (*[]model.Class, error) {
 	// sort the dates first to convert to the correct format
 	sort.Slice(offerDates, func(i, j int) bool {
@@ -137,6 +149,8 @@ func GetClassListByOfferDate(offerDates []int, courseID int64) (*[]model.Class, 
 	return &classes, nil
 }
 
+// GetClassListByTimeslot gives the class list with the given start/end time and course ID
+// this is away from the filter, just for singular use
 func GetClassListByTimeslot(startTime, endTime float32, courseID int64) (*[]model.Class, error) {
 	var classes []model.Class
 	var sql string
@@ -153,6 +167,8 @@ func GetClassListByTimeslot(startTime, endTime float32, courseID int64) (*[]mode
 	return &classes, nil
 }
 
+// GetClassListByProfessorNames gives the class list with the given professor names and the course ID
+// multiple professor names can be passed in
 func GetClassListByProfessorNames(professorNames []string, courseID int64) (*[]model.Class, error) {
 	var professors []int32
 	sql := "select id from professor where name = "

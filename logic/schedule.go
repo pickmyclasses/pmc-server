@@ -49,7 +49,7 @@ func CreateSchedule(param model.PostEventParam) error {
 	}
 
 	// update user course history
-	class, err := classDao.GetClassInfoByID(int(param.ClassID))
+	class, err := classDao.GetClassByID(int(param.ClassID))
 	if err != nil {
 		return err
 	}
@@ -85,7 +85,7 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 	}
 
 	for _, schedule := range scheduleList {
-		class, err := classDao.GetClassInfoByID(int(schedule.ClassID))
+		class, err := classDao.GetClassByID(int(schedule.ClassID))
 		if err != nil {
 			return nil, err
 		}
@@ -163,7 +163,7 @@ func DeleteSchedule(userID, classID int64) error {
 		return err
 	}
 
-	class, err := classDao.GetClassInfoByID(int(classID))
+	class, err := classDao.GetClassByID(int(classID))
 	if err != nil {
 		return err
 	}

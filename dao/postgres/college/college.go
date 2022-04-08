@@ -6,6 +6,7 @@ import (
 	"pmc_server/shared"
 )
 
+// GetCollegeList gives the entire list of the colleges in the database
 func GetCollegeList() ([]model.College, error) {
 	var collegeList []model.College
 	res := postgres.DB.Find(&collegeList)
@@ -14,6 +15,8 @@ func GetCollegeList() ([]model.College, error) {
 	}
 	return collegeList, nil
 }
+
+// GetCollegeSemesterList gives the semester list in a college
 func GetCollegeSemesterList(collegeID int32) ([]model.Semester, error) {
 	var semesterList []model.Semester
 	res := postgres.DB.Where("college_id = ?", collegeID).Find(&semesterList)
@@ -23,6 +26,7 @@ func GetCollegeSemesterList(collegeID int32) ([]model.Semester, error) {
 	return semesterList, nil
 }
 
+// GetCollegeByID gives a college entity with the given college ID
 func GetCollegeByID(collegeID int32) (*model.College, error) {
 	var college model.College
 	res := postgres.DB.Where("id = ?", collegeID).First(&college)

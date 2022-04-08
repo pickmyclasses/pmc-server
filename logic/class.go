@@ -17,5 +17,5 @@ func GetClassByID(id string) (*model.Class, error) {
 	if err != nil {
 		return nil, shared.ParamIncompatibleErr{}
 	}
-	return dao.GetClassInfoByID(idInt)
+	return dao.GetClassByID(idInt)
 }

@@ -16,7 +16,7 @@ import (
 )
 
 func GetCourseList(pn, pSize int) ([]dto.Course, int64, error) {
-	courseList, err := courseDao.GetCourses(pn, pSize)
+	courseList, err := courseDao.GetCourseList(pn, pSize)
 
 	if err != nil {
 		return nil, -1, fmt.Errorf("unable to get the list of course: %+v\n", err)

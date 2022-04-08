@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"pmc_server/init/aura"
-	"pmc_server/init/es"
 	"syscall"
 	"time"
 
 	"pmc_server/config"
+	"pmc_server/init/aura"
+	"pmc_server/init/es"
 	"pmc_server/init/logger"
 	"pmc_server/init/postgres"
 	libs "pmc_server/libs/snowflake"
@@ -58,7 +58,7 @@ func main() {
 		return
 	}
 
-	//// init redis
+	// init redis
 	//if err = redis.Init(); err != nil {
 	//	fmt.Printf("Init redis failed %s", err)
 	//	return

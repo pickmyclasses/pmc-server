@@ -7,6 +7,7 @@ import (
 	tagDao "pmc_server/dao/postgres/tag"
 	"pmc_server/dao/postgres/user"
 	"pmc_server/model/dto"
+	"pmc_server/shared"
 	"strconv"
 
 	"pmc_server/libs/jwt"
@@ -121,6 +122,22 @@ func AddUserCourseHistory(userID, courseID int64) error {
 
 func RemoveUserCourseHistory(userID, courseID int64) error {
 	err := dao.RemoveUserHistoryCourse(userID, courseID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func PostUserMajor(userID int64, majorName string, schoolYear string) error {
+	exist, err := dao.UserExistByID(userID)
+	if err != nil {
+		return err
+	}
+	if !exist {
+		return shared.ContentNotFoundErr{}
+	}
+
+	err = dao.UpdateUserMajorAndYear(userID, majorName, schoolYear)
 	if err != nil {
 		return err
 	}

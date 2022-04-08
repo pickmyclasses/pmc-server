@@ -99,9 +99,10 @@ func GetMajorEmphasisList(collegeID int32, majorName string) ([]major.Emphasis, 
 }
 
 type CourseSet struct {
-	SetName    string       `json:"setName"`
-	CourseList []dto.Course `json:"courseList"`
-	SubSets    []CourseSet  `json:"subSets"`
+	SetName      string       `json:"setName"`
+	CourseNeeded int32        `json:"courseNeeded"`
+	CourseList   []dto.Course `json:"courseList"`
+	SubSets      []CourseSet  `json:"subSets"`
 }
 
 func GetCourseSetListByMajor(majorName string) ([]CourseSet, error) {

@@ -23,6 +23,15 @@ func UserExist(email string) (exist bool, err error) {
 	return result.RowsAffected != 0, err
 }
 
+func UserExistByID(userID int64) (bool, error) {
+	var user model.User
+	result := postgres.DB.Where("id = ?", userID).Find(&user)
+	if result.Error != nil {
+		return true, shared.InternalErr{}
+	}
+	return result.RowsAffected != 0, nil
+}
+
 // InsertUser creates a new user in the database
 func InsertUser(user *model.User) error {
 	user.Password = EncryptPassword(user.Password)
@@ -118,4 +127,14 @@ func CheckUserHistoryCourseAlreadyExist(userID, courseID int64, professorName st
 		return false, nil
 	}
 	return res.RowsAffected != 0, nil
+}
+
+func UpdateUserMajorAndYear(userID int64, majorName string, schoolYear string) error {
+	res := postgres.DB.Model(&model.User{}).Where("id = ?", userID).
+		Updates(map[string]interface{}{"major": majorName, "academic_year": schoolYear})
+
+	if res.Error != nil {
+		return shared.InternalErr{}
+	}
+	return nil
 }

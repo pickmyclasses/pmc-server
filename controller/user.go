@@ -123,3 +123,27 @@ func RemoveUserHistoryHandler(c *gin.Context) {
 		MESSAGE: SUCCESS,
 	})
 }
+
+type PostUserMajorParams struct {
+	UserID     int64  `json:"userID"`
+	MajorName  string `json:"majorName"`
+	SchoolYear string `json:"schoolYear"`
+}
+
+func PostUserMajorHandler(c *gin.Context) {
+	var param PostUserMajorParams
+	if err := c.ShouldBindJSON(&param); err != nil {
+		_ = c.Error(shared.ParamInsufficientErr{})
+		return
+	}
+
+	err := logic.PostUserMajor(param.UserID, param.MajorName, param.SchoolYear)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
+	})
+}

@@ -6,18 +6,23 @@ import (
 	"pmc_server/init/aura"
 )
 
+// Set defines a course SET, for example, CS pre-major
+// Set contains multiple courses
+// This is used for inserting mostly
 type Set struct {
-	Name           string
-	Relation       string
-	TargetName     string
-	CourseRequired int32
-	LinkedToMajor  bool
+	Name           string // name of the course set
+	Relation       string // relationship will be attached to another node
+	TargetName     string // the target node this set will be connected to, cannot be null
+	CourseRequired int32  // how many courses are required in the set (minimum credits required)
+	LinkedToMajor  bool   // is this set directly linked to the major node (sometimes they are subset of another set)
 }
 
+// InsertSet defines the action of inserting a course set
 type InsertSet struct {
 	Set Set
 }
 
+// InsertCourseSet defines the behavior of inserting a course set to Neo4j
 func (s InsertSet) InsertCourseSet() (string, error) {
 	session := aura.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -28,8 +33,11 @@ func (s InsertSet) InsertCourseSet() (string, error) {
 	return result.(string), nil
 }
 
+// InsertCourseSetFn is a helper function for InsertCourseSet
 func (s *InsertSet) InsertCourseSetFn(tx neo4j.Transaction) (interface{}, error) {
 	target := ""
+	// check if it's linked to a major directly
+	// here I'm calling it Degree because a course set needs to be linked to one of the degrees of the major
 	if s.Set.LinkedToMajor {
 		target = "Degree"
 	} else {
@@ -58,16 +66,19 @@ func (s *InsertSet) InsertCourseSetFn(tx neo4j.Transaction) (interface{}, error)
 	return record.Values[0], nil
 }
 
+// Entity defines a course entity node
 type Entity struct {
-	Name    string
-	ID      int64
+	Name    string // the name of the course
+	ID      int64  // the ID of the course, this will be used for fetching the actual course entity from Postgres
 	SetName string
 }
 
+// InsertEntity defines the action to insert a course entity node to Neo4j
 type InsertEntity struct {
 	Entity Entity
 }
 
+// Insert defines the behavior of inserting a course node to Neo4j
 func (s InsertEntity) Insert() (string, error) {
 	session := aura.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -78,6 +89,7 @@ func (s InsertEntity) Insert() (string, error) {
 	return result.(string), nil
 }
 
+// InsertFn is the helper function for Insert
 func (s *InsertEntity) InsertFn(tx neo4j.Transaction) (interface{}, error) {
 	command := "MATCH (c:CourseSet) WHERE c.name = $set_name " +
 		"CREATE (s:Course)<-[:INCLUDES]-(c) SET s.name = $name, s.id = $id " +
@@ -100,15 +112,19 @@ func (s *InsertEntity) InsertFn(tx neo4j.Transaction) (interface{}, error) {
 	return record.Values[0], nil
 }
 
+// Reader is for reading the course entity list of a course set
+// This will give the entire list of the course list under a course set
 type Reader struct {
-	SetName       string
-	RelationToSet string
+	SetName       string // the name of set we want to fetch
+	RelationToSet string // what we want from the set? another set or courses
 }
 
+// ReadList defines a reader for reading the course list
 type ReadList struct {
 	Reader Reader
 }
 
+// ReadAll reads the course list from a course set
 func (r ReadList) ReadAll() ([]int64, error) {
 	session := aura.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -119,6 +135,7 @@ func (r ReadList) ReadAll() ([]int64, error) {
 	return result.([]int64), nil
 }
 
+// ReadAllFn is a helper function of ReadAll
 func (r *ReadList) ReadAllFn(tx neo4j.Transaction) (interface{}, error) {
 	command := "MATCH "
 	tx.Run(command, map[string]interface{}{

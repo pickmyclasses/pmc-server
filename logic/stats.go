@@ -170,11 +170,10 @@ func GetCourseRatingTrendBySemester(courseID int64) ([]SemesterRating, error) {
 
 		semesterName := fmt.Sprintf("%s %d", semester.Season, semester.Year)
 		if v, exist := mapping[semesterName]; exist {
-			newVal := (v.rating + review.Rating) / float32(v.count+1)
 			mapping[semesterName] = struct {
 				rating float32
 				count  int32
-			}{rating: newVal, count: v.count + 1}
+			}{rating: v.rating + review.Rating, count: v.count + 1}
 		} else {
 			mapping[semesterName] = struct {
 				rating float32
@@ -187,7 +186,7 @@ func GetCourseRatingTrendBySemester(courseID int64) ([]SemesterRating, error) {
 	for k, v := range mapping {
 		semesterRatingList = append(semesterRatingList, SemesterRating{
 			SemesterName: k,
-			Rating:       v.rating,
+			Rating:       v.rating / float32(v.count),
 		})
 	}
 

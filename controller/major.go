@@ -91,7 +91,7 @@ func CreateEmphasisHandler(ctx *gin.Context) {
 	})
 }
 
-func GetMajorEmphasisHandler(ctx *gin.Context) {
+func GetEmphasisHandler(ctx *gin.Context) {
 	id := ctx.Param("id")
 	collegeID, err := strconv.Atoi(id)
 	if err != nil {

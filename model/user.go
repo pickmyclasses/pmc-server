@@ -13,4 +13,5 @@ type User struct {
 	Avatar       string  `gorm:"type:varchar(200)"`                // user's avatar address, on S3
 	Role         int32   `gorm:"type:smallint;not null;default 1"` // user's role, 0 admin, 1 student, 2 professor
 	Major        string  `gorm:"column:major"`                     // student major, this could be empty if not provided by the user
+	Emphasis     string  `gorm:"column:emphasis"`                  // student emphasis (if any)
 }

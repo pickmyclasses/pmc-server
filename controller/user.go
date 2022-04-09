@@ -127,6 +127,7 @@ func RemoveUserHistoryHandler(c *gin.Context) {
 type PostUserMajorParams struct {
 	UserID     int64  `json:"userID"`
 	MajorName  string `json:"majorName"`
+	Emphasis   string `json:"emphasisName"`
 	SchoolYear string `json:"schoolYear"`
 }
 
@@ -137,7 +138,7 @@ func PostUserMajorHandler(c *gin.Context) {
 		return
 	}
 
-	err := logic.PostUserMajor(param.UserID, param.MajorName, param.SchoolYear)
+	err := logic.PostUserMajor(param.UserID, param.MajorName, param.Emphasis, param.SchoolYear)
 	if err != nil {
 		_ = c.Error(err)
 		return

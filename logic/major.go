@@ -39,12 +39,8 @@ func CreateEmphasis(collegeID int32, name string, majorName string, totalCredit 
 }
 
 type MajorDto struct {
-	CollegeID        int      `json:"collegeID"`
-	Name             string   `json:"name"`
-	DegreeHour       int32    `json:"degreeHour"`
-	MinMajorHour     int32    `json:"minMajorHour"`
-	EmphasisRequired bool     `json:"emphasisRequired"`
-	EmphasisList     []string `json:"emphasisList"`
+	Name             string `json:"name"`
+	EmphasisRequired bool   `json:"emphasisRequired"`
 }
 
 func GetMajorList(collegeID int32) ([]MajorDto, error) {
@@ -58,31 +54,12 @@ func GetMajorList(collegeID int32) ([]MajorDto, error) {
 
 	majorDtoList := make([]MajorDto, 0)
 	for _, m := range majorList {
-		emphasisReader := major.ReadEmphasis{
-			CollegeID: collegeID,
-			MajorName: m.Name,
-		}
-		emphasisList, err := emphasisReader.FindAllEmphasisesOfAMajor()
-		if err != nil {
-			return nil, err
-		}
-		emphasisNameList := make([]string, 0)
-		for _, e := range emphasisList {
-			emphasisNameList = append(emphasisNameList, e.Name)
-		}
-
-		majorDto := MajorDto{
-			CollegeID:        int(collegeID),
+		dto := MajorDto{
 			Name:             m.Name,
-			DegreeHour:       m.DegreeHour,
-			MinMajorHour:     m.MinMajorHour,
 			EmphasisRequired: m.EmphasisRequired,
-			EmphasisList:     emphasisNameList,
 		}
-
-		majorDtoList = append(majorDtoList, majorDto)
+		majorDtoList = append(majorDtoList, dto)
 	}
-
 	return majorDtoList, nil
 }
 

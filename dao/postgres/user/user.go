@@ -129,9 +129,9 @@ func CheckUserHistoryCourseAlreadyExist(userID, courseID int64, professorName st
 	return res.RowsAffected != 0, nil
 }
 
-func UpdateUserMajorAndYear(userID int64, majorName string, schoolYear string) error {
+func UpdateUserMajorAndYear(userID int64, majorName, emphasis string, schoolYear string) error {
 	res := postgres.DB.Model(&model.User{}).Where("id = ?", userID).
-		Updates(map[string]interface{}{"major": majorName, "academic_year": schoolYear})
+		Updates(map[string]interface{}{"major": majorName, "academic_year": schoolYear, "emphasis": emphasis})
 
 	if res.Error != nil {
 		return shared.InternalErr{}

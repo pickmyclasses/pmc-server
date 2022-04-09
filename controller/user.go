@@ -143,7 +143,6 @@ func PostUserMajorHandler(c *gin.Context) {
 		_ = c.Error(err)
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{
 		MESSAGE: SUCCESS,
 	})

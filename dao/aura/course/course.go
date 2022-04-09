@@ -111,35 +111,3 @@ func (s *InsertEntity) InsertFn(tx neo4j.Transaction) (interface{}, error) {
 
 	return record.Values[0], nil
 }
-
-// Reader is for reading the course entity list of a course set
-// This will give the entire list of the course list under a course set
-type Reader struct {
-	SetName       string // the name of set we want to fetch
-	RelationToSet string // what we want from the set? another set or courses
-}
-
-// ReadList defines a reader for reading the course list
-type ReadList struct {
-	Reader Reader
-}
-
-// ReadAll reads the course list from a course set
-func (r ReadList) ReadAll() ([]int64, error) {
-	session := aura.Driver.NewSession(neo4j.SessionConfig{})
-	defer session.Close()
-	result, err := session.WriteTransaction(r.ReadAllFn)
-	if err != nil {
-		return nil, err
-	}
-	return result.([]int64), nil
-}
-
-// ReadAllFn is a helper function of ReadAll
-func (r *ReadList) ReadAllFn(tx neo4j.Transaction) (interface{}, error) {
-	command := "MATCH "
-	tx.Run(command, map[string]interface{}{
-		"set_name": r.Reader.SetName,
-	})
-	return nil, nil
-}

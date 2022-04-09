@@ -1,7 +1,9 @@
 package major
 
 import (
+	"fmt"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+	"pmc_server/dao/aura/course"
 	"pmc_server/init/aura"
 )
 
@@ -229,4 +231,57 @@ func (r *ReadEmphasis) findAllEmphasisesFn(tx neo4j.Transaction) (interface{}, e
 	}
 
 	return emphasisList, nil
+}
+
+// Reader is for reading the course entity list of a course set
+// This will give the entire list of the course list under a course set
+type Reader struct {
+	MajorName string // the name of major we want to fetch
+}
+
+// ReadList defines a reader for reading the course list
+type ReadList struct {
+	Reader Reader
+}
+
+// ReadAll reads the course list from a course set
+func (r ReadList) ReadAll() ([]int64, error) {
+	session := aura.Driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	defer session.Close()
+	result, err := session.ReadTransaction(r.ReadAllFn)
+	if err != nil {
+		return nil, err
+	}
+	return result.([]int64), nil
+}
+
+// ReadAllFn is a helper function of ReadAll
+func (r *ReadList) ReadAllFn(tx neo4j.Transaction) (interface{}, error) {
+	res, err := tx.Run("MATCH (m:Major)-[*]-(connected) RETURN connected", map[string]interface{}{
+		"major_name": r.Reader.MajorName,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	courseList := make([]int64, 0)
+	for res.Next() {
+		fmt.Println(res.Record().Values)
+	}
+
+	return courseList, nil
+}
+
+func (r ReadList) ReadDirectCourseSet() ([]course.Set, error) {
+	session := aura.Driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	defer session.Close()
+	result, err := session.ReadTransaction(r.ReadDirectCourseSetFn)
+	if err != nil {
+		return nil, err
+	}
+	return result.([]course.Set), nil
+}
+
+func (r ReadList) ReadDirectCourseSetFn(tx neo4j.Transaction) (interface{}, error) {
+	res, err := tx.Run("MATCH (m:Major)-")
 }

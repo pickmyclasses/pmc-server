@@ -83,5 +83,16 @@ type CourseSet struct {
 }
 
 func GetCourseSetListByMajor(majorName string) ([]CourseSet, error) {
+	reader := major.Reader{
+		MajorName: majorName,
+	}
+	courseSetReader := major.ReadList{
+		Reader: reader,
+	}
+
+	_, err := courseSetReader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
 	return nil, nil
 }

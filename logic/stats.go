@@ -1,11 +1,14 @@
 package logic
 
 import (
+	"fmt"
+	"sort"
+
 	courseDao "pmc_server/dao/postgres/course"
 	historyDao "pmc_server/dao/postgres/history"
 	dao "pmc_server/dao/postgres/review"
+	semesterDao "pmc_server/dao/postgres/semester"
 	"pmc_server/shared"
-	"sort"
 )
 
 type ProfessorRanking struct {
@@ -134,6 +137,61 @@ func GetCourseAverageLoad(courseID int64) (*CourseLoad, error) {
 		CourseAverageGrade: courseLoad,
 		MajorAverageGrade:  majorLoad,
 	}, nil
+}
+
+type SemesterRating struct {
+	SemesterName string  `json:"semesterName"`
+	Rating       float32 `json:"rating"`
+}
+
+// GetCourseRatingTrendBySemester fetches the overall rating for the course for each semester
+// The returned result should be sorted
+func GetCourseRatingTrendBySemester(courseID int64) ([]SemesterRating, error) {
+	reviewList, err := dao.GetReviewListByCourseID(courseID)
+	if err != nil {
+		return nil, err
+	}
+
+	mapping := make(map[string]struct {
+		rating float32
+		count  int32
+	}, 0)
+
+	for _, review := range reviewList {
+		history, err := historyDao.GetUserCourseHistoryByID(review.UserID, courseID)
+		if err != nil {
+			return nil, err
+		}
+
+		semester, err := semesterDao.GetSemesterByID(history.SemesterID)
+		if err != nil {
+			return nil, err
+		}
+
+		semesterName := fmt.Sprintf("%s %d", semester.Season, semester.Year)
+		if v, exist := mapping[semesterName]; exist {
+			newVal := (v.rating + review.Rating) / float32(v.count+1)
+			mapping[semesterName] = struct {
+				rating float32
+				count  int32
+			}{rating: newVal, count: v.count + 1}
+		} else {
+			mapping[semesterName] = struct {
+				rating float32
+				count  int32
+			}{rating: review.Rating, count: 1}
+		}
+	}
+
+	semesterRatingList := make([]SemesterRating, 0)
+	for k, v := range mapping {
+		semesterRatingList = append(semesterRatingList, SemesterRating{
+			SemesterName: k,
+			Rating:       v.rating,
+		})
+	}
+
+	return semesterRatingList, nil
 }
 
 func getCourseNumberGrade(grade string) (float32, error) {

@@ -83,6 +83,7 @@ func SetUp(mode string) *gin.Engine {
 		// for stats
 		r.GET("/stats/course/:id/professor/rank", controller.GetCourseProfessorRankingHandler)
 		r.GET("/stats/course/:id/load", controller.GetCourseAverageLoadHandler)
+		r.GET("/stats/course/:id/rating/trend", controller.GetCourseAverageRatingTrendBySemesterHandler)
 
 		// for testing
 		r.GET("/ping", auth.JWT(), func(c *gin.Context) {

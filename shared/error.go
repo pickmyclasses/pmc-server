@@ -1,6 +1,9 @@
 package shared
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 type AppErr interface {
 	Error() string
@@ -89,10 +92,12 @@ func (err ResourceConflictErr) Code() int {
 
 // InternalErr represents an internal server errors
 // this is mostly cost by internet delay or server issue
-type InternalErr struct{}
+type InternalErr struct {
+	Msg string
+}
 
 func (err InternalErr) Error() string {
-	return InternalServerErr
+	return fmt.Sprintf("%s %s", InternalServerErr, err.Msg)
 }
 
 func (err InternalErr) Code() int {

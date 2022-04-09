@@ -132,3 +132,21 @@ func GetMajorCourseSetHandler(ctx *gin.Context) {
 		shared.DATA: courseSetList,
 	})
 }
+
+func GetMajorDirectRequirementsHandler(ctx *gin.Context) {
+	major := ctx.Query("major")
+
+	if major == "" {
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
+		return
+	}
+
+	courseSetList, err := logic.GetDirectMajorCourseSets(major)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		shared.DATA: courseSetList,
+	})
+}

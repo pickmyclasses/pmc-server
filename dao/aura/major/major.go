@@ -236,7 +236,9 @@ func (r *ReadEmphasis) findAllEmphasisesFn(tx neo4j.Transaction) (interface{}, e
 // Reader is for reading the course entity list of a course set
 // This will give the entire list of the course list under a course set
 type Reader struct {
-	MajorName string // the name of major we want to fetch
+	MajorName  string // the name of major we want to fetch
+	SetName    string // the name of the set we are fetching (this could be empty)
+	DegreeName string // the degree we are fetching  (this could be empty)
 }
 
 // ReadList defines a reader for reading the course list
@@ -266,7 +268,7 @@ func (r *ReadList) ReadAllFn(tx neo4j.Transaction) (interface{}, error) {
 
 	courseList := make([]int64, 0)
 	for res.Next() {
-		fmt.Println(res.Record().Values)
+		fmt.Println(res.Record().Values[0])
 	}
 
 	return courseList, nil
@@ -283,5 +285,48 @@ func (r ReadList) ReadDirectCourseSet() ([]course.Set, error) {
 }
 
 func (r ReadList) ReadDirectCourseSetFn(tx neo4j.Transaction) (interface{}, error) {
-	res, err := tx.Run("MATCH (m:Major)-")
+	command := fmt.Sprintf("MATCH (m:Major{name:'%s'})-[:HAS]->(d:Degree{name:'Bachelor or Arts - %s'})"+
+		"<-[:REQUIRED_BY]-(courseSet) RETURN courseSet.name, courseSet.course_required",
+		r.Reader.MajorName, r.Reader.MajorName)
+	res, err := tx.Run(command, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	courseSetList := make([]course.Set, 0)
+	for res.Next() {
+		fmt.Println(res.Record().Values)
+	}
+	return courseSetList, nil
+}
+
+type SubSet struct {
+	Name           string   `json:"name"`
+	CourseRequired int32    `json:"courseRequired"`
+	SubSets        []SubSet `json:"subSets"`
+}
+
+func (r ReadList) ReadSubCourseSets() ([]SubSet, error) {
+	session := aura.Driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
+	defer session.Close()
+	result, err := session.ReadTransaction(r.ReadSubCourseSetsFn)
+	if err != nil {
+		return nil, err
+	}
+	return result.([]SubSet), nil
+}
+
+func (r ReadList) ReadSubCourseSetsFn(tx neo4j.Transaction) (interface{}, error) {
+	command := fmt.Sprintf("match (connected)-[*]-(m:CourseSet{name:'%s'})-"+
+		"[:REQUIRED_BY]->(:Degree{name:'%s'}) return connected", r.Reader.SetName, r.Reader.DegreeName)
+	res, err := tx.Run(command, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	subSetList := make([]SubSet, 0)
+	for res.Next() {
+		fmt.Println(res.Record().Values)
+	}
+	return subSetList, nil
 }

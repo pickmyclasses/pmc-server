@@ -96,3 +96,23 @@ func GetCourseSetListByMajor(majorName string) ([]CourseSet, error) {
 	}
 	return nil, nil
 }
+
+type DirectCourseSet struct {
+	SetName        string `json:"setName"`
+	CourseRequired int32  `json:"courseRequired"`
+}
+
+func GetDirectMajorCourseSets(majorName string) ([]DirectCourseSet, error) {
+	reader := major.Reader{
+		MajorName: majorName,
+	}
+	courseSetReader := major.ReadList{
+		Reader: reader,
+	}
+
+	_, err := courseSetReader.ReadDirectCourseSet()
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+}

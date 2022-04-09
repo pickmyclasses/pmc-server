@@ -77,7 +77,8 @@ func SetUp(mode string) *gin.Engine {
 		r.POST("/college/:id/major", controller.CreateMajorHandler)
 		r.POST("/college/:id/emphasis", controller.CreateEmphasisHandler)
 		r.GET("/college/:id/emphasis", controller.GetEmphasisHandler)
-		r.GET("/major/course/list", controller.GetMajorCourseSetHandler)
+		r.GET("/college/:id/major/course/list", controller.GetMajorCourseSetHandler)
+		r.GET("/college/:id/major/course/requirements", controller.GetMajorDirectRequirementsHandler)
 
 		// for stats
 		r.GET("/stats/course/:id/professor/rank", controller.GetCourseProfessorRankingHandler)
@@ -87,7 +88,6 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/ping", auth.JWT(), func(c *gin.Context) {
 			c.String(http.StatusOK, "pong")
 		})
-
 	}
 
 	// for swagger

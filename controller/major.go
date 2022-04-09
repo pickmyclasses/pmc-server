@@ -150,3 +150,21 @@ func GetMajorDirectRequirementsHandler(ctx *gin.Context) {
 		shared.DATA: courseSetList,
 	})
 }
+
+func GetMajorCourseSubsetsHandler(ctx *gin.Context) {
+	major := ctx.Query("major")
+
+	if major == "" {
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
+		return
+	}
+
+	subSetList, err := logic.GetSubCourseSets(major)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		shared.DATA: subSetList,
+	})
+}

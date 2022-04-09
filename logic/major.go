@@ -116,3 +116,16 @@ func GetDirectMajorCourseSets(majorName string) ([]DirectCourseSet, error) {
 	}
 	return nil, nil
 }
+
+func GetSubCourseSets(majorName string) ([]major.SubSet, error) {
+	reader := major.ReadList{
+		Reader: major.Reader{
+			MajorName: majorName,
+			SetName:   "General Education Courses",
+		}}
+	subsetList, err := reader.ReadSubCourseSets()
+	if err != nil {
+		return nil, err
+	}
+	return subsetList, nil
+}

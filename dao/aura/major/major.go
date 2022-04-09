@@ -5,6 +5,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 	"pmc_server/dao/aura/course"
 	"pmc_server/init/aura"
+	"pmc_server/shared"
 )
 
 type Entity struct {
@@ -236,9 +237,8 @@ func (r *ReadEmphasis) findAllEmphasisesFn(tx neo4j.Transaction) (interface{}, e
 // Reader is for reading the course entity list of a course set
 // This will give the entire list of the course list under a course set
 type Reader struct {
-	MajorName  string // the name of major we want to fetch
-	SetName    string // the name of the set we are fetching (this could be empty)
-	DegreeName string // the degree we are fetching  (this could be empty)
+	MajorName string // the name of major we want to fetch
+	SetName   string // the name of the set we are fetching (this could be empty)
 }
 
 // ReadList defines a reader for reading the course list
@@ -301,9 +301,9 @@ func (r ReadList) ReadDirectCourseSetFn(tx neo4j.Transaction) (interface{}, erro
 }
 
 type SubSet struct {
-	Name           string   `json:"name"`
-	CourseRequired int32    `json:"courseRequired"`
-	SubSets        []SubSet `json:"subSets"`
+	Name           string  `json:"name"`
+	CourseRequired int32   `json:"courseRequired"`
+	CourseIDList   []int64 `json:"courseIDList"`
 }
 
 func (r ReadList) ReadSubCourseSets() ([]SubSet, error) {
@@ -317,16 +317,45 @@ func (r ReadList) ReadSubCourseSets() ([]SubSet, error) {
 }
 
 func (r ReadList) ReadSubCourseSetsFn(tx neo4j.Transaction) (interface{}, error) {
-	command := fmt.Sprintf("match (connected)-[*]-(m:CourseSet{name:'%s'})-"+
-		"[:REQUIRED_BY]->(:Degree{name:'%s'}) return connected", r.Reader.SetName, r.Reader.DegreeName)
+	command := fmt.Sprintf(
+		"MATCH (connected)-[*]-(m:CourseSet{name:\"%s\"})-[:REQUIRED_BY]->(:Degree{name:\"Bachelor or Arts -"+
+			" Accounting\"})<-[:HAS]-(major:Major{name:\"%s\"}) "+
+			"RETURN connected.name, labels(connected), connected.course_required, connected.id",
+		r.Reader.SetName, r.Reader.MajorName)
 	res, err := tx.Run(command, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	subSetList := make([]SubSet, 0)
+	isFirstSet := true
+	isPrevSet := false
 	for res.Next() {
-		fmt.Println(res.Record().Values)
+		var subSet SubSet
+		if labels, ok := res.Record().Values[1].([]interface{}); ok {
+			if !isFirstSet {
+				subSetList = append(subSetList, subSet)
+			}
+			// handle courseSet
+			if labels[0].(string) == "CourseSet" {
+				// previous one is also a set, this is a subset
+				if isPrevSet {
+					isPrevSet = true
+				}
+				subSet = SubSet{}
+				subSet.Name = res.Record().Values[0].(string)
+				fmt.Println(res.Record().Values[2])
+				subSet.CourseRequired = int32(res.Record().Values[2].(int64))
+				subSet.CourseIDList = make([]int64, 0)
+				isFirstSet = false
+			}
+			if labels[0].(string) == "Course" {
+				isPrevSet = false
+				subSet.CourseIDList = append(subSet.CourseIDList, res.Record().Values[3].(int64))
+			}
+		} else {
+			return nil, shared.InternalErr{}
+		}
 	}
 	return subSetList, nil
 }

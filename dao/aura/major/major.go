@@ -52,10 +52,10 @@ func (m *Insertion) insertMajorFn(tx neo4j.Transaction) (interface{}, error) {
 }
 
 type Emphasis struct {
-	Name          string
-	TotalCredit   int32
-	MainMajorName string
-	CollegeID     int32
+	Name          string `json:"name"`
+	TotalCredit   int32  `json:"totalCredit"`
+	MainMajorName string `json:"mainMajorName"`
+	CollegeID     int32  `json:"collegeID"`
 }
 
 type EmphasisInsertion struct {

@@ -10,10 +10,10 @@ const pool = new Pool({
   port: 5432,
 });
 
-// ----------------------------------------------- Class functions -------------------------------------------------------------------------------
-const getClasses = (request, response) => 
+// ----------------------------------------------- Get functions -------------------------------------------------------------------------------
+const getBuildings = (request, response) => 
 {
-  pool.query('select * from class ORDER BY id ASC', (error, result) => {
+  pool.query('select * from public.building ORDER BY id ASC', (error, result) => {
     if(error)
     {
       response.status(400).json(error);
@@ -22,6 +22,63 @@ const getClasses = (request, response) =>
   })
 }
 
+const getClasses = (request, response) => 
+{
+  pool.query('select * from public.class ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getColleges = (request, response) => 
+{
+  pool.query('select * from public.college ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getCourses = (request, response) => 
+{
+  pool.query('select * from public.course ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getCourseSets = (request, response) => 
+{
+  pool.query('select * from public.course_set ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getCustomEvents = (request, response) => 
+{
+  pool.query('select * from public.custom_event ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+
+// ----------------------------------------------- Class functions -------------------------------------------------------------------------------
 const updateClass = (request, response) => {
   const { id, created_at, deleted_at, is_deleted, semester, year, session, wait_list, offer_date, start_time, end_time, location, recommendation_score, 
   type, number, component, unit, seat_available, notes, instructors, course_title, course_catalog_name, course_id, rating } = request.body
@@ -53,17 +110,6 @@ const deleteClass = (request, response) =>
 }
 
 // ----------------------------------------------- College functions -------------------------------------------------------------------------------
-const getColleges = (request, response) => 
-{
-  pool.query('select * from college ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
-}
-
 const deleteCollege = (request, response) =>
 {
   const id = parseInt(request.params.id)
@@ -93,17 +139,6 @@ const updateCollege = (request, response) => {
 }
 
 // ----------------------------------------------- Course functions -------------------------------------------------------------------------------
-const getCourses = (request, response) => 
-{
-  pool.query('select * from course ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
-}
-
 const deleteCourse = (request, response) =>
 {
   const id = parseInt(request.params.id)

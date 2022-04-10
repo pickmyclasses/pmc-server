@@ -2,17 +2,33 @@ package logic
 
 import (
 	"fmt"
-	reviewDao "pmc_server/dao/postgres/review"
-	tagDao "pmc_server/dao/postgres/tag"
 	"strconv"
 
 	"pmc_server/dao/aura/major"
-	classDao "pmc_server/dao/postgres/class"
 	dao "pmc_server/dao/postgres/course"
 	majorDao "pmc_server/dao/postgres/major"
+	reviewDao "pmc_server/dao/postgres/review"
+	tagDao "pmc_server/dao/postgres/tag"
 	"pmc_server/init/postgres"
 	"pmc_server/model/dto"
 )
+
+type CourseSet struct {
+	SetName      string       `json:"setName"`
+	CourseNeeded int32        `json:"courseNeeded"`
+	CourseList   []dto.Course `json:"courseList"`
+	SubSets      []CourseSet  `json:"subSets"`
+}
+
+type MajorDto struct {
+	Name             string `json:"name"`
+	EmphasisRequired bool   `json:"emphasisRequired"`
+}
+
+type DirectCourseSet struct {
+	SetName        string `json:"setName"`
+	CourseRequired int32  `json:"courseRequired"`
+}
 
 func CreateMajor(collegeID int, name string, degreeHour, minMajorHour int32, emphasisRequired bool) (string, error) {
 	insertion := major.Insertion{Major: major.Entity{
@@ -47,11 +63,6 @@ func CreateEmphasis(collegeID int32, name string, majorName string, totalCredit 
 	return emphasis, nil
 }
 
-type MajorDto struct {
-	Name             string `json:"name"`
-	EmphasisRequired bool   `json:"emphasisRequired"`
-}
-
 func GetMajorList(collegeID int32) ([]MajorDto, error) {
 	reader := major.Read{
 		CollegeID: collegeID,
@@ -84,13 +95,6 @@ func GetMajorEmphasisList(collegeID int32, majorName string) ([]major.Emphasis, 
 	return emphasisList, nil
 }
 
-type CourseSet struct {
-	SetName      string       `json:"setName"`
-	CourseNeeded int32        `json:"courseNeeded"`
-	CourseList   []dto.Course `json:"courseList"`
-	SubSets      []CourseSet  `json:"subSets"`
-}
-
 func GetCourseSetListByMajor(majorName string) ([]CourseSet, error) {
 	reader := major.Reader{
 		MajorName: majorName,
@@ -104,11 +108,6 @@ func GetCourseSetListByMajor(majorName string) ([]CourseSet, error) {
 		return nil, err
 	}
 	return nil, nil
-}
-
-type DirectCourseSet struct {
-	SetName        string `json:"setName"`
-	CourseRequired int32  `json:"courseRequired"`
 }
 
 func GetDirectMajorCourseSets(majorName string) ([]DirectCourseSet, error) {
@@ -173,60 +172,87 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 
 	courseSetDtoList := make([]CourseSet, 0)
 	for _, set := range directCourseSetList {
-		courseEntityList := make([]dto.Course, 0)
-		for _, id := range set.CourseIDList {
-			course, err := dao.GetCourseByID(int(id))
-			if err != nil {
-				return nil, err
-			}
-			classList, err := classDao.GetClassByCourseID(id)
-			if err != nil {
-				return nil, err
-			}
+		courseEntityList, err := buildCourseDto(set.CourseIDList)
+		if err != nil {
+			return nil, err
+		}
 
-			rating, err := reviewDao.GetCourseOverallRating(id)
+		subsetList, err := q.QueryChildrenCourseSetList(int32(set.ID))
+		if err != nil {
+			return nil, err
+		}
+
+		subsetDtoList := make([]CourseSet, 0)
+		for _, subset := range subsetList {
+			subsetEntityList, err := BuildCourseDto(subset.CourseIDList)
 			if err != nil {
 				return nil, err
 			}
-
-			tagList, err := tagDao.GetTagListByCourseID(id)
-			if err != nil {
-				return nil, err
-			}
-
-			maxCredit, err := strconv.Atoi(course.MaxCredit)
-			if err != nil {
-				maxCredit = 0
-			}
-			minCredit, err := strconv.Atoi(course.MinCredit)
-			if err != nil {
-				minCredit = 0
-			}
-			courseEntityList = append(courseEntityList, dto.Course{
-				CourseID:           id,
-				IsHonor:            course.IsHonor,
-				FixedCredit:        course.FixedCredit,
-				DesignationCatalog: course.DesignationCatalog,
-				Description:        course.Description,
-				Prerequisites:      course.Prerequisites,
-				Title:              course.Title,
-				CatalogCourseName:  course.CatalogCourseName,
-				Component:          course.Component,
-				MaxCredit:          float64(maxCredit),
-				MinCredit:          float64(minCredit),
-				Classes:            *classList,
-				OverallRating:      rating.OverAllRating,
-				Tags:               tagList,
+			subsetDtoList = append(subsetDtoList, CourseSet{
+				SetName:      subset.Name,
+				CourseNeeded: subset.CourseRequired,
+				CourseList:   subsetEntityList,
 			})
 		}
+
 		courseSetDto := CourseSet{
 			SetName:      set.Name,
 			CourseNeeded: set.CourseRequired,
 			CourseList:   courseEntityList,
-			SubSets:      nil,
+			SubSets:      subsetDtoList,
 		}
 		courseSetDtoList = append(courseSetDtoList, courseSetDto)
 	}
 
 	return courseSetDtoList, nil
+}
+
+func BuildCourseDto(courseIDList []int64) ([]dto.Course, error) {
+	courseEntityList := make([]dto.Course, 0)
+	for _, id := range courseIDList {
+		course, err := dao.GetCourseByID(int(id))
+		if err != nil {
+			return nil, err
+		}
+		//classList, err := classDao.GetClassByCourseID(id)
+		//if err != nil {
+		//	return nil, err
+		//}
+
+		rating, err := reviewDao.GetCourseOverallRating(id)
+		if err != nil {
+			return nil, err
+		}
+
+		tagList, err := tagDao.GetTagListByCourseID(id)
+		if err != nil {
+			return nil, err
+		}
+
+		maxCredit, err := strconv.Atoi(course.MaxCredit)
+		if err != nil {
+			maxCredit = 0
+		}
+		minCredit, err := strconv.Atoi(course.MinCredit)
+		if err != nil {
+			minCredit = 0
+		}
+		courseEntityList = append(courseEntityList, dto.Course{
+			CourseID:           id,
+			IsHonor:            course.IsHonor,
+			FixedCredit:        course.FixedCredit,
+			DesignationCatalog: course.DesignationCatalog,
+			Description:        course.Description,
+			Prerequisites:      course.Prerequisites,
+			Title:              course.Title,
+			CatalogCourseName:  course.CatalogCourseName,
+			Component:          course.Component,
+			MaxCredit:          float64(maxCredit),
+			MinCredit:          float64(minCredit),
+			//Classes:            *classList,
+			OverallRating: rating.OverAllRating,
+			Tags:          tagList,
+		})
+	}
+	return courseEntityList, nil
 }

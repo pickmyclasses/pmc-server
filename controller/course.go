@@ -124,20 +124,31 @@ func GetCoursesBySearchHandler(c *gin.Context) {
 	})
 }
 
+type CreateBatchCourseInSetParam struct {
+	CourseNameList      []string `json:"courseNameList"`
+	SetName             string   `json:"setName"`
+	LinkedToMajor       bool     `json:"linkedToMajor"`
+	CourseRequiredInSet int32    `json:"courseRequiredInSet"`
+	IsLeaf              bool     `json:"isLeaf"`
+	MajorID             int32    `json:"majorID"`
+	ParentSetID         int32    `json:"parentSetID"`
+}
+
 func CreateBatchCourseInSetHandler(c *gin.Context) {
-	var param model.CreateBatchCourseInSetParam
+	var param CreateBatchCourseInSetParam
 	if err := c.ShouldBindJSON(&param); err != nil {
 		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
-	courses, err := logic.InsertCoursesToSet(param.CourseNameList, param.TargetName,
-		param.SetName, param.RelationToTarget, param.LinkedToMajor, param.CourseRequiredInSet)
+
+	err := logic.CreateCourseSet(param.SetName, param.CourseNameList,
+		param.LinkedToMajor, param.CourseRequiredInSet, param.IsLeaf, param.MajorID, param.ParentSetID)
 	if err != nil {
 		_ = c.Error(err)
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		DATA: courses,
+		shared.MESSAGE: shared.SUCCESS,
 	})
 }

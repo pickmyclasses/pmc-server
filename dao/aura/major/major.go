@@ -333,21 +333,16 @@ func (r ReadList) ReadSubCourseSetsFn(tx neo4j.Transaction) (interface{}, error)
 	for res.Next() {
 		var subSet SubSet
 		if labels, ok := res.Record().Values[1].([]interface{}); ok {
-			if !isFirstSet {
-				subSetList = append(subSetList, subSet)
-			}
-			// handle courseSet
 			if labels[0].(string) == "CourseSet" {
-				// previous one is also a set, this is a subset
+				if isFirstSet {
+					isFirstSet = false
+				}
 				if isPrevSet {
 					isPrevSet = true
 				}
-				subSet = SubSet{}
 				subSet.Name = res.Record().Values[0].(string)
-				fmt.Println(res.Record().Values[2])
 				subSet.CourseRequired = int32(res.Record().Values[2].(int64))
 				subSet.CourseIDList = make([]int64, 0)
-				isFirstSet = false
 			}
 			if labels[0].(string) == "Course" {
 				isPrevSet = false

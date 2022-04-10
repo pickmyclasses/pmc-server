@@ -3,13 +3,30 @@ package dao
 import (
 	"errors"
 	"fmt"
-	"github.com/lib/pq"
 
 	"pmc_server/model"
 	"pmc_server/shared"
 
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
+
+// CourseSetOps defines a set of operations on the CourseSet db.
+type CourseSetOps interface {
+	InsertCourseSet(name string, isLeaf bool, courseIDList []int64,
+		parentSetID int32, linkedToMajor bool, courseRequired int32) error
+	QueryCourseSetByID(id int32) (*model.CourseSet, error)
+	QueryCourseSetByName(name string) (*model.CourseSet, error)
+	QueryCourseSetList() ([]model.CourseSet, error)
+	QueryParentCourseSet(id int32) (*model.CourseSet, error)
+	QueryChildrenCourseSetList(id int32) ([]model.CourseSet, error)
+	QueryCourseListInCourseSetByID(id int32) ([]model.Course, error)
+	QueryCourseListInCourseSetByName(name string) ([]model.Course, error)
+	QueryDirectMajorCourseSetsByMajorID(id int32) ([]model.CourseSet, error)
+	DeleteCourseSetByID(id int32) error
+	DetachCourSetFromParentSetByID(id int32) error
+	DetachCourseSetChildrenSetByID(id int32) error
+}
 
 // CourseSet defines a query on the CourseSet db.
 // majorName - the name of major this course set belongs to.
@@ -24,13 +41,16 @@ type CourseSet struct {
 // isLeaf - is the course set a leaf node (ie, no sub course set).
 // courseIDList - the course id list this course set contains.
 func (c CourseSet) InsertCourseSet(name string, isLeaf bool,
-	courseIDList []int64, parentSetID int32) error {
+	courseIDList []int64, parentSetID int32, linkedToMajor bool, courseRequired int32) error {
+
 	set := model.CourseSet{
-		Name:         name,
-		IsLeaf:       isLeaf,
-		CourseIDList: courseIDList,
-		ParentSetID:  parentSetID,
-		MajorID:      c.MajorID,
+		Name:           name,
+		IsLeaf:         isLeaf,
+		CourseIDList:   courseIDList,
+		ParentSetID:    parentSetID,
+		MajorID:        c.MajorID,
+		LinkedToMajor:  linkedToMajor,
+		CourseRequired: courseRequired,
 	}
 
 	res := c.Querier.Create(&set)
@@ -168,6 +188,23 @@ func (c CourseSet) QueryCourseListInCourseSetByName(name string) ([]model.Course
 		return nil, err
 	}
 	return courseList, nil
+}
+
+// QueryDirectMajorCourseSetsByMajorID queries the course set list directly associated to the major.
+// By direct course set, we mean those course set that has no parent set (eg. general education).
+// id - the id of the major we are querying
+func (c CourseSet) QueryDirectMajorCourseSetsByMajorID(id int32) ([]model.CourseSet, error) {
+	var setList []model.CourseSet
+	res := c.Querier.Where("major_id = ? and linked_to_major = ? and parent_set_id = ?", id, true, -1).Find(&setList)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return []model.CourseSet{}, nil
+		}
+		return nil, shared.InternalErr{
+			Msg: fmt.Sprintf("Failed to query course set list for the major with id %d", id),
+		}
+	}
+	return setList, nil
 }
 
 // DeleteCourseSetByID deletes a course set from the database with the given id.

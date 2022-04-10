@@ -134,14 +134,20 @@ func GetMajorCourseSetHandler(ctx *gin.Context) {
 }
 
 func GetMajorDirectRequirementsHandler(ctx *gin.Context) {
-	major := ctx.Query("major")
+	id := ctx.Param("id")
+	collegeID, err := strconv.Atoi(id)
+	if err != nil {
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
+		return
+	}
 
+	major := ctx.Query("major")
 	if major == "" {
 		_ = ctx.Error(shared.ParamIncompatibleErr{})
 		return
 	}
 
-	courseSetList, err := logic.GetDirectMajorCourseSets(major)
+	courseSetList, err := logic.GetMajorCourseSets(int32(collegeID), major)
 	if err != nil {
 		_ = ctx.Error(err)
 		return

@@ -47,6 +47,21 @@ app.get('/user_voted_tag', cors(), db.getUserVotedTags);
 app.get('/building/delete/:id', cors(), db.deleteBuilding);
 app.get('/class/delete/:id', cors(), db.deleteClass);
 app.get('/college/delete/:id', cors(), db.deleteCollege);
+app.get('/course/delete/:id', cors(), db.deleteCourse);
+app.get('/course_set/delete/:id', cors(), db.deleteCourseSet);
+app.get('/custom_event/delete/:id', cors(), db.deleteCustomEvent);
+app.get('/major/delete/:id', cors(), db.deleteMajor);
+app.get('/over_all_rating/delete/:id', cors(), db.deleteOverAllRating);
+app.get('/prerequisites/delete/:id', cors(), db.deletePrerequisites);
+app.get('/professor/delete/:id', cors(), db.deleteProfessor);
+app.get('/review/delete/:id', cors(), db.deleteReview);
+app.get('/schedule/delete/:id', cors(), db.deleteSchedule);
+app.get('/semester/delete/:id', cors(), db.deleteSemester);
+app.get('/subject/delete/:id', cors(), db.deleteSubject);
+app.get('/tag/delete/:id', cors(), db.deleteTag);
+app.get('/user/delete/:id', cors(), db.deleteUser);
+app.get('/user_course_history/delete/:id', cors(), db.deleteUserCourseHistory);
+app.get('/user_voted_tag/delete/:id', cors(), db.deleteUserVotedTag);
 
 
 // class API

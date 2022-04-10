@@ -724,6 +724,7 @@ module.exports =
   deleteProfessor,
   deleteReview,
   deleteSchedule,
+  deleteSemester,
   deleteSubject,
   deleteTag,
   deleteUser,

@@ -318,6 +318,58 @@ const deletePrerequisites = (request, response) =>
   })
 }
 
+const deleteProfessor = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM public.professor WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(201).send({"message" : "Delete data successfully"});
+  })
+}
+
+const deleteReview = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM public.review WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(201).send({"message" : "Delete data successfully"});
+  })
+}
+
+const deleteSchedule = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM public.schedule WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(201).send({"message" : "Delete data successfully"});
+  })
+}
+
+const deleteSemester = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM public.semester WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(201).send({"message" : "Delete data successfully"});
+  })
+}
+
 
 // ----------------------------------------------- Class functions -------------------------------------------------------------------------------
 const updateClass = (request, response) => {
@@ -389,18 +441,7 @@ const deleteSubject = (request, response) =>
 
 
 // ----------------------------------------------- Professor functions -------------------------------------------------------------------------------
-const deleteProfessor = (request, response) =>
-{
-  const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.professor WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
-}
 
 const updateProfessor = (request, response) => {
   const { id, name, college_id, deleted_at} = request.body
@@ -418,18 +459,7 @@ const updateProfessor = (request, response) => {
 }
 
 // ----------------------------------------------- Review functions -------------------------------------------------------------------------------
-const deleteReview = (request, response) =>
-{
-  const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.review WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
-}
 
 const updateReview = (request, response) => {
   const { id, created_at, deleted_at, is_deleted, rating, anonymous, recommended, pros, cons, comment, course_id, user_id, like_count, dislike_count } = request.body
@@ -489,18 +519,7 @@ const updateUser = (request, response) => {
 }
 
 // ----------------------------------------------- Schedule functions -------------------------------------------------------------------------------
-const deleteSchedule = (request, response) =>
-{
-  const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.schedule WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
-}
 
 const getScheduleByID = (request, response) => 
 {

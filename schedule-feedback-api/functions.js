@@ -10,7 +10,7 @@ const pool = new Pool({
   port: 5432,
 });
 
-// ----------------------------------------------- Get functions -------------------------------------------------------------------------------
+// ----------------------------------------------- GET functions -------------------------------------------------------------------------------
 const getBuildings = (request, response) => 
 {
   pool.query('select * from public.building ORDER BY id ASC', (error, result) => {
@@ -200,6 +200,32 @@ const getUserVotedTags = (request, response) =>
   })
 }
 
+// ----------------------------------------------- DELETE functions -------------------------------------------------------------------------------
+const deleteBuilding = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM public.building WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(201).send({"message" : "Delete data successfully"});
+  })
+}
+
+const deleteClass = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM public.class WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(201).send({"message" : "Delete data successfully"});
+  })
+}
 
 // ----------------------------------------------- Class functions -------------------------------------------------------------------------------
 const updateClass = (request, response) => {
@@ -219,18 +245,7 @@ const updateClass = (request, response) => {
   )
 }
 
-const deleteClass = (request, response) =>
-{
-  const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.class WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
-}
 
 // ----------------------------------------------- College functions -------------------------------------------------------------------------------
 const deleteCollege = (request, response) =>

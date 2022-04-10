@@ -690,6 +690,7 @@ const createFeedback = (request, response) => {
 
 module.exports = 
 {
+  // GET APIs
   getBuildings,
   getClasses,
   getColleges,
@@ -710,36 +711,36 @@ module.exports =
   getUserVotedTags,
   getFeedbacks,
 
+  //DELETE APIs
+  deleteBuilding,
+  deleteClass,
+  deleteCollege,
+  deleteCourse,
+  deleteCourseSet,
+  deleteCustomEvent,
+  deleteMajor,
+  deleteOverAllRating,
+  deletePrerequisites,
+  deleteProfessor,
+  deleteReview,
+  deleteSchedule,
+  deleteSubject,
+  deleteTag,
+  deleteUser,
+  deleteUserCourseHistory,
+  deleteUserVotedTag,
+
   getScheduleByID,
   addToSchedule,
   removeFromSchedule,
   updateSchedule,
-  deleteSchedule,
-
-
   getFeedbackById,
   updateFeedBack,
   createFeedback,
-  deleteFeedback,
-
-  deleteClass,
   updateClass,
-
-  deleteCollege,
   updateCollege,
-
-  deleteCourse,
-
-
-  deleteSubject,
-
   updateProfessor,
-  deleteProfessor,
-
   updateReview,
-  deleteReview,
-
-
   updateUser,
-  deleteUser
+
 }

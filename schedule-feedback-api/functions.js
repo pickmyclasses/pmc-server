@@ -301,16 +301,7 @@ const deleteSubject = (request, response) =>
 }
 
 // ----------------------------------------------- Google Users functions -------------------------------------------------------------------------------
-const getGoogleUsers = (request, response) => 
-{
-  pool.query('select * from google_user ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
-}
+
 
 // ----------------------------------------------- Professor functions -------------------------------------------------------------------------------
 const deleteProfessor = (request, response) =>
@@ -553,46 +544,54 @@ const createFeedback = (request, response) => {
 
 module.exports = 
 {
+  getBuildings,
+  getClasses,
+  getColleges,
+  getCourses,
+  getCourseSets,
+  getCustomEvents,
+  getMajors,
+  getOverallRatings,
+  getPrerequisites,
+  getProfessors,
+  getReviews,
   getSchedules,
+  getSemesters,
+  getSubjects,
+  getTags,
+  getUsers,
+  getFeedbacks,
+
   getSchedule,
   addToSchedule,
   removeFromSchedule,
   updateSchedule,
   deleteSchedule,
 
-  getFeedbacks,
+
   getFeedbackById,
   updateFeedBack,
   createFeedback,
   deleteFeedback,
 
-  getClasses,
   deleteClass,
   updateClass,
 
-  getColleges,
   deleteCollege,
   updateCollege,
 
-  getCourses,
   deleteCourse,
 
-  getSubjects,
+
   deleteSubject,
 
-  getProfessors,
   updateProfessor,
   deleteProfessor,
 
-  getGoogleUsers,
-
-  getReviews,
   updateReview,
   deleteReview,
 
-  getSemesters,
 
-  getUsers,
   updateUser,
   deleteUser
 }

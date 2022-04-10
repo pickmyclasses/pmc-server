@@ -417,7 +417,7 @@ const deleteSchedule = (request, response) =>
   })
 }
 
-const getSchedule = (request, response) => 
+const getScheduleByID = (request, response) => 
 {
   const user_id = parseInt(request.params.user_id);
   const semester_id = parseInt(request.params.semester_id);
@@ -562,7 +562,7 @@ module.exports =
   getUsers,
   getFeedbacks,
 
-  getSchedule,
+  getScheduleByID,
   addToSchedule,
   removeFromSchedule,
   updateSchedule,

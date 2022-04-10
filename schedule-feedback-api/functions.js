@@ -200,6 +200,223 @@ const getUserVotedTags = (request, response) =>
   })
 }
 
+// ----------------------------------------------- GET BY ID functions -------------------------------------------------------------------------------
+const getBuildingByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.building WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getClassByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.class WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getCollegeByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.college WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getCourseByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.course WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getCourseSetByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.course_set WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getCustomEventByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.custom_event WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getMajorByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.major WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getOverAllRatingByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.over_all_rating WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getPrerequisitesByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.prerequisites WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getProfessorByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.professor WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getReviewByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.review WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getScheduleByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.professor WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getSemesterByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.semester WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getSubjectByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.subject WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getTagByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.tag WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getUserByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.user WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getUserCourseHistoryByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.user_course_history WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getUserVotedTagByID = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM public.user_voted_tag WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
 // ----------------------------------------------- DELETE functions -------------------------------------------------------------------------------
 const deleteBuilding = (request, response) =>
 {
@@ -453,11 +670,7 @@ const updateClass = (request, response) => {
   )
 }
 
-
-
 // ----------------------------------------------- College functions -------------------------------------------------------------------------------
-
-
 const updateCollege = (request, response) => {
   const { id, created_at, deleted_at, is_deleted, name } = request.body
 
@@ -473,9 +686,6 @@ const updateCollege = (request, response) => {
   )
 }
 
-// ----------------------------------------------- Course functions -------------------------------------------------------------------------------
-
-
 // ----------------------------------------------- Subject functions -------------------------------------------------------------------------------
 const getSubjects = (request, response) => 
 {
@@ -488,14 +698,7 @@ const getSubjects = (request, response) =>
   })
 }
 
-
-
-// ----------------------------------------------- Google Users functions -------------------------------------------------------------------------------
-
-
 // ----------------------------------------------- Professor functions -------------------------------------------------------------------------------
-
-
 const updateProfessor = (request, response) => {
   const { id, name, college_id, deleted_at} = request.body
 
@@ -511,9 +714,7 @@ const updateProfessor = (request, response) => {
   )
 }
 
-// ----------------------------------------------- Review functions -------------------------------------------------------------------------------
-
-
+// ----------------------------------------------- Review functions --------------------------------------------------------------------------------------
 const updateReview = (request, response) => {
   const { id, created_at, deleted_at, is_deleted, rating, anonymous, recommended, pros, cons, comment, course_id, user_id, like_count, dislike_count } = request.body
 
@@ -529,22 +730,7 @@ const updateReview = (request, response) => {
   )
 }
 
-// ----------------------------------------------- Semester functions -------------------------------------------------------------------------------
-
-
-// ----------------------------------------------- Tag functions -------------------------------------------------------------------------------
-
-
-// ----------------------------------------------- Overall Rating functions -------------------------------------------------------------------------------
-
-
-// ----------------------------------------------- User Voted Tags functions -------------------------------------------------------------------------------
-
-
 // ----------------------------------------------- User functions -------------------------------------------------------------------------------
-
-
-
 const updateUser = (request, response) => {
   const { id, created_at, deleted_at, is_deleted, first_name, last_name, password, email, college_id, academic_year, avatar, user_id, role } = request.body
 
@@ -561,9 +747,7 @@ const updateUser = (request, response) => {
 }
 
 // ----------------------------------------------- Schedule functions -------------------------------------------------------------------------------
-
-
-const getScheduleByID = (request, response) => 
+const getScheduleByUserIDAndSemesterID = (request, response) => 
 {
   const user_id = parseInt(request.params.user_id);
   const semester_id = parseInt(request.params.semester_id);
@@ -711,6 +895,28 @@ module.exports =
   getUserVotedTags,
   getFeedbacks,
 
+  // GET BY ID APIs
+  getBuildingByID,
+  getClassByID,
+  getCollegeByID,
+  getCourseByID,
+  getCourseSetByID,
+  getCustomEventByID,
+  getMajorByID,
+  getOverAllRatingByID,
+  getPrerequisitesByID,
+  getProfessorByID,
+  getReviewByID,
+  getScheduleByID,
+  getSemesterByID,
+  getSubjectByID,
+  getTagByID,
+  getUserByID,
+  getUserCourseHistoryByID,
+  getUserVotedTagByID,
+
+  // UPDATE APIs
+
   //DELETE APIs
   deleteBuilding,
   deleteClass,
@@ -743,5 +949,4 @@ module.exports =
   updateProfessor,
   updateReview,
   updateUser,
-
 }

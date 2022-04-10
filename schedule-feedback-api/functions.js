@@ -77,6 +77,106 @@ const getCustomEvents = (request, response) =>
   })
 }
 
+const getMajors = (request, response) => 
+{
+  pool.query('select * from public.major ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getOverallRatings = (request, response) => 
+{
+  pool.query('select * from public.over_all_rating ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getPrerequisites = (request, response) => 
+{
+  pool.query('select * from public.prerequisites ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getProfessors = (request, response) => 
+{
+  pool.query('select * from public.professor ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getReviews = (request, response) => 
+{
+  pool.query('select * from review ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getSchedules = (request, response) => 
+{
+  pool.query('select * from public.schedule ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getSemesters = (request, response) => 
+{
+  pool.query('select * from public.semester ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getTags = (request, response) => 
+{
+  pool.query('select * from tag ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
+const getUsers = (request, response) => 
+{
+  pool.query('select * from public.user ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    console.log(result);
+    response.status(200).json(result.rows);
+  })
+}
+
 
 // ----------------------------------------------- Class functions -------------------------------------------------------------------------------
 const updateClass = (request, response) => {
@@ -190,17 +290,6 @@ const getGoogleUsers = (request, response) =>
 }
 
 // ----------------------------------------------- Professor functions -------------------------------------------------------------------------------
-const getProfessors = (request, response) => 
-{
-  pool.query('select * from professor ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
-}
-
 const deleteProfessor = (request, response) =>
 {
   const id = parseInt(request.params.id)
@@ -230,17 +319,6 @@ const updateProfessor = (request, response) => {
 }
 
 // ----------------------------------------------- Review functions -------------------------------------------------------------------------------
-const getReviews = (request, response) => 
-{
-  pool.query('select * from review ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
-}
-
 const deleteReview = (request, response) =>
 {
   const id = parseInt(request.params.id)
@@ -270,40 +348,13 @@ const updateReview = (request, response) => {
 }
 
 // ----------------------------------------------- Semester functions -------------------------------------------------------------------------------
-const getSemesters = (request, response) => 
-{
-  pool.query('select * from semester ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
-}
+
 
 // ----------------------------------------------- Tag functions -------------------------------------------------------------------------------
-const getTags = (request, response) => 
-{
-  pool.query('select * from tag ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
-}
+
 
 // ----------------------------------------------- Overall Rating functions -------------------------------------------------------------------------------
-const getOverallRatings = (request, response) => 
-{
-  pool.query('select * from over_all_rating ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
-}
+
 
 // ----------------------------------------------- User Voted Tags functions -------------------------------------------------------------------------------
 const getUserVotedTags = (request, response) => 
@@ -318,17 +369,6 @@ const getUserVotedTags = (request, response) =>
 }
 
 // ----------------------------------------------- User functions -------------------------------------------------------------------------------
-const getUsers = (request, response) => 
-{
-  pool.query('select * from public.user ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    console.log(result);
-    response.status(200).json(result.rows);
-  })
-}
 
 const deleteUser = (request, response) =>
 {
@@ -359,17 +399,6 @@ const updateUser = (request, response) => {
 }
 
 // ----------------------------------------------- Schedule functions -------------------------------------------------------------------------------
-const getSchedules = (request, response) => 
-{
-  pool.query('select * from schedule ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
-}
-
 const deleteSchedule = (request, response) =>
 {
   const id = parseInt(request.params.id)

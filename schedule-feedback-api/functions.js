@@ -560,6 +560,8 @@ module.exports =
   getSubjects,
   getTags,
   getUsers,
+  getUserCourseHistory,
+  getUserVotedTags,
   getFeedbacks,
 
   getScheduleByID,

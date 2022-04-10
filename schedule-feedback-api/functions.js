@@ -443,7 +443,7 @@ const getSchedule = (request, response) =>
 }
 
 const updateSchedule = (request, response) => {
-  const { id, user_id, class_id, semester_id, deleted_at, created_at, is_deleted} = request.body
+  const { id, user_id, class_id, semester_id, deleted_at, created_at, is_deleted } = request.body
 
   pool.query('UPDATE public.schedule SET user_id = $2, class_id = $3, semester_id = $4, deleted_at = $5, created_at = $6, is_deleted = $7 where id = $1',
               [id, user_id, class_id, semester_id, deleted_at, created_at, is_deleted], 

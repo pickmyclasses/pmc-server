@@ -115,7 +115,8 @@ func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) e
 		if err != nil {
 			return err
 		}
-		err = historyDao.CreateSingleUserCourseHistory(review.UserID, review.CourseID, semester.Year,
+
+		err = historyDao.CreateSingleUserCourseHistory(review.UserID, courseID, int32(semester.ID),
 			review.ClassProfessor)
 		if err != nil {
 			return err

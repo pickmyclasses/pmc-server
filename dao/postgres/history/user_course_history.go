@@ -36,6 +36,7 @@ func CreateSingleUserCourseHistory(userID, courseID int64, semesterID int32, pro
 		SemesterID:    semesterID,
 		ProfessorName: professorName,
 	}
+
 	res := postgres.DB.Create(&history)
 	if res.Error != nil {
 		return shared.InternalErr{}

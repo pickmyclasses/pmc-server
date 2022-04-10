@@ -7,6 +7,7 @@ import (
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
+	"strconv"
 )
 
 func GetSemesterByID(semesterID int32) (*model.Semester, error) {
@@ -19,8 +20,9 @@ func GetSemesterByID(semesterID int32) (*model.Semester, error) {
 }
 
 func GetSemesterByName(season string, year int32) (*model.Semester, error) {
+	yearStr := strconv.Itoa(int(year))
 	var semester model.Semester
-	res := postgres.DB.Where("season = ? and year = ?", season, year)
+	res := postgres.DB.Where("season = ? and year = ?", season, yearStr).First(&semester)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			return nil, shared.ContentNotFoundErr{}

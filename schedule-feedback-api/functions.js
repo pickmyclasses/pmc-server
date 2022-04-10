@@ -240,6 +240,19 @@ const deleteCollege = (request, response) =>
   })
 }
 
+const deleteCourse = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM public.course WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(201).send({"message" : "Delete data successfully"});
+  })
+}
+
 // ----------------------------------------------- Class functions -------------------------------------------------------------------------------
 const updateClass = (request, response) => {
   const { id, created_at, deleted_at, is_deleted, semester, year, session, wait_list, offer_date, start_time, end_time, location, recommendation_score, 
@@ -279,18 +292,7 @@ const updateCollege = (request, response) => {
 }
 
 // ----------------------------------------------- Course functions -------------------------------------------------------------------------------
-const deleteCourse = (request, response) =>
-{
-  const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.course WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
-}
 
 // ----------------------------------------------- Subject functions -------------------------------------------------------------------------------
 const getSubjects = (request, response) => 

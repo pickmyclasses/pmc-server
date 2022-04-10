@@ -11,21 +11,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// CourseSetOps defines a set of operations on the CourseSet db.
-type CourseSetOps interface {
-	InsertCourseSet(name string, isLeaf bool, courseIDList []int64, parentSetID int32, MajorID int32) error
-	QueryCourseSetByID(id int32) (*model.CourseSet, error)
-	QueryCourseSetByName(name string) (*model.CourseSet, error)
-	QueryCourseSetList() ([]model.CourseSet, error)
-	QueryParentCourseSet(id int32) (*model.CourseSet, error)
-	QueryChildrenCourseSetList(id int32) ([]model.CourseSet, error)
-	QueryCourseListInCourseSetByID(id int32) ([]model.Course, error)
-	QueryCourseListInCourseSetByName(name string) ([]model.Course, error)
-	DeleteCourseSetByID(id int32) error
-	DetachCourSetFromParentSetByID(id int32) error
-	DetachCourseSetChildrenSetByID(id int32) error
-}
-
 // CourseSet defines a query on the CourseSet db.
 // majorName - the name of major this course set belongs to.
 // querier - the query will be used in the CourseSet db.

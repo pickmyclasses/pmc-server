@@ -111,8 +111,12 @@ func GetReviewByID(reviewID string) (*model.Review, error) {
 
 func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) error {
 	if extraInfoNeeded {
-		// TODO: fix the semesterID here
-		err := historyDao.CreateSingleUserCourseHistory(review.UserID, review.CourseID, 2, review.ClassProfessor)
+		semester, err := semesterDao.GetSemesterByName(review.ClassSemester.Season, review.ClassSemester.Year)
+		if err != nil {
+			return err
+		}
+		err = historyDao.CreateSingleUserCourseHistory(review.UserID, review.CourseID, semester.Year,
+			review.ClassProfessor)
 		if err != nil {
 			return err
 		}

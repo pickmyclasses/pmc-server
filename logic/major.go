@@ -2,6 +2,7 @@ package logic
 
 import (
 	"pmc_server/dao/aura/major"
+	"pmc_server/model"
 	"pmc_server/model/dto"
 )
 
@@ -115,4 +116,19 @@ func GetDirectMajorCourseSets(majorName string) ([]DirectCourseSet, error) {
 		return nil, err
 	}
 	return nil, nil
+}
+
+// CourseSetOps defines a set of operations on the CourseSet db.
+type CourseSetOps interface {
+	InsertCourseSet(name string, isLeaf bool, courseIDList []int64, parentSetID int32, MajorID int32) error
+	QueryCourseSetByID(id int32) (*model.CourseSet, error)
+	QueryCourseSetByName(name string) (*model.CourseSet, error)
+	QueryCourseSetList() ([]model.CourseSet, error)
+	QueryParentCourseSet(id int32) (*model.CourseSet, error)
+	QueryChildrenCourseSetList(id int32) ([]model.CourseSet, error)
+	QueryCourseListInCourseSetByID(id int32) ([]model.Course, error)
+	QueryCourseListInCourseSetByName(name string) ([]model.Course, error)
+	DeleteCourseSetByID(id int32) error
+	DetachCourSetFromParentSetByID(id int32) error
+	DetachCourseSetChildrenSetByID(id int32) error
 }

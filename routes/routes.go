@@ -79,7 +79,7 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/college/:id/emphasis", controller.GetEmphasisHandler)
 		r.GET("/college/:id/major/course/list", controller.GetMajorCourseSetHandler)
 		r.GET("/college/:id/major/course/requirements", controller.GetMajorDirectRequirementsHandler)
-		r.GET("/college/:id/major/course/subsets", controller.GetMajorCourseSubsetsHandler)
+		//r.GET("/college/:id/major/course/subsets", controller.GetMajorCourseSubsetsHandler)
 
 		// for stats
 		r.GET("/stats/course/:id/professor/rank", controller.GetCourseProfessorRankingHandler)

@@ -177,6 +177,29 @@ const getUsers = (request, response) =>
   })
 }
 
+const getUserCourseHistory = (request, response) => 
+{
+  pool.query('select * from public.user_course_history ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    console.log(result);
+    response.status(200).json(result.rows);
+  })
+}
+
+const getUserVotedTags = (request, response) => 
+{
+  pool.query('select * from public.user_voted_tag ORDER BY id ASC', (error, result) => {
+    if(error)
+    {
+      response.status(400).json(error);
+    }
+    response.status(200).json(result.rows);
+  })
+}
+
 
 // ----------------------------------------------- Class functions -------------------------------------------------------------------------------
 const updateClass = (request, response) => {
@@ -357,16 +380,7 @@ const updateReview = (request, response) => {
 
 
 // ----------------------------------------------- User Voted Tags functions -------------------------------------------------------------------------------
-const getUserVotedTags = (request, response) => 
-{
-  pool.query('select * from user_voted_tag ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
-}
+
 
 // ----------------------------------------------- User functions -------------------------------------------------------------------------------
 

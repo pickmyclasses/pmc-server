@@ -43,6 +43,26 @@ app.get('/user', cors(), db.getUsers);
 app.get('/user_course_history', cors(), db.getUserCourseHistory);
 app.get('/user_voted_tag', cors(), db.getUserVotedTags);
 
+//GET BY ID APIs
+app.get('/building/:id', cors(), db.getBuildingByID);
+app.get('/class/:id', cors(), db.getClassByID);
+app.get('/college/:id', cors(), db.getCollegeByID);
+app.get('/course/:id', cors(), db.getCourseByID);
+app.get('/course_set/:id', cors(), db.getCourseSetByID);
+app.get('/custom_event/:id', cors(), db.getCustomEventByID);
+app.get('/major/:id', cors(), db.getMajorByID);
+app.get('/over_all_rating/:id', cors(), db.getOverAllRatingByID);
+app.get('/prerequisites/:id', cors(), db.getPrerequisites);
+app.get('/professor/:id', cors(), db.getProfessorByID);
+app.get('/review/:id', cors(), db.getReviewByID);
+app.get('/schedule/:id', cors(), db.getScheduleByID);
+app.get('/semester/:id', cors(), db.getSemesterByID);
+app.get('/subject/:id', cors(), db.getSubjectByID);
+app.get('/tag/:id', cors(), db.getTagByID);
+app.get('/user/:id', cors(), db.getUserByID);
+app.get('/user_course_history/:id', cors(), db.getUserCourseHistoryByID);
+app.get('/user_voted_tag/:id', cors(), db.getUserVotedTagByID);
+
 // DELETE APIs
 app.get('/building/delete/:id', cors(), db.deleteBuilding);
 app.get('/class/delete/:id', cors(), db.deleteClass);

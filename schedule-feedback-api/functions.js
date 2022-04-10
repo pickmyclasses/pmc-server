@@ -279,6 +279,19 @@ const deleteCustomEvent = (request, response) =>
   })
 }
 
+const deleteMajor = (request, response) =>
+{
+  const id = parseInt(request.params.id)
+
+  pool.query('DELETE FROM public.major WHERE id = $1', [id], (error, results) => {
+    if (error) 
+    {
+      response.status(400).json(error);
+    }
+    response.status(201).send({"message" : "Delete data successfully"});
+  })
+}
+
 
 // ----------------------------------------------- Class functions -------------------------------------------------------------------------------
 const updateClass = (request, response) => {

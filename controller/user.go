@@ -12,6 +12,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type PostUserMajorParams struct {
+	UserID     int64  `json:"userID"`
+	MajorName  string `json:"majorName"`
+	Emphasis   string `json:"emphasisName"`
+	SchoolYear string `json:"schoolYear"`
+}
+
+type HistoryParam struct {
+	CourseID int64 `json:"courseID"`
+	UserID   int64 `json:"userID"`
+}
+
 // RegisterHandler User registration interface
 // @Summary Use this API to register a user
 // @Description You should only use this interface to register for student, professor/admin should be assigned directly
@@ -64,6 +76,15 @@ func LoginHandler(c *gin.Context) {
 	})
 }
 
+// GetUserHistoryHandler User registration interface
+// @Summary Use this API to register a user
+// @Description You should only use this interface to register for student, professor/admin should be assigned directly
+// @Tags User
+// @Accept application/json
+// @Produce application/json
+// @Param object body model.RegisterParams true "registration parameters"
+// @Success 200 {string} success
+// @Router /register [post]
 func GetUserHistoryHandler(c *gin.Context) {
 	userID := c.Param("id")
 	userIDInt, err := strconv.Atoi(userID)
@@ -83,11 +104,15 @@ func GetUserHistoryHandler(c *gin.Context) {
 	})
 }
 
-type HistoryParam struct {
-	CourseID int64 `json:"courseID"`
-	UserID   int64 `json:"userID"`
-}
-
+// AddUserHistoryHandler User registration interface
+// @Summary Use this API to register a user
+// @Description You should only use this interface to register for student, professor/admin should be assigned directly
+// @Tags User
+// @Accept application/json
+// @Produce application/json
+// @Param object body model.RegisterParams true "registration parameters"
+// @Success 200 {string} success
+// @Router /register [post]
 func AddUserHistoryHandler(c *gin.Context) {
 	var param HistoryParam
 	if err := c.ShouldBindJSON(&param); err != nil {
@@ -106,6 +131,15 @@ func AddUserHistoryHandler(c *gin.Context) {
 	})
 }
 
+// RemoveUserHistoryHandler User registration interface
+// @Summary Use this API to register a user
+// @Description You should only use this interface to register for student, professor/admin should be assigned directly
+// @Tags User
+// @Accept application/json
+// @Produce application/json
+// @Param object body model.RegisterParams true "registration parameters"
+// @Success 200 {string} success
+// @Router /register [post]
 func RemoveUserHistoryHandler(c *gin.Context) {
 	var param HistoryParam
 	if err := c.ShouldBindJSON(&param); err != nil {
@@ -122,13 +156,6 @@ func RemoveUserHistoryHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		MESSAGE: SUCCESS,
 	})
-}
-
-type PostUserMajorParams struct {
-	UserID     int64  `json:"userID"`
-	MajorName  string `json:"majorName"`
-	Emphasis   string `json:"emphasisName"`
-	SchoolYear string `json:"schoolYear"`
 }
 
 func PostUserMajorHandler(c *gin.Context) {

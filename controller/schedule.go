@@ -11,6 +11,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// AddUserScheduleHandler Post a single schedule for a user
+// @Summary Use this API to post a single schedule for a user, (custom event or class event)
+// @Description This API is for posting a schedule for a user
+// @Tags Schedule
+// @Accept application/json
+// @Produce application/json
+// @Param object body model.PostEventParam true "Post schedule parameters"
+// @Success 200 {string} OK
+// @Router /course/schedule [post]
 func AddUserScheduleHandler(c *gin.Context) {
 	scheduleType := c.Query("type")
 
@@ -46,6 +55,14 @@ func AddUserScheduleHandler(c *gin.Context) {
 	}
 }
 
+// GetUserScheduleHandler gets the schedule list of a user
+// @Summary Use this API to get the schedule for a user, (custom event or class event)
+// @Description This API is for getting the schedule of a user
+// @Tags Schedule
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} OK
+// @Router /course/schedule [get]
 func GetUserScheduleHandler(c *gin.Context) {
 	var param model.GetScheduleParams
 	if err := c.ShouldBind(&param); err != nil {
@@ -64,6 +81,15 @@ func GetUserScheduleHandler(c *gin.Context) {
 	})
 }
 
+// DeleteUserScheduleHandler removes a single schedule for a user
+// @Summary Use this API to remove a single schedule for a user, (custom event or class event)
+// @Description This API is for removing a schedule for a user
+// @Tags Schedule
+// @Accept application/json
+// @Produce application/json
+// @Param object body model.DeleteScheduleParams true "delete schedule parameters"
+// @Success 200 {string} OK
+// @Router /course/schedule [put]
 func DeleteUserScheduleHandler(c *gin.Context) {
 	scheduleType := c.Query("type")
 

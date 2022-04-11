@@ -12,12 +12,12 @@ import (
 
 // GetProfessorListHandler Get the entire professor list
 // @Summary Use this API to get the list of the professors
-// @Description This API is used to get the course list, you should do pagination
-// @Tags Course
+// @Description This API is used to get the professor list
+// @Tags Professor
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {array} dto.Course
-// @Router /course/list [get]
+// @Success 200 {array} dto.Professor
+// @Router college/:id/professor/list [get]
 func GetProfessorListHandler(ctx *gin.Context) {
 	professorList, err := logic.GetProfessorList()
 	if err != nil {
@@ -30,6 +30,14 @@ func GetProfessorListHandler(ctx *gin.Context) {
 	})
 }
 
+// GetProfessorListByCourseIDHandler Get professor list of a course
+// @Summary Use this API to get the professor list of a course
+// @Description This API is used to get the professor list of a course
+// @Tags Professor
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {array} dto.Professor
+// @Router college/:id/professor/list?course=? [get]
 func GetProfessorListByCourseIDHandler(ctx *gin.Context) {
 	var courseID int
 	var err error

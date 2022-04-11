@@ -59,6 +59,8 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/course/:id/tag", controller.GetTagByCourseIDHandler)
 		r.POST("/course/:id/tag", controller.CreateTagByCourseIDHandler)
 		r.PUT("/course/:id/tag", controller.VoteTagHandler)
+
+		// for course set
 		r.POST("/course/set", controller.CreateBatchCourseInSetHandler)
 
 		// for professors

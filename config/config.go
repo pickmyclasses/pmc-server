@@ -3,10 +3,10 @@ package config
 import (
 	"fmt"
 
-	"go.uber.org/zap"
-
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
+
+	"go.uber.org/zap"
 )
 
 // JWTConfig defines the configuration for JWT

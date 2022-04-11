@@ -1,3 +1,8 @@
+// Package controller - controller for stats API
+// All rights reserved by pickmyclass.com
+// Author: Kaijie Fu
+// Date: 3/13/2022
+// Change Log: - 4/10/2022 added stats for average load computation for a course
 package controller
 
 import (
@@ -10,6 +15,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetCourseProfessorRankingHandler gets the stats of professor ranking list of a course
+// @Summary Use this API to get the stats of professor ranking list of the given course
+// @Description This API is getting the stats of the professor ranking list of the given course, ranked by semester
+// @Tags Stats
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} OK
+// @Router /stats/course/:id/load [get]
 func GetCourseProfessorRankingHandler(c *gin.Context) {
 	id := c.Param("id")
 	courseID, err := strconv.Atoi(id)
@@ -29,6 +42,15 @@ func GetCourseProfessorRankingHandler(c *gin.Context) {
 	})
 }
 
+// GetCourseAverageLoadHandler gets the course average load for the given course
+// @Summary Use this API to get the stats of the class load of the given course, by load, we mean the hw, exams, etc.
+// @Description This API is for getting the stats of the class load of the given course.
+// @Tags Stats
+// @Accept application/json
+// @Produce application/json
+// @Param object body model.PostEventParam true "Post schedule parameters"
+// @Success 200 {string} OK
+// @Router /course/schedule [post]
 func GetCourseAverageLoadHandler(c *gin.Context) {
 	id := c.Param("id")
 	courseID, err := strconv.Atoi(id)
@@ -47,6 +69,14 @@ func GetCourseAverageLoadHandler(c *gin.Context) {
 	})
 }
 
+// GetCourseAverageRatingTrendBySemesterHandler gets the stats of average ranking changing trend of the given course
+// @Summary Use this API to get the average ranking changing trend of the given course
+// @Description This API is for getting teh average ranking changing trend of the given course
+// @Tags Stats
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} OK
+// @Router /stats/course/:id/rating/trend [post]
 func GetCourseAverageRatingTrendBySemesterHandler(c *gin.Context) {
 	id := c.Param("id")
 	courseID, err := strconv.Atoi(id)

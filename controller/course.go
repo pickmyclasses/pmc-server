@@ -10,6 +10,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CreateBatchCourseInSetParam defines the parameters for  create a course set with a batch of courses
+type CreateBatchCourseInSetParam struct {
+	CourseNameList      []string `json:"courseNameList"`      // the list of course names
+	SetName             string   `json:"setName"`             // the name of the set
+	LinkedToMajor       bool     `json:"linkedToMajor"`       // is the course set directly linked to the major
+	CourseRequiredInSet int32    `json:"courseRequiredInSet"` // the amount of courses needed to complete the course set
+	IsLeaf              bool     `json:"isLeaf"`              // Is the course set a leaf set, or does it have any subsets
+	MajorID             int32    `json:"majorID"`             // the id of the major we are fetching
+	ParentSetID         int32    `json:"parentSetID"`         // the id of the parent course set of the current course set
+}
+
 // GetCourseListHandler Get the entire course list
 // @Summary Use this API to get the list of the classes
 // @Description This API is used to get the course list, you should do pagination
@@ -124,16 +135,13 @@ func GetCoursesBySearchHandler(c *gin.Context) {
 	})
 }
 
-type CreateBatchCourseInSetParam struct {
-	CourseNameList      []string `json:"courseNameList"`
-	SetName             string   `json:"setName"`
-	LinkedToMajor       bool     `json:"linkedToMajor"`
-	CourseRequiredInSet int32    `json:"courseRequiredInSet"`
-	IsLeaf              bool     `json:"isLeaf"`
-	MajorID             int32    `json:"majorID"`
-	ParentSetID         int32    `json:"parentSetID"`
-}
-
+// CreateBatchCourseInSetHandler insert a course set with a batch of courses
+// @Summary Use this API to insert a course set along with the courses in the list
+// @Description This API is used to create a course set, should be used internally
+// @Tags Course
+// @Accept application/json
+// @Produce application/json
+// @Router /course/set [post]
 func CreateBatchCourseInSetHandler(c *gin.Context) {
 	var param CreateBatchCourseInSetParam
 	if err := c.ShouldBindJSON(&param); err != nil {

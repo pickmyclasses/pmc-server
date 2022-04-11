@@ -8,6 +8,28 @@ import (
 	"strconv"
 )
 
+// CreateParams defines the action to create a major
+type CreateParams struct {
+	Name             string `json:"name"`             // the name of the major
+	DegreeHour       int32  `json:"degreeHour" `      // the hours the degree required to graduate
+	MinMajorHour     int32  `json:"minMajorHour"`     // the minimum major hours required to graduate
+	EmphasisRequired bool   `json:"emphasisRequired"` // if the major requires an emphasis
+}
+
+// CreateEmphasisParam defines teh action to create an emphasis (also a major)
+type CreateEmphasisParam struct {
+	Name          string `json:"name"`          // the name of the emphasis
+	TotalCredit   int32  `json:"totalCredit"`   // the total credit of the emphasis
+	MainMajorName string `json:"mainMajorName"` // the main major name (this emphasis is based in)
+}
+
+// GetMajorListHandler gets the entire list of the major in the college
+// @Summary Use this API to get the entire list of majors in the college
+// @Description This API is used to get the course list, you should do pagination
+// @Tags Major
+// @Accept application/json
+// @Produce application/json
+// @Router college/:id/major/list [get]
 func GetMajorListHandler(ctx *gin.Context) {
 	id := ctx.Param("id")
 	collegeID, err := strconv.Atoi(id)
@@ -27,17 +49,24 @@ func GetMajorListHandler(ctx *gin.Context) {
 	})
 }
 
+// GetMajorByIDHandler gets a major entity in the college
+// @Summary Use this API to get a major entity by its ID
+// @Description This API is used to get a course entity, its ID should be provided
+// @Tags Major
+// @Accept application/json
+// @Produce application/json
+// @Router college/:id/major?id= [get]
 func GetMajorByIDHandler(ctx *gin.Context) {
 
 }
 
-type CreateParams struct {
-	Name             string `json:"name"`
-	DegreeHour       int32  `json:"degreeHour" `
-	MinMajorHour     int32  `json:"minMajorHour"`
-	EmphasisRequired bool   `json:"emphasisRequired"`
-}
-
+// CreateMajorHandler create a major entity in the college
+// @Summary Use this API to get a major entity, this should be only for internal use
+// @Description This API is used to create a course entity
+// @Tags Major
+// @Accept application/json
+// @Produce application/json
+// @Router college/:id/major [post]
 func CreateMajorHandler(ctx *gin.Context) {
 	id := ctx.Param("id")
 	collegeID, err := strconv.Atoi(id)
@@ -61,12 +90,13 @@ func CreateMajorHandler(ctx *gin.Context) {
 	})
 }
 
-type CreateEmphasisParam struct {
-	Name          string `json:"name"`
-	TotalCredit   int32  `json:"totalCredit"`
-	MainMajorName string `json:"mainMajorName"`
-}
-
+// CreateEmphasisHandler creates an emphasis entity in the college
+// @Summary Use this API to create an emphasis, this is only for internal use
+// @Description This API is used to create an emphasis entity
+// @Tags Major
+// @Accept application/json
+// @Produce application/json
+// @Router college/:id/emphasis [post]
 func CreateEmphasisHandler(ctx *gin.Context) {
 	id := ctx.Param("id")
 	collegeID, err := strconv.Atoi(id)
@@ -77,7 +107,7 @@ func CreateEmphasisHandler(ctx *gin.Context) {
 
 	var param CreateEmphasisParam
 	if err := ctx.ShouldBindJSON(&param); err != nil {
-		ctx.Error(shared.ParamIncompatibleErr{})
+		_ = ctx.Error(shared.ParamIncompatibleErr{})
 		return
 	}
 
@@ -91,6 +121,13 @@ func CreateEmphasisHandler(ctx *gin.Context) {
 	})
 }
 
+// GetEmphasisHandler gets an emphasis entity in the college
+// @Summary Use this API to get an emphasis entity in the college, (emphasis is also a major)
+// @Description This API is used to get an emphasis entity. it's also a major, but with a main major
+// @Tags Major
+// @Accept application/json
+// @Produce application/json
+// @Router college/:id/emphasis?id= [get]
 func GetEmphasisHandler(ctx *gin.Context) {
 	id := ctx.Param("id")
 	collegeID, err := strconv.Atoi(id)
@@ -115,6 +152,13 @@ func GetEmphasisHandler(ctx *gin.Context) {
 	})
 }
 
+// GetMajorCourseSetHandler gets a course set in a major in the college
+// @Summary Use this API to get the entire major course set requirements
+// @Description This API is used to get the entire major course set requirements (basically everything needed to graduate)
+// @Tags Major
+// @Accept application/json
+// @Produce application/json
+// @Router college/:id/major/set?major=? [get]
 func GetMajorCourseSetHandler(ctx *gin.Context) {
 	major := ctx.Query("major")
 
@@ -133,6 +177,13 @@ func GetMajorCourseSetHandler(ctx *gin.Context) {
 	})
 }
 
+// GetMajorDirectRequirementsHandler gets the direct course set in a major in the college
+// @Summary Use this API to get the direct course sets in the major (direct course set means something like gen-eds)
+// @Description This API is used to get the direct course set in the major
+// @Tags Major
+// @Accept application/json
+// @Produce application/json
+// @Router college/:id/major/ [get]
 func GetMajorDirectRequirementsHandler(ctx *gin.Context) {
 	id := ctx.Param("id")
 	collegeID, err := strconv.Atoi(id)

@@ -16,6 +16,24 @@ type ProfessorRanking struct {
 	Rating float32 `json:"rating"`
 }
 
+type SemesterRating struct {
+	SemesterName string  `json:"semesterName"`
+	Rating       float32 `json:"rating"`
+}
+
+type HighestRatedEntity struct {
+	TopCourses []struct {
+		CourseName string  `json:"courseName"`
+		AvgGrade   float32 `json:"avgGrade"`
+	} `json:"topCourses"`
+	MajorAverage float32 `json:"majorAverage"`
+}
+
+type CourseLoad struct {
+	CourseAverageGrade float32 `json:"courseAverageGrade"`
+	MajorAverageGrade  float32 `json:"majorAverageGrade"`
+}
+
 // GetProfessorRankingByCourseID fetches the stats of the average rating each professor received for the course
 // since we don't really have individual rating, average score is fetched by different class sessions
 func GetProfessorRankingByCourseID(courseID int64) ([]ProfessorRanking, error) {
@@ -69,11 +87,6 @@ func GetProfessorRankingByCourseID(courseID int64) ([]ProfessorRanking, error) {
 	})
 
 	return profRankingList, nil
-}
-
-type CourseLoad struct {
-	CourseAverageGrade float32 `json:"courseAverageGrade"`
-	MajorAverageGrade  float32 `json:"majorAverageGrade"`
 }
 
 func GetCourseAverageLoad(courseID int64) (*CourseLoad, error) {
@@ -137,11 +150,6 @@ func GetCourseAverageLoad(courseID int64) (*CourseLoad, error) {
 		CourseAverageGrade: courseLoad,
 		MajorAverageGrade:  majorLoad,
 	}, nil
-}
-
-type SemesterRating struct {
-	SemesterName string  `json:"semesterName"`
-	Rating       float32 `json:"rating"`
 }
 
 // GetCourseRatingTrendBySemester fetches the overall rating for the course for each semester

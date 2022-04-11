@@ -48,9 +48,8 @@ func GetCourseProfessorRankingHandler(c *gin.Context) {
 // @Tags Stats
 // @Accept application/json
 // @Produce application/json
-// @Param object body model.PostEventParam true "Post schedule parameters"
 // @Success 200 {string} OK
-// @Router /course/schedule [post]
+// @Router /stats/course/:id/rating/trend [get]
 func GetCourseAverageLoadHandler(c *gin.Context) {
 	id := c.Param("id")
 	courseID, err := strconv.Atoi(id)
@@ -76,7 +75,7 @@ func GetCourseAverageLoadHandler(c *gin.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Success 200 {string} OK
-// @Router /stats/course/:id/rating/trend [post]
+// @Router /stats/course/:id/rating/trend [get]
 func GetCourseAverageRatingTrendBySemesterHandler(c *gin.Context) {
 	id := c.Param("id")
 	courseID, err := strconv.Atoi(id)
@@ -94,3 +93,32 @@ func GetCourseAverageRatingTrendBySemesterHandler(c *gin.Context) {
 		shared.DATA: ratingTrend,
 	})
 }
+
+// GetMajorTopAvgGradeHandler gets the stats for top 10 rated courses and major average grade
+// @Summary Use this API to get the stats for top-rated courses and major average grade
+// @Description This API is for getting the average grade of the major and top 10 rated courses
+// @Tags Stats
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} OK
+// @Router /stats/major/:id/grade [get]
+//func GetMajorTopAvgGradeHandler(c *gin.Context) {
+//	id := c.Param("id")
+//	majorID, err := strconv.Atoi(id)
+//	if err != nil {
+//		_ = c.Error(shared.ParamIncompatibleErr{
+//			Msg: "unable to process the given major id",
+//		})
+//		return
+//	}
+//
+//	highestRated, err := logic.GetHighestRatedMajorGrade(int32(majorID))
+//	if err != nil {
+//		_ = c.Error(err)
+//		return
+//	}
+//
+//	c.JSON(http.StatusOK, gin.H{
+//		shared.DATA: highestRated,
+//	})
+//}

@@ -47,10 +47,12 @@ func (err ParamInsufficientErr) Code() int {
 }
 
 // ParamIncompatibleErr represents incompatible parameters such as invalid page number, etc
-type ParamIncompatibleErr struct{}
+type ParamIncompatibleErr struct {
+	Msg string `json:"msg"`
+}
 
 func (err ParamIncompatibleErr) Error() string {
-	return BadParamErr
+	return fmt.Sprintf("%s %s", BadParamErr, err.Msg)
 }
 
 func (err ParamIncompatibleErr) Code() int {

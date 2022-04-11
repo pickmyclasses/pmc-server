@@ -13,252 +13,370 @@ const pool = new Pool({
 // ----------------------------------------------- GET functions -------------------------------------------------------------------------------
 const getBuildings = (request, response) => 
 {
-  pool.query('select * from public.building ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.building ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
+
 }
 
 const getClasses = (request, response) => 
 {
-  pool.query('select * from public.class ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.class ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }
+  catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getColleges = (request, response) => 
 {
-  pool.query('select * from public.college ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.college ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
+
 }
 
 const getCourses = (request, response) => 
 {
-  pool.query('select * from public.course ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.course ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getCourseSets = (request, response) => 
 {
-  pool.query('select * from public.course_set ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.course_set ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getCustomEvents = (request, response) => 
 {
-  pool.query('select * from public.custom_event ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.custom_event ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getMajors = (request, response) => 
 {
-  pool.query('select * from public.major ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try
+  {
+    pool.query('select * from public.major ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getOverallRatings = (request, response) => 
 {
-  pool.query('select * from public.over_all_rating ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.over_all_rating ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getPrerequisites = (request, response) => 
 {
-  pool.query('select * from public.prerequisites ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.prerequisites ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getProfessors = (request, response) => 
 {
-  pool.query('select * from public.professor ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.professor ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getReviews = (request, response) => 
 {
-  pool.query('select * from review ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from review ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getSchedules = (request, response) => 
 {
-  pool.query('select * from public.schedule ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.schedule ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getSemesters = (request, response) => 
 {
-  pool.query('select * from public.semester ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.semester ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getTags = (request, response) => 
 {
-  pool.query('select * from tag ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from tag ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getUsers = (request, response) => 
 {
-  pool.query('select * from public.user ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    console.log(result);
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.user ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getUserCourseHistory = (request, response) => 
 {
-  pool.query('select * from public.user_course_history ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    console.log(result);
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.user_course_history ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      console.log(result);
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getUserVotedTags = (request, response) => 
 {
-  pool.query('select * from public.user_voted_tag ORDER BY id ASC', (error, result) => {
-    if(error)
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(result.rows);
-  })
+  try{
+    pool.query('select * from public.user_voted_tag ORDER BY id ASC', (error, result) => {
+      if(error)
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(result.rows);
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 // ----------------------------------------------- GET BY ID functions -------------------------------------------------------------------------------
-const getBuildingByID = (request, response) => {
+const getBuildingByID = (request, response) => 
+{
   const id = parseInt(request.params.id)
 
-  pool.query('SELECT * FROM public.building WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(results.rows)
-  })
+  try{
+    pool.query('SELECT * FROM public.building WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(results.rows)
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
-const getClassByID = (request, response) => {
+const getClassByID = (request, response) => 
+{
   const id = parseInt(request.params.id)
 
-  pool.query('SELECT * FROM public.class WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(results.rows)
-  })
+  try{
+    pool.query('SELECT * FROM public.class WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(results.rows)
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
-const getCollegeByID = (request, response) => {
+const getCollegeByID = (request, response) => 
+{
   const id = parseInt(request.params.id)
 
-  pool.query('SELECT * FROM public.college WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(results.rows)
-  })
+  try{
+    pool.query('SELECT * FROM public.college WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(results.rows)
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
-const getCourseByID = (request, response) => {
+const getCourseByID = (request, response) => 
+{
   const id = parseInt(request.params.id)
 
-  pool.query('SELECT * FROM public.course WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(results.rows)
-  })
+  try{
+    pool.query('SELECT * FROM public.course WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(results.rows)
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
-const getCourseSetByID = (request, response) => {
+const getCourseSetByID = (request, response) => 
+{
   const id = parseInt(request.params.id)
 
-  pool.query('SELECT * FROM public.course_set WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(200).json(results.rows)
-  })
+  try{
+    pool.query('SELECT * FROM public.course_set WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(200).json(results.rows)
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const getCustomEventByID = (request, response) => {
@@ -417,239 +535,390 @@ const getUserVotedTagByID = (request, response) => {
   })
 }
 
-// ----------------------------------------------- DELETE functions -------------------------------------------------------------------------------
+// ----------------------------------------------- UPDATE function ------------------------------------------------------------------------------------
+const updateData = (request, response) => 
+{
+  const table_name = request.body.table_name;
+  const keys = Object.keys(request.body);
+
+  let values_array = [];
+  values_array.push(request.body.id);
+
+  let statement = "UPDATE public." + table_name + " SET ";
+
+  var filtered_keys = keys.filter(function(value, index, arr){ 
+    if(value !== "table_name" && value !== "id")
+    {
+      return value;
+    }
+  });
+
+  for(let i = 0; i < filtered_keys.length; i++)
+  {
+      values_array.push(request.body[filtered_keys[i]]);
+  }
+
+  for(let i = 0; i < filtered_keys.length; ++i)
+  {
+    if(i === filtered_keys.length - 1)
+    {
+      statement += filtered_keys[i] + " = $" + (i + 2).toString();
+    }
+    else
+    {
+      statement += filtered_keys[i] + " = $" + (i + 2).toString() + ", ";
+    }
+  }
+
+  statement += " where id = $1";
+
+  console.log(statement);
+  console.log(values_array);
+  console.log(filtered_keys);
+  
+  try{
+    pool.query(statement, values_array, (error, result) => 
+    {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Update data successfully"});
+    }
+    )
+  }catch(e)
+  {
+    //console.log(e);
+  }
+
+}
+
+
+// ----------------------------------------------- DELETE functions ------------------------------------------------------------------------------------
 const deleteBuilding = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.building WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    let statement = 'DELETE FROM public.building WHERE id = $1';
+    pool.query(statement, [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const deleteClass = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.class WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try
+  {
+    pool.query('DELETE FROM public.class WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const deleteCollege = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.college WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.college WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
+
 }
 
 const deleteCourse = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.course WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.course WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const deleteCourseSet = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.course_set WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.course_set WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const deleteCustomEvent = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.custom_event WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.custom_event WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const deleteMajor = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.major WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.major WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const deleteOverAllRating = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.over_all_rating WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.over_all_rating WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const deletePrerequisites = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.prerequisites WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.prerequisites WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const deleteProfessor = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.professor WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.professor WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const deleteReview = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.review WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.review WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const deleteSchedule = (request, response) =>
 {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM public.schedule WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.schedule WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
+
 }
 
 const deleteSemester = (request, response) =>
 {
   const id = parseInt(request.params.id)
+  try{
+    pool.query('DELETE FROM public.semester WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 
-  pool.query('DELETE FROM public.semester WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
 }
 
 const deleteSubject = (request, response) =>
 {
   const id = parseInt(request.params.id)
-
-  pool.query('DELETE FROM public.subject WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.subject WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 const deleteTag = (request, response) =>
 {
   const id = parseInt(request.params.id)
+  try{
+    pool.query('DELETE FROM public.tag WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 
-  pool.query('DELETE FROM public.tag WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
 }
 
 const deleteUser = (request, response) =>
 {
   const id = parseInt(request.params.id)
+  try{
+    pool.query('DELETE FROM public.user WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 
-  pool.query('DELETE FROM public.user WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
 }
 
 const deleteUserCourseHistory = (request, response) =>
 {
   const id = parseInt(request.params.id)
+  try{
+    pool.query('DELETE FROM public.user_course_history WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 
-  pool.query('DELETE FROM public.user_course_history WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
 }
 
 const deleteUserVotedTag = (request, response) =>
 {
   const id = parseInt(request.params.id)
-
-  pool.query('DELETE FROM public.user_voted_tag WHERE id = $1', [id], (error, results) => {
-    if (error) 
-    {
-      response.status(400).json(error);
-    }
-    response.status(201).send({"message" : "Delete data successfully"});
-  })
+  try{
+    pool.query('DELETE FROM public.user_voted_tag WHERE id = $1', [id], (error, results) => {
+      if (error) 
+      {
+        response.status(400).json(error);
+      }
+      response.status(201).send({"message" : "Delete data successfully"});
+    })
+  }catch(e)
+  {
+    console.log(e);
+  }
 }
 
 // ----------------------------------------------- Class functions -------------------------------------------------------------------------------
@@ -915,7 +1184,8 @@ module.exports =
   getUserCourseHistoryByID,
   getUserVotedTagByID,
 
-  // UPDATE APIs
+  // UPDATE API
+  updateData,
 
   //DELETE APIs
   deleteBuilding,

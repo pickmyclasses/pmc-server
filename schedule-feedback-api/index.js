@@ -63,6 +63,9 @@ app.get('/user/:id', cors(), db.getUserByID);
 app.get('/user_course_history/:id', cors(), db.getUserCourseHistoryByID);
 app.get('/user_voted_tag/:id', cors(), db.getUserVotedTagByID);
 
+// UPDATE API
+app.post('/update-data', cors(), db.updateData);
+
 // DELETE APIs
 app.get('/building/delete/:id', cors(), db.deleteBuilding);
 app.get('/class/delete/:id', cors(), db.deleteClass);

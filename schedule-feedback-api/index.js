@@ -4,7 +4,7 @@ const cors = require('cors');
 const app = express();
 const db = require('./functions');
 const PORT = process.env.PORT || 5000;
-
+ 
 app.use(cors());
 
 // parse the body into json
@@ -20,57 +20,114 @@ app.listen(PORT, () => {
 });
 
 app.get('/', (request, response) => {
-  response.json({ info: 'schedule API' });
+  response.json({ info: 'Admin Data Table API' });
 });
 
-// class API
+// GET APIs
+app.get('/building', cors(), db.getBuildings);
 app.get('/class', cors(), db.getClasses);
-app.post('/class/update', cors(), db.updateClass);
+app.get('/college', cors(), db.getColleges);
+app.get('/course', cors(), db.getCourses);
+app.get('/course_set', cors(), db.getCourseSets);
+app.get('/custom_event', cors(), db.getCustomEvents);
+app.get('/major', cors(), db.getMajors);
+app.get('/over_all_rating', cors(), db.getOverallRatings);
+app.get('/prerequisites', cors(), db.getPrerequisites);
+app.get('/professor', cors(), db.getProfessors);
+app.get('/review', cors(), db.getReviews);
+app.get('/schedule', cors(), db.getSchedules);
+app.get('/semester', cors(), db.getSemesters);
+app.get('/subject', cors(), db.getSubjects);
+app.get('/tag', cors(), db.getTags);
+app.get('/user', cors(), db.getUsers);
+app.get('/user_course_history', cors(), db.getUserCourseHistory);
+app.get('/user_voted_tag', cors(), db.getUserVotedTags);
+
+//GET BY ID APIs
+app.get('/building/:id', cors(), db.getBuildingByID);
+app.get('/class/:id', cors(), db.getClassByID);
+app.get('/college/:id', cors(), db.getCollegeByID);
+app.get('/course/:id', cors(), db.getCourseByID);
+app.get('/course_set/:id', cors(), db.getCourseSetByID);
+app.get('/custom_event/:id', cors(), db.getCustomEventByID);
+app.get('/major/:id', cors(), db.getMajorByID);
+app.get('/over_all_rating/:id', cors(), db.getOverAllRatingByID);
+app.get('/prerequisites/:id', cors(), db.getPrerequisites);
+app.get('/professor/:id', cors(), db.getProfessorByID);
+app.get('/review/:id', cors(), db.getReviewByID);
+app.get('/schedule/:id', cors(), db.getScheduleByID);
+app.get('/semester/:id', cors(), db.getSemesterByID);
+app.get('/subject/:id', cors(), db.getSubjectByID);
+app.get('/tag/:id', cors(), db.getTagByID);
+app.get('/user/:id', cors(), db.getUserByID);
+app.get('/user_course_history/:id', cors(), db.getUserCourseHistoryByID);
+app.get('/user_voted_tag/:id', cors(), db.getUserVotedTagByID);
+
+// DELETE APIs
+app.get('/building/delete/:id', cors(), db.deleteBuilding);
 app.get('/class/delete/:id', cors(), db.deleteClass);
+app.get('/college/delete/:id', cors(), db.deleteCollege);
+app.get('/course/delete/:id', cors(), db.deleteCourse);
+app.get('/course_set/delete/:id', cors(), db.deleteCourseSet);
+app.get('/custom_event/delete/:id', cors(), db.deleteCustomEvent);
+app.get('/major/delete/:id', cors(), db.deleteMajor);
+app.get('/over_all_rating/delete/:id', cors(), db.deleteOverAllRating);
+app.get('/prerequisites/delete/:id', cors(), db.deletePrerequisites);
+app.get('/professor/delete/:id', cors(), db.deleteProfessor);
+app.get('/review/delete/:id', cors(), db.deleteReview);
+app.get('/schedule/delete/:id', cors(), db.deleteSchedule);
+app.get('/semester/delete/:id', cors(), db.deleteSemester);
+app.get('/subject/delete/:id', cors(), db.deleteSubject);
+app.get('/tag/delete/:id', cors(), db.deleteTag);
+app.get('/user/delete/:id', cors(), db.deleteUser);
+app.get('/user_course_history/delete/:id', cors(), db.deleteUserCourseHistory);
+app.get('/user_voted_tag/delete/:id', cors(), db.deleteUserVotedTag);
+
+
+// class API
+// app.post('/class/update', cors(), db.updateClass);
+// app.get('/class/delete/:id', cors(), db.deleteClass);
 
 // college API
-app.get('/college', cors(), db.getColleges);
-app.post('/college/update', cors(), db.updateCollege);
-app.get('/college/delete/:id', cors(), db.deleteCollege);
+
+// app.post('/college/update', cors(), db.updateCollege);
+// app.get('/college/delete/:id', cors(), db.deleteCollege);
 
 // course API
-app.get('/course', cors(), db.getCourses);
+
 
 // subject API
-app.get('/subject', cors(), db.getSubjects);
+
 
 // professor API
-app.get('/professor', cors(), db.getProfessors);
-app.post('/professor/update', cors(), db.updateProfessor);
-app.get('/professor/delete/:id', cors(), db.deleteProfessor);
 
-// google_user API
-app.get('/google_user', cors(), db.getGoogleUsers);
+// app.post('/professor/update', cors(), db.updateProfessor);
+// app.get('/professor/delete/:id', cors(), db.deleteProfessor);
 
 // review API
-app.get('/review', cors(), db.getReviews);
-app.post('/review/update', cors(), db.updateReview);
-app.get('/review/delete/:id', cors(), db.deleteReview);
+
+// app.post('/review/update', cors(), db.updateReview);
+// app.get('/review/delete/:id', cors(), db.deleteReview);
 
 // semester API
-app.get('/semester', cors(), db.getSemesters);
+
 
 // user API
-app.get('/user', cors(), db.getUsers);
-app.post('/user/update', cors(), db.updateUser);
-app.get('/user/delete/:id', cors(), db.deleteUser);
+
+// app.post('/user/update', cors(), db.updateUser);
+// app.get('/user/delete/:id', cors(), db.deleteUser);
 
 // schedule API
-app.get('/schedule', cors(), db.getSchedules);
-app.get('/schedule/:user_id/:semester_id', cors(), db.getSchedule);
-app.post('/schedule/add', db.addToSchedule);
-app.post('/schedule/remove', db.removeFromSchedule);
-app.post('/schedule/update', cors(), db.updateSchedule);
-app.get('/schedule/delete/:id', cors(), db.deleteSchedule);
+
+// app.get('/schedule/:user_id/:semester_id', cors(), db.getSchedule);
+// app.post('/schedule/add', db.addToSchedule);
+// app.post('/schedule/remove', db.removeFromSchedule);
+// app.post('/schedule/update', cors(), db.updateSchedule);
+// app.get('/schedule/delete/:id', cors(), db.deleteSchedule);
 
 // feedback API
-app.get('/feedback', db.getFeedbacks);
-app.get('/feedback/:id', cors(), db.getFeedbackById);
-app.post('/feedback/update', cors(), db.updateFeedBack);
-app.post('/feedback', db.createFeedback);
-app.get('/feedback/delete/:id', cors(), db.deleteFeedback);
+// app.get('/feedback', db.getFeedbacks);
+// app.get('/feedback/:id', cors(), db.getFeedbackById);
+// app.post('/feedback/update', cors(), db.updateFeedBack);
+// app.post('/feedback', db.createFeedback);
+// app.get('/feedback/delete/:id', cors(), db.deleteFeedback);

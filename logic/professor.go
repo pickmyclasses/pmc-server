@@ -16,6 +16,7 @@ func GetProfessorList() ([]dto.Professor, error) {
 	for _, professor := range professorList {
 		professorDto := dto.Professor{
 			ProfessorName: professor.Name,
+			ID:            professor.ID,
 		}
 		professorDtoList = append(professorDtoList, professorDto)
 	}

@@ -7,8 +7,29 @@ import (
 	"pmc_server/shared"
 )
 
-func GetTagList() ([]model.Tag, error) {
-	return dao.GetTagList()
+type tagDto struct {
+	name string `json:"name"`
+	id   int64  `json:"id"`
+}
+
+func GetTagList() ([]tagDto, error) {
+	tagList, err := dao.GetTagList()
+	if err != nil {
+		return nil, err
+	}
+	tagDtoList := make([]tagDto, 0)
+	seen := make(map[int64]bool, 0)
+	for _, tag := range tagList {
+		if _, exist := seen[tag.ID]; exist {
+			continue
+		}
+		dto := tagDto{
+			name: tag.Name,
+			id:   tag.ID,
+		}
+		tagDtoList = append(tagDtoList, dto)
+	}
+	return tagDtoList, nil
 }
 
 func GetTagOfCourse(courseID int64) ([]model.Tag, error) {

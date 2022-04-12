@@ -20,7 +20,7 @@ func GetTagList() ([]tagDto, error) {
 	tagDtoList := make([]tagDto, 0)
 	seen := make(map[int64]bool, 0)
 	for _, tag := range tagList {
-		if _, exist := seen[tag.ID]; exist {
+		if v, exist := seen[tag.ID]; exist && v {
 			continue
 		}
 		dto := tagDto{
@@ -28,6 +28,7 @@ func GetTagList() ([]tagDto, error) {
 			id:   tag.ID,
 		}
 		tagDtoList = append(tagDtoList, dto)
+		seen[tag.ID] = true
 	}
 	return tagDtoList, nil
 }

@@ -19,9 +19,9 @@ func GetTagList() ([]tagDto, error) {
 		return nil, err
 	}
 	tagDtoList := make([]tagDto, 0)
-	seen := make(map[int64]bool, 0)
+	seen := make(map[string]int64, 0)
 	for _, tag := range tagList {
-		if v, exist := seen[tag.ID]; exist && v {
+		if _, exist := seen[strings.TrimSpace(strings.ToLower(tag.Name))]; exist {
 			continue
 		}
 		dto := tagDto{
@@ -29,7 +29,7 @@ func GetTagList() ([]tagDto, error) {
 			ID:   tag.ID,
 		}
 		tagDtoList = append(tagDtoList, dto)
-		seen[tag.ID] = true
+		seen[strings.TrimSpace(strings.ToLower(tag.Name))] = tag.ID
 	}
 	return tagDtoList, nil
 }

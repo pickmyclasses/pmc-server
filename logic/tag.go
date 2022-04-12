@@ -5,11 +5,12 @@ import (
 	dao "pmc_server/dao/postgres/tag"
 	"pmc_server/model"
 	"pmc_server/shared"
+	"strings"
 )
 
 type tagDto struct {
-	name string `json:"name"`
-	id   int64  `json:"id"`
+	Name string `json:"name"`
+	ID   int64  `json:"id"`
 }
 
 func GetTagList() ([]tagDto, error) {
@@ -24,8 +25,8 @@ func GetTagList() ([]tagDto, error) {
 			continue
 		}
 		dto := tagDto{
-			name: tag.Name,
-			id:   tag.ID,
+			Name: strings.TrimSpace(tag.Name),
+			ID:   tag.ID,
 		}
 		tagDtoList = append(tagDtoList, dto)
 		seen[tag.ID] = true

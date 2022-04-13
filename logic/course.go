@@ -196,114 +196,63 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 		keyword := shared.SeparateLettersAndNums(courseParam.Keyword)
 		courseBoolQuery.QueryByKeywords(keyword)
 	}
-	if courseParam.MinCredit != 0 {
-		courseBoolQuery.QueryByMinCredit(courseParam.MinCredit)
-	}
-	if courseParam.MaxCredit != 0 {
-		courseBoolQuery.QueryByMaxCredit(courseParam.MaxCredit)
-	}
 
 	// get the courses that fit the search criteria
-	courseFitIDList, total, err := courseBoolQuery.DoSearch()
+	courseSearchIDList, total, err := courseBoolQuery.DoSearch()
 	if err != nil {
 		return nil, 0, err
 	}
 
-	courseDtoList, err := buildCourseDto(*courseFitIDList, courseParam.UserID)
-	if err != nil {
-		return nil, -1, err
-	}
-
-	return courseDtoList, total, nil
-
-	//if err != nil {
-	//	return nil, -1, fmt.Errorf("error when fetching by keywords %+v", err)
-	//}
-	//
-	//// only check for the filter parameters when there was actually a filter on
-	//// this is for saving time from checking the parameters
-	//if courseParam.HasFilter {
-	//	classQuery := classDao.NewQuery(postgres.DB)
-	//
-	//	if len(*courseFitIDList) != 0 {
-	//		for _, id := range *courseFitIDList {
-	//			classQuery.FilterByCourseID(id)
-	//		}
-	//	}
-	//
-	//	components := make([]string, 0)
-	//	if courseParam.OfferedOnline {
-	//		components = append(components, "Online")
-	//	}
-	//	if courseParam.OfferedOffline {
-	//		components = append(components, "In Person")
-	//	}
-	//	if courseParam.OfferedIVC {
-	//		components = append(components, "IVC")
-	//	}
-	//	if courseParam.OfferedHybrid {
-	//		components = append(components, "Hybrid")
-	//	}
-	//
-	//	for _, component := range components {
-	//		classQuery.FilterByComponent(component)
-	//	}
-	//
-	//	if courseParam.StartTime != 0 && courseParam.EndTime != 0 {
-	//		classQuery.FilterByTimeslot(courseParam.StartTime, courseParam.EndTime)
-	//	}
-	//
-	//	if len(courseParam.Weekday) != 0 {
-	//		classQuery.FilterByOfferDates(courseParam.Weekday)
-	//	}
-	//
-	//	classList, err := classQuery.Do()
-	//	if err != nil {
-	//		return nil, 0, err
-	//	}
-	//
-	//	classFitCourseIDList := make([]int64, 0)
-	//	for _, class := range classList {
-	//		classFitCourseIDList = append(classFitCourseIDList, class.CourseID)
-	//	}
-	//
-	//	// No search keyword input
-	//	if courseParam.Keyword == "" {
-	//		courseDtoList, err := buildCourseDto(classFitCourseIDList)
-	//		if err != nil {
-	//			return nil, 0, err
-	//		}
-	//		return courseDtoList, total, nil
-	//	} else {
-	//		finalCourseIDList := intersection(classFitCourseIDList, *courseFitIDList)
-	//		courseDtoList, err := buildCourseDto(finalCourseIDList)
-	//		if err != nil {
-	//			return nil, 0, err
-	//		}
-	//
-	//		return courseDtoList, total, nil
-	//	}
-	//}
-	//
-	//courseDtoList, err := buildCourseDto(*courseFitIDList)
-	//if err != nil {
-	//	return nil, 0, err
-	//}
-	//
-	//return courseDtoList, total, nil
-}
-
-func buildCourseDto(idList []int64, userID int64) ([]dto.Course, error) {
+	filteredOut := 0
 	courseDtoList := make([]dto.Course, 0)
-	for _, id := range idList {
+	for _, id := range *courseSearchIDList {
 		courseByID, err := courseDao.GetCourseByID(int(id))
 		if err != nil {
-			return nil, shared.InternalErr{}
+			return nil, -1, shared.InternalErr{}
 		}
 
 		classList, err := classDao.GetClassByCourseID(id)
 		if err != nil {
-			return nil, shared.InternalErr{}
+			return nil, -1, shared.InternalErr{}
+		}
+
+		if courseParam.HideNoOffering && len(*classList) == 0 {
+			filteredOut++
+			continue
+		}
+
+		var filterByWeekday bool
+		var weekdayStr string
+		if len(courseParam.Weekday) != 0 {
+			filterByWeekday = true
+			weekdayStr = shared.ConvertSliceToDateString(courseParam.Weekday)
+		}
+		var filterByProfessor bool
+		if len(courseParam.IncludedProfessors) != 0 {
+			filterByProfessor = true
+		}
+
+		var checkForWeeks bool
+		var checkForProfessor bool
+		for _, cls := range *classList {
+			if cls.OfferDate == weekdayStr {
+				checkForWeeks = true
+			}
+			for _, p := range courseParam.IncludedProfessors {
+				if cls.Instructors == p {
+					checkForProfessor = true
+				}
+			}
+		}
+
+		if filterByProfessor && !checkForProfessor {
+			filteredOut++
+			continue
+		}
+
+		if filterByWeekday && !checkForWeeks {
+			filteredOut++
+			continue
 		}
 
 		var maxCredit float64
@@ -315,14 +264,51 @@ func buildCourseDto(idList []int64, userID int64) ([]dto.Course, error) {
 			minCredit = min
 		}
 
+		if courseParam.MaxCredit != 0 {
+			if maxCredit > float64(courseParam.MaxCredit) {
+				filteredOut++
+				continue
+			}
+		}
+
+		if courseParam.MinCredit != 0 {
+			if minCredit < float64(courseParam.MinCredit) {
+				filteredOut++
+				continue
+			}
+		}
+
 		rating, err := reviewDao.GetCourseOverallRating(id)
 		if err != nil {
-			return nil, shared.InternalErr{}
+			return nil, -1, shared.InternalErr{}
+		}
+
+		if courseParam.MinRating != 0 {
+			if rating.OverAllRating < courseParam.MinRating {
+				filteredOut += 1
+				continue
+			}
 		}
 
 		tags, err := tagDao.GetTagListByCourseID(id)
 		if err != nil {
-			return nil, shared.InternalErr{}
+			return nil, -1, shared.InternalErr{}
+		}
+
+		if len(courseParam.IncludedTags) != 0 {
+			var tagCheck bool
+			for _, tag := range tags {
+				for _, ptag := range courseParam.IncludedTags {
+					if tag.Name == ptag {
+						tagCheck = true
+					}
+				}
+			}
+
+			if !tagCheck {
+				filteredOut++
+				continue
+			}
 		}
 
 		courseDto := dto.Course{
@@ -341,11 +327,12 @@ func buildCourseDto(idList []int64, userID int64) ([]dto.Course, error) {
 			OverallRating:      rating.OverAllRating,
 			Tags:               tags,
 		}
+
 		// check if the course is in user's major, if yes, add an extra attachment to it
-		if userID != 0 {
-			user, err := dao.GetUserByID(userID)
+		if courseParam.UserID != 0 {
+			user, err := dao.GetUserByID(courseParam.UserID)
 			if err != nil {
-				return nil, err
+				return nil, -1, err
 			}
 
 			majorQuery := majorDao.Major{
@@ -355,7 +342,7 @@ func buildCourseDto(idList []int64, userID int64) ([]dto.Course, error) {
 
 			major, err := majorQuery.QueryMajorByName(user.Major)
 			if err != nil {
-				return nil, err
+				return nil, -1, err
 			}
 
 			if major.Name == "" {
@@ -369,7 +356,7 @@ func buildCourseDto(idList []int64, userID int64) ([]dto.Course, error) {
 
 			majorSetList, err := courseSetQuery.QueryMajorCourseSets()
 			if err != nil {
-				return nil, err
+				return nil, -1, err
 			}
 
 			degreeCatalogList := make([][]string, 0)
@@ -393,7 +380,7 @@ func buildCourseDto(idList []int64, userID int64) ([]dto.Course, error) {
 		courseDtoList = append(courseDtoList, courseDto)
 	}
 
-	return courseDtoList, nil
+	return courseDtoList, total - int64(filteredOut), nil
 }
 
 func intersection(s1, s2 []int64) (inter []int64) {

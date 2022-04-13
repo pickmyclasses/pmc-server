@@ -33,7 +33,7 @@ func CourseEs() {
 		return
 	}
 
-	dsn := "host=pmc1.ccyv4mlgftmr.us-east-1.rds.amazonaws.com user=admin1 password=admin123 dbname=postgres port=5432 sslmode=disable"
+	dsn := "host=pmc1.ccyv4mlgftmr.us-east-1.rds.amazonaws.com user=admin1 password=pickmyclassesdotcom dbname=postgres port=5432 sslmode=disable"
 	db, err := gorm.Open(pos.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,

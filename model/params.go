@@ -19,26 +19,22 @@ type CourseParams struct {
 }
 
 type CourseFilterParams struct {
-	// TODO: fix this with actual professor entities
-	TaughtProfessor       []string `json:"taughtProfessor"`       // Filter courses with professor names
-	Keyword               string   `json:"keyword"`               // Keyword user inputs, this links to the name/catalog name/subject/tag of the course
-	MinCredit             float32  `json:"minCredit"`             // Filter courses with given credit
-	MaxCredit             float32  `json:"maxCredit"`             //Filter cores with the given max credit
-	OfferedOnline         bool     `json:"isOnline"`              // Filter courses that's online
-	OfferedOffline        bool     `json:"isOffline"`             // Filter courses that's in person
-	OfferedIVC            bool     `json:"offered_ivc"`           // Filter classes that's ivc
-	OfferedHybrid         bool     `json:"offered_hybrid"`        // Filter classes that's hybrid
-	IsHonor               bool     `json:"isHonor"`               // Filter courses that's honor courses
-	Weekday               []int    `json:"weekday"`               // Filter courses that's in the specific weekdays
-	StartTime             float32  `json:"startTime"`             // Filter courses that starts no earlier than the start time
-	EndTime               float32  `json:"endTime"`               // Filter courses that ends no later than the start time
-	MinRating             int8     `json:"minRating"`             // Filter courses that has no lower rating than the give min rating
-	RankByRatingHighToLow bool     `json:"rankByRatingHighToLow"` // Rank the courses by the given rating low to high
-	RankByRatingLowToHigh bool     `json:"rankByRatingLowToHigh"` // Rank the courses by the given rating low to high
-	PageNumber            int      `json:"pageNumber"`            // The current page of the search result, default 0
-	PageSize              int      `json:"pageSize"`              // The current page size of the search result, default 10
-	HasFilter             bool     `json:"has_filter"`            // Check if the parameter has a filter at all
-	UserID                int64    `json:"userID"`                // Current UserID
+	IncludedProfessors []string `json:"includedProfessors"` // Filter courses with professor names
+	IncludedTags       []string `json:"IncludedTags"`
+	Keyword            string   `json:"keyword"`        // Keyword user inputs, this links to the name/catalog name/subject/tag of the course
+	MinCredit          float32  `json:"minCredit"`      // Filter courses with given credit
+	MaxCredit          float32  `json:"maxCredit"`      //Filter cores with the given max credit
+	OfferedOnline      bool     `json:"isOnline"`       // Filter courses that's online
+	OfferedOffline     bool     `json:"isOffline"`      // Filter courses that's in person
+	Weekday            []int    `json:"weekday"`        // Filter courses that's in the specific weekdays
+	StartTime          float32  `json:"startTime"`      // Filter courses that start no earlier than the start time
+	EndTime            float32  `json:"endTime"`        // Filter courses that end no later than the start time
+	MinRating          float32  `json:"minRating"`      // Filter courses that have no lower rating than the give min rating
+	HideNoOffering     bool     `json:"hideNoOffering"` // Filter out the courses with no offerings
+	PageNumber         int      `json:"pageNumber"`     // The current page of the search result, default 0
+	PageSize           int      `json:"pageSize"`       // The current page size of the search result, default 10
+	HasFilter          bool     `json:"has_filter"`     // Check if the parameter has a filter at all
+	UserID             int64    `json:"userID"`         // Current UserID
 }
 
 type ClassParams struct {

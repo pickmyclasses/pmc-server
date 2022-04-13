@@ -1,12 +1,12 @@
 package dao
 
 import (
+	"errors"
 	"fmt"
-	"sort"
-
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
+	"sort"
 
 	"gorm.io/gorm"
 )
@@ -14,24 +14,18 @@ import (
 // Query defines an entity for fetching classes
 // this query is mostly for the filter function
 type Query struct {
-	db *gorm.DB
-}
-
-// NewQuery gives a new Query object
-func NewQuery(db *gorm.DB) *Query {
-	return &Query{
-		db: db,
-	}
+	Db          *gorm.DB
+	queryString string
 }
 
 // FilterByCourseID filters out the classes with the given course ID
 func (c *Query) FilterByCourseID(courseID int64) {
-	c.db = c.db.Where("course_id = ?", courseID)
+	c.queryString += fmt.Sprintf("id = %d and ", courseID)
 }
 
 // FilterByComponent filters out the classes with the given component (IVC, In person, ect)
 func (c *Query) FilterByComponent(component string) {
-	c.db = c.db.Where("component = %s", component)
+	c.queryString += fmt.Sprintf("component = %s and ", component)
 }
 
 // FilterByOfferDates filters out the classes with the given dates
@@ -41,22 +35,70 @@ func (c *Query) FilterByOfferDates(offerDates []int) {
 	})
 
 	dates := shared.ConvertSliceToDateString(offerDates)
-	c.db = c.db.Where("offer_date = %s ", dates)
+	c.queryString += fmt.Sprintf("offer_date = %s and ", dates)
 }
 
-// FilterByTimeslot filters out the classes with the given start/end time
-func (c *Query) FilterByTimeslot(startTime, endTime float32) {
-	c.db = c.db.Where("start_time_float >= %f and end_time_float <= %f", startTime, endTime)
+// FilterByStartTime filters out the classes with the given start time
+func (c *Query) FilterByStartTime(startTime float32) {
+	c.queryString += fmt.Sprintf("start_time_float >= %f and ", startTime)
 }
 
-// Do start the query with the given filters
-func (c *Query) Do() ([]model.Class, error) {
+func (c *Query) FilterByEndTime(endTime float32) {
+	c.queryString += fmt.Sprintf("end_time_float <= %f and ", endTime)
+}
+
+func (c *Query) FilterByIsOnline() {
+	c.queryString += "offer_date = '' and location = '' and "
+}
+
+func (c *Query) FilterByIsOffline() {
+	c.queryString += "offer_date != '' and location != '' and "
+}
+
+func (c *Query) FilterByCourseIDList(majorIDList []int64) {
+	courseIDQuery := "course_id in ("
+	for idx, id := range majorIDList {
+		if idx == len(majorIDList)-1 {
+			courseIDQuery += fmt.Sprintf("%d", id)
+			continue
+		}
+		courseIDQuery += fmt.Sprintf("%d,", id)
+	}
+	courseIDQuery += ")"
+	c.queryString += courseIDQuery
+}
+
+// DoSearchEntity starts the query with the given filters to search the class entities (ie, select *)
+func (c *Query) DoSearchEntity() ([]model.Class, error) {
 	var classList []model.Class
-	res := c.db.Find(&classList)
+	finalQuery := fmt.Sprintf("select * from class where %s", c.queryString)
+	res := c.Db.Raw(finalQuery).Scan(&classList)
 	if res.Error != nil {
-		return nil, shared.InternalErr{}
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return []model.Class{}, nil
+		}
+		return nil, shared.InternalErr{
+			Msg: "failed to search class entity",
+		}
 	}
 	return classList, nil
+}
+
+// DoSearchCourseIDList starts the query with the given filter to search the course_id list (ie, select course_id)
+func (c *Query) DoSearchCourseIDList() ([]int64, error) {
+	var idList []int64
+	finalQuery := fmt.Sprintf("select course_id from class where %s", c.queryString)
+	fmt.Printf("final query is %s\n", finalQuery)
+	res := c.Db.Raw(finalQuery).Scan(&idList)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return []int64{}, nil
+		}
+		return nil, shared.InternalErr{
+			Msg: "failed to search class entity",
+		}
+	}
+	return idList, nil
 }
 
 // GetClasses gives the entire list of class entities

@@ -69,7 +69,7 @@ func (c CourseSet) QueryCourseSetByID(id int32) (*model.CourseSet, error) {
 	res := c.Querier.Where("id = ?", id).First(&set)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return nil, shared.ContentNotFoundErr{}
+			return nil, nil
 		}
 		return nil, shared.InternalErr{
 			Msg: fmt.Sprintf("failed to query course set with the id %d", id),

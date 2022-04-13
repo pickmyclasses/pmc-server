@@ -158,11 +158,16 @@ func GetCourseInfo(id string, uid int64) (*dto.Course, error) {
 			for _, cid := range set.CourseIDList {
 				catalogTuple := make([]string, 0, 2)
 				if cid == course.ID {
-					parentSet, err := courseSetQuery.QueryCourseSetByID(set.ParentSetID)
-					if err != nil || parentSet.Name == "" {
+					if set.ParentSetID != -1 {
+						parentSet, err := courseSetQuery.QueryCourseSetByID(set.ParentSetID)
+						if err != nil && parentSet.Name == "" {
+							catalogTuple = append(catalogTuple, "")
+						} else {
+							catalogTuple = append(catalogTuple, parentSet.Name)
+						}
+					} else {
 						catalogTuple = append(catalogTuple, "")
 					}
-					catalogTuple = append(catalogTuple, parentSet.Name)
 					catalogTuple = append(catalogTuple, set.Name)
 					degreeCatalogList = append(degreeCatalogList, catalogTuple)
 				}

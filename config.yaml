@@ -1,6 +1,6 @@
 app:
   name: "pmc"
-  mode: "dev"
+  mode: "release"
 log:
   level: "debug"
   filename: "pmc-dev.log"
@@ -13,7 +13,7 @@ mongo:
   port: 27017
   max_pool: 20
   w: "majority"
-  dbname: "release"
+  dbname: "dev"
 postgres:
   host: "pmc1.ccyv4mlgftmr.us-east-1.rds.amazonaws.com"
   port: 5432

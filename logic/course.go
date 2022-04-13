@@ -388,6 +388,7 @@ func buildCourseDto(idList []int64, userID int64) ([]dto.Course, error) {
 					}
 				}
 			}
+			courseDto.DegreeCatalogs = degreeCatalogList
 		}
 		courseDtoList = append(courseDtoList, courseDto)
 	}

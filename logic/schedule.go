@@ -183,6 +183,7 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 					}
 				}
 			}
+			courseDto.DegreeCatalogs = degreeCatalogList
 		}
 
 		scheduleClassInfo := &dto.ClassInfo{

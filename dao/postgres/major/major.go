@@ -145,7 +145,7 @@ func (m Major) QueryMajorByName(name string) (*model.Major, error) {
 	res := m.Querier.Where("name = ?", name).First(&major)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return &model.Major{}, shared.ContentNotFoundErr{}
+			return &model.Major{}, nil
 		}
 		return nil, shared.InternalErr{
 			Msg: fmt.Sprintf("Did not find the major with given name %s", name),

@@ -143,6 +143,10 @@ func GetCourseInfo(id string, uid int64) (*dto.Course, error) {
 			return nil, err
 		}
 
+		if major.Name == "" {
+			return courseDto, nil
+		}
+
 		courseSetQuery := courseDao.CourseSet{
 			MajorID: int32(major.ID),
 			Querier: postgres.DB,

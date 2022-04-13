@@ -2,6 +2,9 @@ package logic
 
 import (
 	"fmt"
+	majorDao "pmc_server/dao/postgres/major"
+	dao "pmc_server/dao/postgres/user"
+	"pmc_server/init/postgres"
 	"strconv"
 
 	"pmc_server/dao/aura/course"
@@ -74,7 +77,7 @@ func GetCourseList(pn, pSize int) ([]dto.Course, int64, error) {
 	return courseDtoList, total, nil
 }
 
-func GetCourseInfo(id string) (*dto.Course, error) {
+func GetCourseInfo(id string, uid int64) (*dto.Course, error) {
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
 		return nil, shared.ParamIncompatibleErr{}
@@ -106,7 +109,7 @@ func GetCourseInfo(id string) (*dto.Course, error) {
 
 	tagList, err := tagDao.GetTagListByCourseID(course.ID)
 
-	return &dto.Course{
+	courseDto := &dto.Course{
 		CourseID:           course.ID,
 		IsHonor:            course.IsHonor,
 		FixedCredit:        course.FixedCredit,
@@ -121,7 +124,55 @@ func GetCourseInfo(id string) (*dto.Course, error) {
 		Classes:            *classList,
 		OverallRating:      rating.OverAllRating,
 		Tags:               tagList,
-	}, nil
+	}
+
+	// check if the course is in user's major, if yes, add an extra attachment to it
+	if uid != 0 {
+		user, err := dao.GetUserByID(uid)
+		if err != nil {
+			return nil, err
+		}
+
+		majorQuery := majorDao.Major{
+			CollegeID: int32(user.CollegeID),
+			Querier:   postgres.DB,
+		}
+
+		major, err := majorQuery.QueryMajorByName(user.Major)
+		if err != nil {
+			return nil, err
+		}
+
+		courseSetQuery := courseDao.CourseSet{
+			MajorID: int32(major.ID),
+			Querier: postgres.DB,
+		}
+
+		majorSetList, err := courseSetQuery.QueryMajorCourseSets()
+		if err != nil {
+			return nil, err
+		}
+
+		degreeCatalogList := make([][]string, 0)
+		for _, set := range majorSetList {
+			for _, cid := range set.CourseIDList {
+				catalogTuple := make([]string, 0, 2)
+				if cid == course.ID {
+					parentSet, err := courseSetQuery.QueryCourseSetByID(set.ParentSetID)
+					if err != nil || parentSet.Name == "" {
+						catalogTuple = append(catalogTuple, "")
+					}
+					catalogTuple = append(catalogTuple, parentSet.Name)
+					catalogTuple = append(catalogTuple, set.Name)
+					degreeCatalogList = append(degreeCatalogList, catalogTuple)
+				}
+			}
+		}
+
+		courseDto.DegreeCatalogs = degreeCatalogList
+	}
+
+	return courseDto, nil
 }
 
 func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {

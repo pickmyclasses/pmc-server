@@ -270,3 +270,18 @@ func (c CourseSet) queryCourseListByIDs(idList pq.Int64Array) ([]model.Course, e
 	}
 	return courseList, nil
 }
+
+func (c CourseSet) QueryMajorCourseSets() ([]model.CourseSet, error) {
+	var majorSetList []model.CourseSet
+	res := c.Querier.Where("major_id = ?", c.MajorID).Find(&majorSetList)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, shared.ContentNotFoundErr{}
+		}
+		return nil, shared.InternalErr{
+			Msg: fmt.Sprintf("Error when fetching major course set with given major id %d", c.MajorID),
+		}
+	}
+
+	return majorSetList, nil
+}

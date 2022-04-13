@@ -1,6 +1,6 @@
 app:
   name: "pmc"
-  mode: "release"
+  mode: "dev"
 log:
   level: "debug"
   filename: "pmc-dev.log"

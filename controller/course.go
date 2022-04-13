@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"pmc_server/logic"
 	"pmc_server/model"
@@ -63,12 +64,27 @@ func GetCourseListHandler(c *gin.Context) {
 // @Router /course/:id [get]
 func GetCourseByIDHandler(c *gin.Context) {
 	var courseParam model.CourseParams
-	if err := c.ShouldBindUri(&courseParam); err != nil {
+	var err error
+	if err = c.ShouldBindUri(&courseParam); err != nil {
 		_ = c.Error(shared.ParamInsufficientErr{})
 		return
 	}
 
-	courseInfo, err := logic.GetCourseInfo(courseParam.ID)
+	id := c.Query("userID")
+	var uid int
+	if id != "NaN" {
+		uid, err = strconv.Atoi(id)
+		if err != nil {
+			_ = c.Error(shared.ParamIncompatibleErr{
+				Msg: "the given user ID is invalid, should be an integer or NaN",
+			})
+		}
+	} else {
+		uid = 0
+	}
+
+	courseInfo, err := logic.GetCourseInfo(courseParam.ID, int64(uid))
+
 	if err != nil {
 		_ = c.Error(err)
 		return

@@ -51,12 +51,15 @@ func Login(param *model.LoginParams) (*dto.User, error) {
 		return nil, err
 	}
 	return &dto.User{
-		ID:        user.ID,
-		Token:     token,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Role:      user.Role,
-		CollegeID: int32(user.CollegeID),
+		ID:         user.ID,
+		Token:      token,
+		FirstName:  user.FirstName,
+		LastName:   user.LastName,
+		Role:       user.Role,
+		CollegeID:  int32(user.CollegeID),
+		Major:      user.Major,
+		Emphasis:   user.Emphasis,
+		SchoolYear: user.AcademicYear,
 	}, nil
 }
 

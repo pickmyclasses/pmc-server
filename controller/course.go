@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"pmc_server/logic"
+	"pmc_server/middlewares/request"
 	"pmc_server/model"
 	"pmc_server/shared"
 	. "pmc_server/shared"
@@ -123,6 +125,12 @@ func GetCoursesBySearchHandler(c *gin.Context) {
 		return
 	}
 
+	user, err := request.GetCurrentUser(c)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(user)
 	data, total, err := logic.GetCoursesBySearch(param)
 	if err != nil {
 		_ = c.Error(err)

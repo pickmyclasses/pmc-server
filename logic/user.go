@@ -3,9 +3,11 @@ package logic
 import (
 	"errors"
 	courseDao "pmc_server/dao/postgres/course"
+	majorDao "pmc_server/dao/postgres/major"
 	reviewDao "pmc_server/dao/postgres/review"
 	tagDao "pmc_server/dao/postgres/tag"
 	"pmc_server/dao/postgres/user"
+	"pmc_server/init/postgres"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
 	"strconv"
@@ -108,6 +110,57 @@ func GetUserHistoryCourseList(userID int64) ([]dto.Course, error) {
 			Classes:            *classList,
 			OverallRating:      rating.OverAllRating,
 			Tags:               tags,
+		}
+
+		// check if the course is in user's major, if yes, add an extra attachment to it
+		if userID != 0 {
+			user, err := dao.GetUserByID(userID)
+			if err != nil {
+				return nil, err
+			}
+
+			majorQuery := majorDao.Major{
+				CollegeID: int32(user.CollegeID),
+				Querier:   postgres.DB,
+			}
+
+			major, err := majorQuery.QueryMajorByName(user.Major)
+			if err != nil {
+				return nil, err
+			}
+
+			if major.Name == "" {
+				courseDto.DegreeCatalogs = make([][]string, 0)
+			}
+
+			courseSetQuery := courseDao.CourseSet{
+				MajorID: int32(major.ID),
+				Querier: postgres.DB,
+			}
+
+			majorSetList, err := courseSetQuery.QueryMajorCourseSets()
+			if err != nil {
+				return nil, err
+			}
+
+			degreeCatalogList := make([][]string, 0)
+			for _, set := range majorSetList {
+				for _, cid := range set.CourseIDList {
+					catalogTuple := make([]string, 0, 2)
+					if cid == course.ID {
+						if set.ParentSetID != -1 {
+							parentSet, err := courseSetQuery.QueryCourseSetByID(set.ParentSetID)
+							if err == nil && parentSet.Name != "" {
+								catalogTuple = append(catalogTuple, parentSet.Name)
+							}
+						}
+						catalogTuple = append(catalogTuple, set.Name)
+						degreeCatalogList = append(degreeCatalogList, catalogTuple)
+					}
+				}
+			}
+
+			courseDto.DegreeCatalogs = degreeCatalogList
 		}
 
 		courseDtoList = append(courseDtoList, courseDto)

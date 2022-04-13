@@ -209,7 +209,7 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 		return nil, 0, err
 	}
 
-	courseDtoList, err := buildCourseDto(*courseFitIDList)
+	courseDtoList, err := buildCourseDto(*courseFitIDList, courseParam.UserID)
 	if err != nil {
 		return nil, -1, err
 	}
@@ -293,7 +293,7 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 	//return courseDtoList, total, nil
 }
 
-func buildCourseDto(idList []int64) ([]dto.Course, error) {
+func buildCourseDto(idList []int64, userID int64) ([]dto.Course, error) {
 	courseDtoList := make([]dto.Course, 0)
 	for _, id := range idList {
 		courseByID, err := courseDao.GetCourseByID(int(id))
@@ -340,6 +340,54 @@ func buildCourseDto(idList []int64) ([]dto.Course, error) {
 			Classes:            *classList,
 			OverallRating:      rating.OverAllRating,
 			Tags:               tags,
+		}
+		// check if the course is in user's major, if yes, add an extra attachment to it
+		if userID != 0 {
+			user, err := dao.GetUserByID(userID)
+			if err != nil {
+				return nil, err
+			}
+
+			majorQuery := majorDao.Major{
+				CollegeID: int32(user.CollegeID),
+				Querier:   postgres.DB,
+			}
+
+			major, err := majorQuery.QueryMajorByName(user.Major)
+			if err != nil {
+				return nil, err
+			}
+
+			if major.Name == "" {
+				courseDto.DegreeCatalogs = make([][]string, 0)
+			}
+
+			courseSetQuery := courseDao.CourseSet{
+				MajorID: int32(major.ID),
+				Querier: postgres.DB,
+			}
+
+			majorSetList, err := courseSetQuery.QueryMajorCourseSets()
+			if err != nil {
+				return nil, err
+			}
+
+			degreeCatalogList := make([][]string, 0)
+			for _, set := range majorSetList {
+				for _, cid := range set.CourseIDList {
+					catalogTuple := make([]string, 0, 2)
+					if cid == id {
+						if set.ParentSetID != -1 {
+							parentSet, err := courseSetQuery.QueryCourseSetByID(set.ParentSetID)
+							if err == nil && parentSet.Name != "" {
+								catalogTuple = append(catalogTuple, parentSet.Name)
+							}
+						}
+						catalogTuple = append(catalogTuple, set.Name)
+						degreeCatalogList = append(degreeCatalogList, catalogTuple)
+					}
+				}
+			}
 		}
 		courseDtoList = append(courseDtoList, courseDto)
 	}

@@ -1,6 +1,9 @@
 package logic
 
 import (
+	majorDao "pmc_server/dao/postgres/major"
+	userDao "pmc_server/dao/postgres/user"
+	"pmc_server/init/postgres"
 	"strconv"
 
 	classDao "pmc_server/dao/postgres/class"
@@ -117,24 +120,74 @@ func GetSchedule(param model.GetScheduleParams) (*dto.Schedule, error) {
 			return nil, err
 		}
 
+		courseDto := dto.Course{
+			CourseID:           course.ID,
+			IsHonor:            course.IsHonor,
+			FixedCredit:        course.FixedCredit,
+			DesignationCatalog: course.DesignationCatalog,
+			Description:        course.Description,
+			Prerequisites:      course.Prerequisites,
+			Title:              course.Title,
+			CatalogCourseName:  course.CatalogCourseName,
+			Component:          course.Component,
+			MaxCredit:          maxCredit,
+			MinCredit:          minCredit,
+			Classes:            *classList,
+			OverallRating:      rating.OverAllRating,
+			Tags:               tagList,
+		}
+		// check if the course is in user's major, if yes, add an extra attachment to it
+		if param.UserID != 0 {
+			user, err := userDao.GetUserByID(param.UserID)
+			if err != nil {
+				return nil, err
+			}
+
+			majorQuery := majorDao.Major{
+				CollegeID: int32(user.CollegeID),
+				Querier:   postgres.DB,
+			}
+
+			major, err := majorQuery.QueryMajorByName(user.Major)
+			if err != nil {
+				return nil, err
+			}
+
+			if major.Name == "" {
+				courseDto.DegreeCatalogs = make([][]string, 0)
+			}
+
+			courseSetQuery := courseDao.CourseSet{
+				MajorID: int32(major.ID),
+				Querier: postgres.DB,
+			}
+
+			majorSetList, err := courseSetQuery.QueryMajorCourseSets()
+			if err != nil {
+				return nil, err
+			}
+
+			degreeCatalogList := make([][]string, 0)
+			for _, set := range majorSetList {
+				for _, cid := range set.CourseIDList {
+					catalogTuple := make([]string, 0, 2)
+					if cid == course.ID {
+						if set.ParentSetID != -1 {
+							parentSet, err := courseSetQuery.QueryCourseSetByID(set.ParentSetID)
+							if err == nil && parentSet.Name != "" {
+								catalogTuple = append(catalogTuple, parentSet.Name)
+							}
+						}
+						catalogTuple = append(catalogTuple, set.Name)
+						degreeCatalogList = append(degreeCatalogList, catalogTuple)
+					}
+				}
+			}
+		}
+
 		scheduleClassInfo := &dto.ClassInfo{
-			ClassData: *class,
-			CourseInfo: dto.Course{
-				CourseID:           course.ID,
-				IsHonor:            course.IsHonor,
-				FixedCredit:        course.FixedCredit,
-				DesignationCatalog: course.DesignationCatalog,
-				Description:        course.Description,
-				Prerequisites:      course.Prerequisites,
-				Title:              course.Title,
-				CatalogCourseName:  course.CatalogCourseName,
-				Component:          course.Component,
-				MaxCredit:          maxCredit,
-				MinCredit:          minCredit,
-				Classes:            *classList,
-				OverallRating:      rating.OverAllRating,
-				Tags:               tagList,
-			},
+			ClassData:  *class,
+			CourseInfo: courseDto,
 		}
 		scheduleRes.ScheduledClassList = append(scheduleRes.ScheduledClassList, *scheduleClassInfo)
 	}

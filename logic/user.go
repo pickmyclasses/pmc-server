@@ -184,18 +184,28 @@ func RemoveUserCourseHistory(userID, courseID int64) error {
 	return nil
 }
 
-func PostUserMajor(userID int64, majorName, emphasis string, schoolYear string) error {
+func PostUserMajor(userID int64, majorName, emphasis string, schoolYear string) (*dto.User, error) {
 	exist, err := dao.UserExistByID(userID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if !exist {
-		return shared.ContentNotFoundErr{}
+		return nil, shared.ContentNotFoundErr{}
 	}
 
-	err = dao.UpdateUserMajorAndYear(userID, majorName, emphasis, schoolYear)
+	user, err := dao.UpdateUserMajorAndYear(userID, majorName, emphasis, schoolYear)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+
+	return &dto.User{
+		ID:         user.ID,
+		FirstName:  user.FirstName,
+		LastName:   user.LastName,
+		Role:       user.Role,
+		CollegeID:  int32(user.CollegeID),
+		Major:      user.Major,
+		Emphasis:   user.Emphasis,
+		SchoolYear: user.AcademicYear,
+	}, nil
 }

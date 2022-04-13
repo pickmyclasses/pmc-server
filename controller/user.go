@@ -165,12 +165,13 @@ func PostUserMajorHandler(c *gin.Context) {
 		return
 	}
 
-	err := logic.PostUserMajor(param.UserID, param.MajorName, param.Emphasis, param.SchoolYear)
+	user, err := logic.PostUserMajor(param.UserID, param.MajorName, param.Emphasis, param.SchoolYear)
 	if err != nil {
 		_ = c.Error(err)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		MESSAGE: SUCCESS,
+		DATA:    user,
 	})
 }

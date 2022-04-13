@@ -189,7 +189,7 @@ func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	return classList, total, nil
 }
 
-func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int64, error) {
+func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int, error) {
 	courseBoolQuery := courseEsDao.NewBoolQuery(courseParam.PageNumber, courseParam.PageSize)
 
 	if courseParam.Keyword != "" {
@@ -198,12 +198,11 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 	}
 
 	// get the courses that fit the search criteria
-	courseSearchIDList, total, err := courseBoolQuery.DoSearch()
+	courseSearchIDList, _, err := courseBoolQuery.DoSearch()
 	if err != nil {
 		return nil, 0, err
 	}
 
-	filteredOut := 0
 	courseDtoList := make([]dto.Course, 0)
 	for _, id := range *courseSearchIDList {
 		courseByID, err := courseDao.GetCourseByID(int(id))
@@ -216,45 +215,6 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 			return nil, -1, shared.InternalErr{}
 		}
 
-		if courseParam.HideNoOffering && len(*classList) == 0 {
-			filteredOut++
-			continue
-		}
-
-		var filterByWeekday bool
-		var weekdayStr string
-		if len(courseParam.Weekday) != 0 {
-			filterByWeekday = true
-			weekdayStr = shared.ConvertSliceToDateString(courseParam.Weekday)
-		}
-		var filterByProfessor bool
-		if len(courseParam.IncludedProfessors) != 0 {
-			filterByProfessor = true
-		}
-
-		var checkForWeeks bool
-		var checkForProfessor bool
-		for _, cls := range *classList {
-			if cls.OfferDate == weekdayStr {
-				checkForWeeks = true
-			}
-			for _, p := range courseParam.IncludedProfessors {
-				if cls.Instructors == p {
-					checkForProfessor = true
-				}
-			}
-		}
-
-		if filterByProfessor && !checkForProfessor {
-			filteredOut++
-			continue
-		}
-
-		if filterByWeekday && !checkForWeeks {
-			filteredOut++
-			continue
-		}
-
 		var maxCredit float64
 		var minCredit float64
 		if max, err := strconv.ParseFloat(courseByID.MaxCredit, 32); err == nil {
@@ -264,51 +224,14 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 			minCredit = min
 		}
 
-		if courseParam.MaxCredit != 0 {
-			if maxCredit > float64(courseParam.MaxCredit) {
-				filteredOut++
-				continue
-			}
-		}
-
-		if courseParam.MinCredit != 0 {
-			if minCredit < float64(courseParam.MinCredit) {
-				filteredOut++
-				continue
-			}
-		}
-
 		rating, err := reviewDao.GetCourseOverallRating(id)
 		if err != nil {
 			return nil, -1, shared.InternalErr{}
 		}
 
-		if courseParam.MinRating != 0 {
-			if rating.OverAllRating < courseParam.MinRating {
-				filteredOut += 1
-				continue
-			}
-		}
-
 		tags, err := tagDao.GetTagListByCourseID(id)
 		if err != nil {
 			return nil, -1, shared.InternalErr{}
-		}
-
-		if len(courseParam.IncludedTags) != 0 {
-			var tagCheck bool
-			for _, tag := range tags {
-				for _, ptag := range courseParam.IncludedTags {
-					if tag.Name == ptag {
-						tagCheck = true
-					}
-				}
-			}
-
-			if !tagCheck {
-				filteredOut++
-				continue
-			}
 		}
 
 		courseDto := dto.Course{
@@ -380,7 +303,7 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 		courseDtoList = append(courseDtoList, courseDto)
 	}
 
-	return courseDtoList, total - int64(filteredOut), nil
+	return courseDtoList, len(courseDtoList), nil
 }
 
 func intersection(s1, s2 []int64) (inter []int64) {

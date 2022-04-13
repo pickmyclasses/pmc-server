@@ -1,15 +1,11 @@
 package controller
 
 import (
-	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"pmc_server/logic"
-	"pmc_server/middlewares/request"
 	"pmc_server/model"
 	"pmc_server/shared"
-	. "pmc_server/shared"
-
-	"github.com/gin-gonic/gin"
 )
 
 // CreateBatchCourseInSetParam defines the parameters for  create a course set with a batch of courses
@@ -125,12 +121,6 @@ func GetCoursesBySearchHandler(c *gin.Context) {
 		return
 	}
 
-	user, err := request.GetCurrentUser(c)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(user)
 	data, total, err := logic.GetCoursesBySearch(param)
 	if err != nil {
 		_ = c.Error(err)

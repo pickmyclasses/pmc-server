@@ -3,6 +3,7 @@ package course
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/olivere/elastic/v7"
 	"pmc_server/init/es"
 	esModel "pmc_server/model/es"
@@ -68,32 +69,35 @@ func (c *BoolQuery) QueryByTypes(types string) {
 }
 
 func (c *BoolQuery) QueryByOffering() {
-	c.query = c.query.Must(elastic.NewNestedQuery(
-		"classes", elastic.NewExistsQuery("offerDate")))
+	c.query = c.query.Must(elastic.NewExistsQuery("classes"))
 }
 
-func (c *BoolQuery) QueryByWeekdays() {
-
+func (c *BoolQuery) QueryByWeekdays(weekdays string) {
+	c.query = c.query.Must(elastic.NewNestedQuery("classes",
+		elastic.NewMatchQuery("offerDates", weekdays)))
 }
 
-func (c *BoolQuery) QueryByStartTime() {
-
+func (c *BoolQuery) QueryByStartTime(startTime string) {
+	c.query = c.query.Must(elastic.NewScript(
+		fmt.Sprintf(`"source": "doc.endTime.getHourOfDay() >= %s"`, startTime)))
 }
 
-func (c *BoolQuery) QueryByEndTime() {
-
+func (c *BoolQuery) QueryByEndTime(endTime string) {
+	c.query = c.query.Must(elastic.NewScript(
+		fmt.Sprintf(`"source": "doc.startTime.getHourOfDay() <= %s"`, endTime)))
 }
 
-func (c *BoolQuery) QueryByProfessors() {
-
+func (c *BoolQuery) QueryByProfessors(professors []string) {
+	c.query = c.query.Must(elastic.NewNestedQuery("classes",
+		elastic.NewTermsQuery("instructors", professors)))
 }
 
-func (c *BoolQuery) QueryByTags() {
-
+func (c *BoolQuery) QueryByTags(tags []string) {
+	c.query = c.query.Must(elastic.NewTermQuery("tags", tags))
 }
 
-func (c *BoolQuery) QueryByRating() {
-
+func (c *BoolQuery) QueryByRating(rating int32) {
+	c.query = c.query.Filter(elastic.NewRangeQuery("rating").Gte(rating))
 }
 
 func (c *BoolQuery) DoSearch() (*[]int64, int64, error) {

@@ -14,6 +14,7 @@ import (
 )
 
 type CourseSet struct {
+	ID           int32       `json:"id"`
 	SetName      string      `json:"setName"`
 	CourseNeeded int32       `json:"courseNeeded"`
 	CourseList   []int64     `json:"courseList"`
@@ -172,10 +173,6 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 
 	courseSetDtoList := make([]CourseSet, 0)
 	for _, set := range directCourseSetList {
-		//courseEntityList, err := buildCourseDto(set.CourseIDList)
-		//if err != nil {
-		//	return nil, err
-		//}
 
 		subsetList, err := q.QueryChildrenCourseSetList(int32(set.ID))
 		if err != nil {
@@ -184,18 +181,18 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 
 		subsetDtoList := make([]CourseSet, 0)
 		for _, subset := range subsetList {
-			//subsetEntityList, err := BuildCourseDto(subset.CourseIDList)
-			//if err != nil {
-			//	return nil, err
-			//}
+
 			subsetDtoList = append(subsetDtoList, CourseSet{
+				ID:           int32(subset.ID),
 				SetName:      subset.Name,
 				CourseNeeded: subset.CourseRequired,
 				CourseList:   subset.CourseIDList,
 			})
+
 		}
 
 		courseSetDto := CourseSet{
+			ID:           int32(set.ID),
 			SetName:      set.Name,
 			CourseNeeded: set.CourseRequired,
 			CourseList:   set.CourseIDList,

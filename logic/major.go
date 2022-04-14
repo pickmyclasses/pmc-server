@@ -20,6 +20,7 @@ type CourseSet struct {
 	CourseList   []int64     `json:"courseList"`
 	SubSets      []CourseSet `json:"subSets"`
 	RootSetID    int32       `json:"rootSetID"`
+	Depth        int32       `json:"depth"`
 }
 
 type MajorDto struct {
@@ -188,6 +189,7 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 				CourseNeeded: subset.CourseRequired,
 				CourseList:   subset.CourseIDList,
 				RootSetID:    subset.ParentSetID,
+				Depth:        1,
 			}
 
 			// third layer, the deepest layer
@@ -205,6 +207,7 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 						CourseNeeded: l.CourseRequired,
 						CourseList:   l.CourseIDList,
 						RootSetID:    subset.ParentSetID,
+						Depth:        2,
 					})
 				}
 				subsetDto.SubSets = thirdLayerDtoList
@@ -219,6 +222,7 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 			CourseNeeded: set.CourseRequired,
 			CourseList:   set.CourseIDList,
 			SubSets:      subsetDtoList,
+			Depth:        0,
 		}
 		courseSetDtoList = append(courseSetDtoList, courseSetDto)
 	}

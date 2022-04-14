@@ -141,6 +141,9 @@ func (c CourseSet) QueryChildrenCourseSetList(id int32) ([]model.CourseSet, erro
 	res := c.Querier.Where("parent_set_id = ?", id).Find(&children)
 	if res.Error != nil {
 		// it's ok if the course set doesn't really have any child
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return []model.CourseSet{}, nil
+		}
 		return nil, shared.InternalErr{
 			Msg: fmt.Sprintf("Failed to query the children set of the course set with id %d", id),
 		}

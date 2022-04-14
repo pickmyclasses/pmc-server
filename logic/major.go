@@ -19,6 +19,7 @@ type CourseSet struct {
 	CourseNeeded int32       `json:"courseNeeded"`
 	CourseList   []int64     `json:"courseList"`
 	SubSets      []CourseSet `json:"subSets"`
+	RootSetID    int32       `json:"rootSetID"`
 }
 
 type MajorDto struct {
@@ -181,14 +182,35 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 
 		subsetDtoList := make([]CourseSet, 0)
 		for _, subset := range subsetList {
-
-			subsetDtoList = append(subsetDtoList, CourseSet{
+			subsetDto := CourseSet{
 				ID:           int32(subset.ID),
 				SetName:      subset.Name,
 				CourseNeeded: subset.CourseRequired,
 				CourseList:   subset.CourseIDList,
-			})
+				RootSetID:    subset.ParentSetID,
+			}
 
+			// third layer, the deepest layer
+			thirdLayer, err := q.QueryChildrenCourseSetList(int32(subset.ID))
+			if err != nil {
+				return nil, err
+			}
+
+			if len(thirdLayer) != 0 {
+				thirdLayerDtoList := make([]CourseSet, 0)
+				for _, l := range thirdLayer {
+					thirdLayerDtoList = append(thirdLayerDtoList, CourseSet{
+						ID:           int32(l.ID),
+						SetName:      l.Name,
+						CourseNeeded: l.CourseRequired,
+						CourseList:   l.CourseIDList,
+						RootSetID:    subset.ParentSetID,
+					})
+				}
+				subsetDto.SubSets = thirdLayerDtoList
+			}
+
+			subsetDtoList = append(subsetDtoList, subsetDto)
 		}
 
 		courseSetDto := CourseSet{

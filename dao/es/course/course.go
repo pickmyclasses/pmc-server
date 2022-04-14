@@ -38,10 +38,11 @@ func NewBoolQuery(pageNum, pageSize int) *BoolQuery {
 func (c *BoolQuery) QueryByKeywords(keywords string) {
 	// change the weights when there is only string
 	// something like cs 5000 should have heavier weights on title than description
-	fields := []string{"title^1.5", "description^1.0", "designation_catalog^1.5", "catalog_course_name^1.5"}
+	fields := []string{"title^1.5", "description^1.0", "designation_catalog^1.5", "catalog_course_name^1.5", "tags^1.5"}
 	for _, s := range keywords {
 		if unicode.IsDigit(s) {
-			fields = []string{"title4.0", "description^1.0", "designation_catalog^2.0", "catalog_course_name^3.0"}
+			fields = []string{"title4.0", "description^1.0",
+				"designation_catalog^2.0", "catalog_course_name^3.0", "tags^3.0"}
 		}
 	}
 	c.query = c.query.
@@ -64,6 +65,35 @@ func (c *BoolQuery) QueryByIsHonor(isHonor bool) {
 
 func (c *BoolQuery) QueryByTypes(types string) {
 	c.query = c.query.Must(elastic.NewMatchQuery("subject", types))
+}
+
+func (c *BoolQuery) QueryByOffering() {
+	c.query = c.query.Must(elastic.NewNestedQuery(
+		"classes", elastic.NewExistsQuery("offerDate")))
+}
+
+func (c *BoolQuery) QueryByWeekdays() {
+
+}
+
+func (c *BoolQuery) QueryByStartTime() {
+
+}
+
+func (c *BoolQuery) QueryByEndTime() {
+
+}
+
+func (c *BoolQuery) QueryByProfessors() {
+
+}
+
+func (c *BoolQuery) QueryByTags() {
+
+}
+
+func (c *BoolQuery) QueryByRating() {
+
 }
 
 func (c *BoolQuery) DoSearch() (*[]int64, int64, error) {

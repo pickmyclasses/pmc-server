@@ -1,26 +1,24 @@
 package es
 
+import "pmc_server/model"
+
 type Course struct {
-	ID                 int64     `json:"id"`
-	DesignationCatalog string    `json:"designation_catalog"`
-	Title              string    `json:"title"`
-	Description        string    `json:"description"`
-	CatalogCourseName  string    `json:"catalog_course_name"`
-	CatalogName        string    `json:"catalog_name"`
-	Prerequisites      string    `json:"prerequisites"`
-	Component          string    `json:"component"`
-	MaxCredit          float32   `json:"max_credit"`
-	MinCredit          float32   `json:"min_credit"`
-	Subject            string    `json:"subject"`
-	IsHonor            bool      `json:"is_honor"`
-	FixedCredit        bool      `json:"fixed_credit"`
-	Rating             float32   `json:"rating"`
-	Professors         []string  `json:"professors"`
-	OffersOnline       bool      `json:"offersOnline"`
-	OffersOffline      bool      `json:"offersOffline"`
-	Dates              []int32   `json:"dates"`
-	StartTimes         []float32 `json:"startTimes"`
-	EndTimes           []float32 `json:"endTimes"`
+	ID                 int64         `json:"id"`
+	DesignationCatalog string        `json:"designation_catalog"`
+	Title              string        `json:"title"`
+	Description        string        `json:"description"`
+	CatalogCourseName  string        `json:"catalog_course_name"`
+	CatalogName        string        `json:"catalog_name"`
+	Prerequisites      string        `json:"prerequisites"`
+	Component          string        `json:"component"`
+	MaxCredit          float32       `json:"max_credit"`
+	MinCredit          float32       `json:"min_credit"`
+	Subject            string        `json:"subject"`
+	IsHonor            bool          `json:"is_honor"`
+	FixedCredit        bool          `json:"fixed_credit"`
+	Rating             float32       `json:"rating"`
+	Classes            []model.Class `json:"classes"`
+	Tags               []string      `json:"tags"`
 }
 
 func (Course) GetMapping() string {
@@ -68,10 +66,13 @@ func (Course) GetMapping() string {
                "type":"boolean"
             },
 			"rating": {
-				"rating":"rating"
+				"type":"float"
 			},
 			"classes": {
-				
+				"type":"nested"
+			},
+			"tags": {
+				"type": "text"
 			}
          }
       }

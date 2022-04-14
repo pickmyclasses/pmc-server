@@ -7,6 +7,7 @@ import (
 	"os"
 	"pmc_server/shared"
 	"strconv"
+	"strings"
 
 	"pmc_server/model"
 	esModel "pmc_server/model/es"
@@ -70,6 +71,16 @@ func CourseEs() {
 
 		letter, number := shared.ParseString(course.CatalogCourseName, false)
 
+		var classes []model.Class
+		_ = db.Where("course_id = ?", course.ID).Find(&classes)
+
+		var tags []model.Tag
+		_ = db.Where("course_id = ?", course.ID).Find(&tags)
+		tagNameList := make([]string, 0)
+		for _, t := range tags {
+			tagNameList = append(tagNameList, strings.TrimSpace(t.Name))
+		}
+
 		esCourse := esModel.Course{
 			ID:                 course.ID,
 			DesignationCatalog: course.DesignationCatalog,
@@ -84,6 +95,8 @@ func CourseEs() {
 			IsHonor:            course.IsHonor,
 			FixedCredit:        course.FixedCredit,
 			Rating:             rating.OverAllRating,
+			Classes:            classes,
+			Tags:               tagNameList,
 		}
 
 		_, err = client.Index().Index(esCourse.GetIndexName()).BodyJson(esCourse).Id(strconv.Itoa(int(course.ID))).Do(context.Background())

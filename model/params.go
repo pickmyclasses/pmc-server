@@ -33,7 +33,6 @@ type CourseFilterParams struct {
 	HideNoOffering     bool     `json:"hideNoOffering"` // Filter out the courses with no offerings
 	PageNumber         int      `json:"pageNumber"`     // The current page of the search result, default 0
 	PageSize           int      `json:"pageSize"`       // The current page size of the search result, default 10
-	HasFilter          bool     `json:"has_filter"`     // Check if the parameter has a filter at all
 	UserID             int64    `json:"userID"`         // Current UserID
 }
 

@@ -198,7 +198,7 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 	}
 
 	// get the courses that fit the search criteria
-	courseSearchIDList, _, err := courseBoolQuery.DoSearch()
+	courseSearchIDList, total, err := courseBoolQuery.DoSearch()
 	if err != nil {
 		return nil, 0, err
 	}
@@ -303,7 +303,7 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 		courseDtoList = append(courseDtoList, courseDto)
 	}
 
-	return courseDtoList, len(courseDtoList), nil
+	return courseDtoList, int(total), nil
 }
 
 func intersection(s1, s2 []int64) (inter []int64) {

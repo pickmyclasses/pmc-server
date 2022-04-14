@@ -1,6 +1,6 @@
 app:
   name: "pmc"
-  mode: "dev"
+  mode: "release"
 log:
   level: "debug"
   filename: "pmc-dev.log"
@@ -18,7 +18,7 @@ postgres:
   host: "pmc1.ccyv4mlgftmr.us-east-1.rds.amazonaws.com"
   port: 5432
   username: "admin1"
-  password: "admin123"
+  password: "pickmyclassesdotcom"
   dbname: "postgres"
 redis:
   host: "127.0.0.1"

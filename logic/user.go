@@ -11,7 +11,6 @@ import (
 	"pmc_server/init/postgres"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
-	"sort"
 	"strconv"
 
 	"pmc_server/libs/jwt"
@@ -213,29 +212,21 @@ func PostUserMajor(userID int64, majorName, emphasis string, schoolYear string) 
 }
 
 type Recommendation struct {
-	CourseCatalogList []struct {
-		DirectCourseSetName string       `json:"directCourseSetName"`
-		CourseList          []dto.Course `json:"courseList"`
-	} `json:"courseCatalogList"`
+	CourseCatalogList []CourseCatalog `json:"courseCatalogList"`
 }
 
-func RecommendCourses(userID int64) ([]dto.Course, error) {
-	exist, err := dao.UserExistByID(userID)
-	if err != nil {
-		return nil, err
-	}
-	if !exist {
-		return nil, shared.ContentNotFoundErr{
-			Msg: "Unable to find user",
-		}
-	}
+type CourseCatalog struct {
+	DirectCourseSetName string       `json:"directCourseSetName"`
+	CourseList          []dto.Course `json:"courseList"`
+}
 
+func RecommendCourses(userID int64) (*Recommendation, error) {
 	user, err := dao.GetUserByID(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	history, err := historyDao.GetUserCourseHistoryList(userID)
+	_, err = historyDao.GetUserCourseHistoryList(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -259,65 +250,45 @@ func RecommendCourses(userID int64) ([]dto.Course, error) {
 		return nil, err
 	}
 
-	for _, set := range directSets {
-		courseIDList := make([]int64, 0)
-		if !set.IsLeaf {
-			subsets, err := courseSetQ.QueryChildrenCourseSetList(int32(set.ID))
-			if err != nil {
-				return nil, err
-			}
-			for _, subset := range subsets {
-				if !subset.IsLeaf {
-					thirdLayer, err := courseSetQ.QueryChildrenCourseSetList(int32(subset.ID))
-					if err != nil {
-						return nil, err
-					}
-					for _, third := range thirdLayer {
-						for _, c := range third.CourseIDList {
-							courseIDList = append(courseIDList, c)
-						}
-					}
-				} else {
-					for _, c := range subset.CourseIDList {
-						courseIDList = append(courseIDList, c)
-					}
-				}
-			}
-		} else {
-			for _, c := range set.CourseIDList {
-				courseIDList = append(courseIDList, c)
-			}
-		}
-
-		type courseScore struct {
-			courseID int64
-			score    float32
-		}
-
-		courseScoreMap := make([]courseScore, 0)
-
-		for _, id := range courseIDList {
-			for _, his := range history {
-				if id == his.CourseID {
-					continue
-				}
-				overallRating, err := reviewDao.GetCourseOverallRating(id)
-				if err != nil {
-					return nil, err
-				}
-				reviews, err := reviewDao.GetReviewListByCourseID(id)
-
-				score := (overallRating.OverAllRating * 15) / (float32(len(reviews) * 5))
-				courseScoreMap = append(courseScoreMap, courseScore{
-					courseID: id,
-					score:    score,
-				})
-			}
-		}
-		sort.Slice(courseScoreMap, func(i, j int) bool {
-			return courseScoreMap[i].score > courseScoreMap[j].score
-		})
+	type idScoreMapping struct {
+		courseID int64
+		setName  string
+		score    float32
 	}
+
+	idScoreMappingList := make([]idScoreMapping, 0)
+	for _, set := range directSets {
+		directSubSets, _ := courseSetQ.QueryChildrenCourseSetList(int32(set.ID))
+		for _, subset := range directSubSets {
+			if !subset.IsLeaf {
+				for _, id := range subset.CourseIDList {
+					idScoreMappingList = append(idScoreMappingList, idScoreMapping{
+						courseID: id,
+						setName:  set.Name,
+					})
+				}
+			} else {
+				thirdLayer, _ := courseSetQ.QueryChildrenCourseSetList(int32(subset.ID))
+				for _, t := range thirdLayer {
+					for _, id := range t.CourseIDList {
+						idScoreMappingList = append(idScoreMappingList, idScoreMapping{
+							courseID: id,
+							setName:  set.Name,
+						})
+					}
+				}
+			}
+		}
+	}
+
+	for _, m := range idScoreMappingList {
+		rating, _ := reviewDao.GetCourseOverallRating(m.courseID)
+		m.score = (rating.OverAllRating * 15) / float32(rating.TotalRatingCount*5)
+	}
+
+	//for _, en := range idScoreMappingList {
+	//
+	//}
 
 	return nil, nil
 }

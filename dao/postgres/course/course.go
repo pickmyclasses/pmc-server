@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"errors"
+	"gorm.io/gorm"
 	"pmc_server/shared"
 	"strings"
 
@@ -55,6 +57,9 @@ func GetCourseByCatalogName(catalogName string) (*model.Course, error) {
 	var course model.Course
 	result := postgres.DB.Where("catalog_course_name", strings.TrimSpace(catalogName)).First(&course)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, shared.ContentNotFoundErr{}
+		}
 		return nil, shared.InternalErr{}
 	}
 	return &course, nil

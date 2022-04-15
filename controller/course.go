@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -216,7 +217,9 @@ func GetCourseIDsByNameListHandler(c *gin.Context) {
 	for _, name := range nameList.CourseNameList {
 		id, err := logic.GetCourseByName(name)
 		if err != nil {
-			_ = c.Error(err)
+			if errors.Is(err, shared.ContentNotFoundErr{}) {
+				continue
+			}
 			return
 		}
 		courseList = append(courseList, Entity{

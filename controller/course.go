@@ -135,6 +135,7 @@ func GetClassesOfCourseHandler(c *gin.Context) {
 // @Router /course/list [post]
 func GetCoursesBySearchHandler(c *gin.Context) {
 	var param model.CourseFilterParams
+
 	if err := c.ShouldBindJSON(&param); err != nil {
 		_ = c.Error(shared.ParamInsufficientErr{})
 		return
@@ -175,5 +176,56 @@ func CreateBatchCourseInSetHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		shared.MESSAGE: shared.SUCCESS,
+	})
+}
+
+func GetCourseByNameHandler(c *gin.Context) {
+	courseName := c.Query("name")
+	if courseName == "" {
+		_ = c.Error(shared.ParamInsufficientErr{})
+		return
+	}
+
+	id, err := logic.GetCourseByName(courseName)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		shared.DATA: id,
+	})
+}
+
+type NameList struct {
+	CourseNameList []string `json:"courseNameList"`
+}
+type Entity struct {
+	Name string `json:"name"`
+	ID   int64  `json:"id"`
+}
+
+func GetCourseIDsByNameListHandler(c *gin.Context) {
+	var nameList NameList
+	if err := c.ShouldBindJSON(&nameList); err != nil {
+		_ = c.Error(shared.ParamInsufficientErr{})
+		return
+	}
+
+	courseList := make([]Entity, 0)
+	for _, name := range nameList.CourseNameList {
+		id, err := logic.GetCourseByName(name)
+		if err != nil {
+			_ = c.Error(err)
+			return
+		}
+		courseList = append(courseList, Entity{
+			Name: name,
+			ID:   id,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		DATA: courseList,
 	})
 }

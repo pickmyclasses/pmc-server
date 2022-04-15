@@ -173,7 +173,7 @@ func (c CourseSet) QueryCourseListInCourseSetByID(id int32) ([]model.Course, err
 	return courseList, nil
 }
 
-// QueryCourseListInCourseSetByName queries course list in the course of the course set with the given id.
+// QueryCourseListInCourseSetByName queries course list in the course of the course set with the given name.
 // name - the name of the course set.
 func (c CourseSet) QueryCourseListInCourseSetByName(name string) ([]model.Course, error) {
 	var set model.CourseSet
@@ -196,15 +196,15 @@ func (c CourseSet) QueryCourseListInCourseSetByName(name string) ([]model.Course
 // QueryDirectMajorCourseSetsByMajorID queries the course set list directly associated to the major.
 // By direct course set, we mean those course set that has no parent set (eg. general education).
 // id - the id of the major we are querying
-func (c CourseSet) QueryDirectMajorCourseSetsByMajorID(id int32) ([]model.CourseSet, error) {
+func (c CourseSet) QueryDirectMajorCourseSetsByMajorID() ([]model.CourseSet, error) {
 	var setList []model.CourseSet
-	res := c.Querier.Where("major_id = ? and linked_to_major = ? and parent_set_id = ?", id, true, -1).Find(&setList)
+	res := c.Querier.Where("major_id = ? and linked_to_major = ? and parent_set_id = ?", c.MajorID, true, -1).Find(&setList)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			return []model.CourseSet{}, nil
 		}
 		return nil, shared.InternalErr{
-			Msg: fmt.Sprintf("Failed to query course set list for the major with id %d", id),
+			Msg: fmt.Sprintf("Failed to query course set list for the major with id %d", c.MajorID),
 		}
 	}
 	return setList, nil
@@ -287,4 +287,18 @@ func (c CourseSet) QueryMajorCourseSets() ([]model.CourseSet, error) {
 	}
 
 	return majorSetList, nil
+}
+
+func (c CourseSet) QueryCourseIDListByCourseSetID(id int32) ([]int64, error) {
+	var idList []int64
+	res := c.Querier.Where("id = ?", id).Select("course_id_list").Find(&idList)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return []int64{}, nil
+		}
+		return nil, shared.InternalErr{
+			Msg: fmt.Sprintf("Error when fecthing course id list from course set id %d", id),
+		}
+	}
+	return idList, nil
 }

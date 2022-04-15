@@ -12,10 +12,12 @@ type AppErr interface {
 
 // ContentNotFoundErr represents resource not found error
 // this should be used for whenever a content (eg, course) not found by the given criteria
-type ContentNotFoundErr struct{}
+type ContentNotFoundErr struct {
+	Msg string
+}
 
 func (err ContentNotFoundErr) Error() string {
-	return NoInfoErr
+	return fmt.Sprintf("%s %s", NoInfoErr, err.Msg)
 }
 
 func (err ContentNotFoundErr) Code() int {

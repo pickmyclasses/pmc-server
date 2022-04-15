@@ -175,3 +175,23 @@ func PostUserMajorHandler(c *gin.Context) {
 		DATA:    user,
 	})
 }
+
+func GetUserRecommendCourseHandler(ctx *gin.Context) {
+	id := ctx.Param("id")
+	uid, err := strconv.Atoi(id)
+	if err != nil {
+		_ = ctx.Error(shared.ParamIncompatibleErr{
+			Msg: "Unable to process the given user ID",
+		})
+	}
+
+	recommendCourses, err := logic.RecommendCourses(int64(uid))
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		DATA: recommendCourses,
+	})
+}

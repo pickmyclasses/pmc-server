@@ -381,3 +381,12 @@ func InsertCoursesToSet(courseInfoList []string, targetName, setName, relationTo
 
 	return resList, nil
 }
+
+func GetCourseByName(name string) (int64, error) {
+	entity, err := courseDao.GetCourseByCatalogName(name)
+	if err != nil {
+		return -1, err
+	}
+
+	return entity.ID, nil
+}

@@ -29,6 +29,7 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/user/:id/history", controller.GetUserHistoryHandler)
 		r.PUT("/user/history", controller.RemoveUserHistoryHandler)
 		r.POST("/user/major", controller.PostUserMajorHandler)
+		r.GET("/user/:id/recommend", controller.GetUserRecommendCourseHandler)
 
 		// for schedule
 		r.POST("/schedule", controller.AddUserScheduleHandler)
@@ -40,6 +41,8 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/course/:id", controller.GetCourseByIDHandler)
 		r.GET("/course/:id/class", controller.GetClassesOfCourseHandler)
 		r.GET("/course/:id/professor/list", controller.GetProfessorListByCourseIDHandler)
+		r.GET("/course", controller.GetCourseByNameHandler)
+		r.POST("/course", controller.GetCourseIDsByNameListHandler)
 
 		// for course search
 		r.POST("/course/search", controller.GetCoursesBySearchHandler)

@@ -168,7 +168,7 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 		Querier: postgres.DB,
 	}
 
-	directCourseSetList, err := q.QueryDirectMajorCourseSetsByMajorID(q.MajorID)
+	directCourseSetList, err := q.QueryDirectMajorCourseSetsByMajorID()
 	if err != nil {
 		return nil, err
 	}

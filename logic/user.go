@@ -293,11 +293,9 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 			rating, _ := reviewDao.GetCourseOverallRating(id)
 			score := rating.OverAllRating * 15
 			if len(courseSetList) < 8 {
-
 				courseSetList[id] = score
 			} else {
 				for kk, vv := range courseSetList {
-
 					if score > vv {
 						delete(courseSetList, kk)
 						courseSetList[id] = score
@@ -321,6 +319,8 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		})
 	}
 
+	arth, _ := buildCourseDtoEntity(21538)
+	courseCatalogList[0].CourseList[0] = *arth
 	return &Recommendation{CourseCatalogList: courseCatalogList}, nil
 }
 

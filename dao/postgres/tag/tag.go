@@ -19,7 +19,7 @@ func GetTagList() ([]model.Tag, error) {
 
 func GetTagByID(id int32) (*model.Tag, error) {
 	var tag model.Tag
-	res := postgres.DB.Find(&tag)
+	res := postgres.DB.Where("id = ?", id).Find(&tag)
 	if res.Error != nil {
 		return nil, shared.InternalErr{}
 	}

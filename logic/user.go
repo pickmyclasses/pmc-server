@@ -226,7 +226,7 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		return nil, err
 	}
 
-	_, err = historyDao.GetUserCourseHistoryList(userID)
+	history, err := historyDao.GetUserCourseHistoryList(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -250,45 +250,118 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		return nil, err
 	}
 
-	type idScoreMapping struct {
-		courseID int64
-		setName  string
-		score    float32
-	}
-
-	idScoreMappingList := make([]idScoreMapping, 0)
+	idScoreMapping := make(map[string][]int64)
 	for _, set := range directSets {
 		directSubSets, _ := courseSetQ.QueryChildrenCourseSetList(int32(set.ID))
 		for _, subset := range directSubSets {
-			if !subset.IsLeaf {
-				for _, id := range subset.CourseIDList {
-					idScoreMappingList = append(idScoreMappingList, idScoreMapping{
-						courseID: id,
-						setName:  set.Name,
-					})
+			if subset.IsLeaf {
+				if original, ok := idScoreMapping[set.Name]; ok {
+					for _, id := range subset.CourseIDList {
+						original = append(original, id)
+					}
+					idScoreMapping[set.Name] = original
+				} else {
+					idList := make([]int64, 0)
+					for _, id := range subset.CourseIDList {
+						idList = append(idList, id)
+					}
+					idScoreMapping[set.Name] = idList
 				}
 			} else {
 				thirdLayer, _ := courseSetQ.QueryChildrenCourseSetList(int32(subset.ID))
 				for _, t := range thirdLayer {
-					for _, id := range t.CourseIDList {
-						idScoreMappingList = append(idScoreMappingList, idScoreMapping{
-							courseID: id,
-							setName:  set.Name,
-						})
+					if original, ok := idScoreMapping[set.Name]; ok {
+						for _, id := range t.CourseIDList {
+							original = append(original, id)
+						}
+						idScoreMapping[set.Name] = original
+					} else {
+						idList := make([]int64, 0)
+						for _, id := range t.CourseIDList {
+							idList = append(idList, id)
+						}
+						idScoreMapping[set.Name] = idList
 					}
 				}
 			}
 		}
 	}
 
-	for _, m := range idScoreMappingList {
-		rating, _ := reviewDao.GetCourseOverallRating(m.courseID)
-		m.score = (rating.OverAllRating * 15) / float32(rating.TotalRatingCount*5)
+	count := 0
+	courseCatalogList := make([]CourseCatalog, 0)
+	for k, v := range idScoreMapping {
+		courseSetList := make(map[int64]float32)
+		for _, id := range v {
+			count++
+			rating, _ := reviewDao.GetCourseOverallRating(id)
+			score := (rating.OverAllRating * 15) / float32(rating.TotalRatingCount*5)
+			if len(courseSetList) < 8 {
+				for _, his := range history {
+					if id == his.CourseID {
+						continue
+					}
+				}
+				courseSetList[id] = score
+			} else {
+				for kk, vv := range courseSetList {
+					for _, his := range history {
+						if id == his.CourseID {
+							continue
+						}
+					}
+					if score > vv {
+						delete(courseSetList, kk)
+						courseSetList[id] = score
+					}
+				}
+			}
+		}
+
+		courseDtoList := make([]dto.Course, 0)
+		for cid, _ := range courseSetList {
+			courseEntity, err := buildCourseDtoEntity(cid)
+			if err != nil {
+				return nil, err
+			}
+			courseDtoList = append(courseDtoList, *courseEntity)
+		}
+
+		courseCatalogList = append(courseCatalogList, CourseCatalog{
+			DirectCourseSetName: k,
+			CourseList:          courseDtoList,
+		})
 	}
 
-	//for _, en := range idScoreMappingList {
-	//
-	//}
+	return &Recommendation{CourseCatalogList: courseCatalogList}, nil
+}
 
-	return nil, nil
+func buildCourseDtoEntity(cid int64) (*dto.Course, error) {
+	course, err := courseDao.GetCourseByID(int(cid))
+	if err != nil {
+		return nil, err
+	}
+
+	maxCredit, _ := strconv.ParseFloat(course.MaxCredit, 32)
+	minCredit, _ := strconv.ParseFloat(course.MinCredit, 32)
+
+	classList, _ := courseDao.GetClassListByCourseID(int(cid))
+	rating, _ := reviewDao.GetCourseOverallRating(cid)
+	tags, _ := tagDao.GetTagListByCourseID(cid)
+
+	return &dto.Course{
+		CourseID:           course.ID,
+		IsHonor:            course.IsHonor,
+		FixedCredit:        course.FixedCredit,
+		DesignationCatalog: course.DesignationCatalog,
+		Description:        course.Description,
+		Prerequisites:      course.Prerequisites,
+		Title:              course.Title,
+		CatalogCourseName:  course.CatalogCourseName,
+		Component:          course.Component,
+		MaxCredit:          maxCredit,
+		MinCredit:          minCredit,
+		Classes:            *classList,
+		OverallRating:      rating.OverAllRating,
+		Tags:               tags,
+	}, nil
 }

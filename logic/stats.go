@@ -59,10 +59,11 @@ func GetProfessorRankingByCourseID(courseID int64) ([]ProfessorRanking, error) {
 		if history.ProfessorName != "" {
 			if _, exist := mapping[history.ProfessorName]; exist {
 				count := mapping[history.ProfessorName].Count + 1
+				rating := mapping[history.ProfessorName].Rating + review.Rating
 				mapping[history.ProfessorName] = struct {
 					Rating float32
 					Count  int32
-				}{Rating: mapping[history.ProfessorName].Rating, Count: count}
+				}{Rating: rating, Count: count}
 			} else {
 				mapping[history.ProfessorName] = struct {
 					Rating float32
@@ -74,6 +75,7 @@ func GetProfessorRankingByCourseID(courseID int64) ([]ProfessorRanking, error) {
 
 	profRankingList := make([]ProfessorRanking, 0)
 	for k, v := range mapping {
+
 		profRank := ProfessorRanking{
 			Name:   k,
 			Rating: v.Rating / float32(v.Count),

@@ -287,12 +287,10 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		}
 	}
 
-	count := 0
 	courseCatalogList := make([]CourseCatalog, 0)
 	for k, v := range idScoreMapping {
 		courseSetList := make(map[int64]float32)
 		for _, id := range v {
-			count++
 			rating, _ := reviewDao.GetCourseOverallRating(id)
 			score := (rating.OverAllRating * 15) / float32(rating.TotalRatingCount*5)
 			if len(courseSetList) < 8 {

@@ -19,4 +19,6 @@ type Class struct {
 	CourseID          int64   `gorm:"column:course_id" json:"courseID"`
 	Course            *Course `gorm:"foreignKey:CourseID" json:"course"`
 	InstructorID      int32   `gorm:"column:instructor_id" json:"instructorID"`
+	StartTimeFloat    float32 `gorm:"column:start_time_float" json:"startTimeFloat"`
+	EndTimeFloat      float32 `gorm:"column:end_time_float" json:"endTimeFloat"`
 }

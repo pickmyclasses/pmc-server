@@ -38,7 +38,7 @@ func NewBoolQuery(pageNum, pageSize int) *BoolQuery {
 func (c *BoolQuery) QueryByKeywords(keywords string) {
 	// change the weights when there is only string
 	// something like cs 5000 should have heavier weights on title than description
-	fields := []string{"title^1.5", "description^1.0", "designation_catalog^1.5", "catalog_course_name^1.5", "tags^1.5"}
+	fields := []string{"title^1.5", "description^1.0", "designation_catalog^1.5", "catalog_course_name^1.5"}
 	for _, s := range keywords {
 		if unicode.IsDigit(s) {
 			fields = []string{"title4.0", "description^1.0",
@@ -73,7 +73,7 @@ func (c *BoolQuery) QueryByOffering() {
 
 func (c *BoolQuery) QueryByWeekdays(weekdays string) {
 	c.query = c.query.Filter(elastic.NewNestedQuery("classes",
-		elastic.NewMatchQuery("offerDate", weekdays)))
+		elastic.NewMatchQuery("classes.offerDate", weekdays)))
 }
 
 func (c *BoolQuery) QueryByStartTime(startTime string) {

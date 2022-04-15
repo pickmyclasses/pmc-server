@@ -81,6 +81,21 @@ func CourseEs() {
 			tagNameList = append(tagNameList, strings.TrimSpace(t.Name))
 		}
 
+		classNestedList := make([]esModel.ClassNested, 0)
+
+		for _, cls := range classes {
+			classNested := esModel.ClassNested{
+				Semester:    cls.Semester,
+				Year:        2022,
+				WaitList:    cls.WaitList,
+				OfferDate:   cls.OfferDate,
+				StartTime:   cls.StartTimeFloat,
+				EndTime:     cls.EndTimeFloat,
+				Instructors: cls.Instructors,
+			}
+			classNestedList = append(classNestedList, classNested)
+		}
+
 		esCourse := esModel.Course{
 			ID:                 course.ID,
 			DesignationCatalog: course.DesignationCatalog,
@@ -95,7 +110,8 @@ func CourseEs() {
 			IsHonor:            course.IsHonor,
 			FixedCredit:        course.FixedCredit,
 			Rating:             rating.OverAllRating,
-			Classes:            classes,
+			HasOffering:        len(classes) != 0,
+			Classes:            classNestedList,
 			Tags:               tagNameList,
 		}
 

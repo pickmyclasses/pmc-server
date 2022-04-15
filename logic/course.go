@@ -209,6 +209,10 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 		courseBoolQuery.QueryByOffering()
 	}
 
+	if courseParam.Weekday != "" {
+		courseBoolQuery.QueryByWeekdays(courseParam.Weekday)
+	}
+
 	// get the courses that fit the search criteria
 	courseSearchIDList, total, err := courseBoolQuery.DoSearch()
 	if err != nil {

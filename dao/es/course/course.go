@@ -87,7 +87,7 @@ func (c *BoolQuery) QueryByEndTime(endTime float32) {
 
 func (c *BoolQuery) QueryByProfessors(professors []string) {
 	c.query = c.query.Must(elastic.NewNestedQuery("classes",
-		elastic.NewTermsQuery("instructors", professors)))
+		elastic.NewTermsQuery("classes.instructors", professors)))
 }
 
 func (c *BoolQuery) QueryByTags(tags []string) {
@@ -96,6 +96,11 @@ func (c *BoolQuery) QueryByTags(tags []string) {
 
 func (c *BoolQuery) QueryByRating(rating float32) {
 	c.query = c.query.Filter(elastic.NewRangeQuery("rating").Gte(rating))
+}
+
+func (c *BoolQuery) QueryByOnline() {
+	c.query = c.query.Must(elastic.NewNestedQuery("classes",
+		elastic.NewTermsQuery("classes.offer_date", "")))
 }
 
 func (c *BoolQuery) DoSearch() (*[]int64, int64, error) {

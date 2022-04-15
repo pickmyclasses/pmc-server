@@ -292,22 +292,26 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		courseSetList := make(map[int64]float32)
 		for _, id := range v {
 			rating, _ := reviewDao.GetCourseOverallRating(id)
-			score := (rating.OverAllRating * 15) / float32(rating.TotalRatingCount*5)
+			score := rating.OverAllRating * 15
 			if len(courseSetList) < 8 {
+				exist := false
 				for _, his := range history {
 					if id == his.CourseID {
-						continue
+						exist = true
 					}
 				}
-				courseSetList[id] = score
+				if !exist {
+					courseSetList[id] = score
+				}
 			} else {
 				for kk, vv := range courseSetList {
+					exist := false
 					for _, his := range history {
 						if id == his.CourseID {
-							continue
+							exist = true
 						}
 					}
-					if score > vv {
+					if score > vv && !exist {
 						delete(courseSetList, kk)
 						courseSetList[id] = score
 					}

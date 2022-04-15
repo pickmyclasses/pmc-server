@@ -320,7 +320,12 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 	}
 
 	arth, _ := buildCourseDtoEntity(21538)
-	courseCatalogList[2].CourseList[0] = *arth
+
+	for _, catalog := range courseCatalogList {
+		if catalog.DirectCourseSetName == "General Education Courses" {
+			catalog.CourseList[0] = *arth
+		}
+	}
 	return &Recommendation{CourseCatalogList: courseCatalogList}, nil
 }
 

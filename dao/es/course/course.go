@@ -8,7 +8,6 @@ import (
 	"pmc_server/init/es"
 	esModel "pmc_server/model/es"
 	"pmc_server/shared"
-	. "pmc_server/shared"
 	"unicode"
 )
 
@@ -53,28 +52,28 @@ func (c *BoolQuery) QueryByKeywords(keywords string) {
 }
 
 func (c *BoolQuery) QueryByMinCredit(minCredit float32) {
-	c.query = c.query.Filter(elastic.NewRangeQuery("min_credit").Gte(minCredit).Lte(MAX))
+	c.query = c.query.Filter(elastic.NewRangeQuery("min_credit").Gte(minCredit))
 }
 
 func (c *BoolQuery) QueryByMaxCredit(maxCredit float32) {
-	c.query = c.query.Filter(elastic.NewRangeQuery("max_credit").Gte(0).Lte(maxCredit))
+	c.query = c.query.Filter(elastic.NewRangeQuery("max_credit").Lte(maxCredit))
 }
 
 func (c *BoolQuery) QueryByIsHonor(isHonor bool) {
-	c.query = c.query.Must(elastic.NewTermsQuery("is_honor", isHonor))
+	c.query = c.query.Filter(elastic.NewTermsQuery("is_honor", isHonor))
 }
 
 func (c *BoolQuery) QueryByTypes(types string) {
-	c.query = c.query.Must(elastic.NewMatchQuery("subject", types))
+	c.query = c.query.Filter(elastic.NewMatchQuery("subject", types))
 }
 
 func (c *BoolQuery) QueryByOffering() {
-	c.query = c.query.Must(elastic.NewExistsQuery("classes"))
+	c.query = c.query.Filter(elastic.NewExistsQuery("classes"))
 }
 
 func (c *BoolQuery) QueryByWeekdays(weekdays string) {
-	c.query = c.query.Must(elastic.NewNestedQuery("classes",
-		elastic.NewMatchQuery("offerDates", weekdays)))
+	c.query = c.query.Filter(elastic.NewNestedQuery("classes",
+		elastic.NewMatchQuery("offerDate", weekdays)))
 }
 
 func (c *BoolQuery) QueryByStartTime(startTime string) {

@@ -26,7 +26,7 @@ type CourseFilterParams struct {
 	MaxCredit          float32  `json:"maxCredit"`      //Filter cores with the given max credit
 	OfferedOnline      bool     `json:"isOnline"`       // Filter courses that's online
 	OfferedOffline     bool     `json:"isOffline"`      // Filter courses that's in person
-	Weekday            []int    `json:"weekday"`        // Filter courses that's in the specific weekdays
+	Weekday            string   `json:"weekday"`        // Filter courses that's in the specific weekdays
 	StartTime          float32  `json:"startTime"`      // Filter courses that start no earlier than the start time
 	EndTime            float32  `json:"endTime"`        // Filter courses that end no later than the start time
 	MinRating          float32  `json:"minRating"`      // Filter courses that have no lower rating than the give min rating

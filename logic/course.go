@@ -205,6 +205,10 @@ func GetCoursesBySearch(courseParam model.CourseFilterParams) ([]dto.Course, int
 		courseBoolQuery.QueryByMinCredit(courseParam.MinCredit)
 	}
 
+	if courseParam.HideNoOffering {
+		courseBoolQuery.QueryByOffering()
+	}
+
 	// get the courses that fit the search criteria
 	courseSearchIDList, total, err := courseBoolQuery.DoSearch()
 	if err != nil {

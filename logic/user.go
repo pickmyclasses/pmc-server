@@ -3,7 +3,6 @@ package logic
 import (
 	"errors"
 	courseDao "pmc_server/dao/postgres/course"
-	historyDao "pmc_server/dao/postgres/history"
 	majorDao "pmc_server/dao/postgres/major"
 	reviewDao "pmc_server/dao/postgres/review"
 	tagDao "pmc_server/dao/postgres/tag"
@@ -226,7 +225,7 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		return nil, err
 	}
 
-	history, err := historyDao.GetUserCourseHistoryList(userID)
+	//_, err := historyDao.GetUserCourseHistoryList(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -294,24 +293,12 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 			rating, _ := reviewDao.GetCourseOverallRating(id)
 			score := rating.OverAllRating * 15
 			if len(courseSetList) < 8 {
-				exist := false
-				for _, his := range history {
-					if id == his.CourseID {
-						exist = true
-					}
-				}
-				if !exist {
-					courseSetList[id] = score
-				}
+
+				courseSetList[id] = score
 			} else {
 				for kk, vv := range courseSetList {
-					exist := false
-					for _, his := range history {
-						if id == his.CourseID {
-							exist = true
-						}
-					}
-					if score > vv && !exist {
+
+					if score > vv {
 						delete(courseSetList, kk)
 						courseSetList[id] = score
 					}

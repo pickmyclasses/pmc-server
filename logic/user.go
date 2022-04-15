@@ -320,7 +320,7 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 	}
 
 	arth, _ := buildCourseDtoEntity(21538)
-	courseCatalogList[0].CourseList[0] = *arth
+	courseCatalogList[2].CourseList[0] = *arth
 	return &Recommendation{CourseCatalogList: courseCatalogList}, nil
 }
 

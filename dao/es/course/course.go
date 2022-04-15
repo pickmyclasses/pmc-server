@@ -72,7 +72,7 @@ func (c *BoolQuery) QueryByOffering() {
 
 func (c *BoolQuery) QueryByWeekdays(weekdays string) {
 	c.query = c.query.Filter(elastic.NewNestedQuery("classes",
-		elastic.NewTermsQuery("classes.offer_date", weekdays)))
+		elastic.NewMatchQuery("classes.offer_date", weekdays)))
 }
 
 func (c *BoolQuery) QueryByStartTime(startTime float32) {

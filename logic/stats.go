@@ -14,6 +14,7 @@ import (
 type ProfessorRanking struct {
 	Name   string  `json:"name"`
 	Rating float32 `json:"rating"`
+	Grade  float32 `json:"grade"`
 }
 
 type SemesterRating struct {
@@ -45,6 +46,7 @@ func GetProfessorRankingByCourseID(courseID int64) ([]ProfessorRanking, error) {
 	mapping := make(map[string]struct {
 		Rating float32
 		Count  int32
+		Grade  float32
 	})
 	for _, review := range reviewList {
 		history, err := historyDao.GetUserCourseHistoryByID(review.UserID, courseID)
@@ -60,15 +62,26 @@ func GetProfessorRankingByCourseID(courseID int64) ([]ProfessorRanking, error) {
 			if _, exist := mapping[history.ProfessorName]; exist {
 				count := mapping[history.ProfessorName].Count + 1
 				rating := mapping[history.ProfessorName].Rating + review.Rating
+				newReceived, err := getCourseNumberGrade(review.GradeReceived)
+				if err != nil {
+					return nil, err
+				}
+				newGrade := mapping[history.ProfessorName].Grade + newReceived
 				mapping[history.ProfessorName] = struct {
 					Rating float32
 					Count  int32
-				}{Rating: rating, Count: count}
+					Grade  float32
+				}{Rating: rating, Count: count, Grade: newGrade}
 			} else {
+				numberGrade, err := getCourseNumberGrade(review.GradeReceived)
+				if err != nil {
+					return nil, err
+				}
 				mapping[history.ProfessorName] = struct {
 					Rating float32
 					Count  int32
-				}{Rating: review.Rating, Count: 1}
+					Grade  float32
+				}{Rating: review.Rating, Count: 1, Grade: numberGrade}
 			}
 		}
 	}
@@ -79,6 +92,7 @@ func GetProfessorRankingByCourseID(courseID int64) ([]ProfessorRanking, error) {
 		profRank := ProfessorRanking{
 			Name:   k,
 			Rating: v.Rating / float32(v.Count),
+			Grade:  v.Grade / float32(v.Count),
 		}
 		profRankingList = append(profRankingList, profRank)
 	}

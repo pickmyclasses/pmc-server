@@ -3,7 +3,6 @@ package course
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/olivere/elastic/v7"
 	"pmc_server/init/es"
 	esModel "pmc_server/model/es"
@@ -42,7 +41,7 @@ func (c *BoolQuery) QueryByKeywords(keywords string) {
 	for _, s := range keywords {
 		if unicode.IsDigit(s) {
 			fields = []string{"title4.0", "description^1.0",
-				"designation_catalog^2.0", "catalog_course_name^3.0", "tags^3.0"}
+				"designation_catalog^2.0", "catalog_course_name^3.0"}
 		}
 	}
 	c.query = c.query.
@@ -68,22 +67,22 @@ func (c *BoolQuery) QueryByTypes(types string) {
 }
 
 func (c *BoolQuery) QueryByOffering() {
-	c.query = c.query.Filter(elastic.NewExistsQuery("classes"))
+	c.query = c.query.Filter(elastic.NewTermsQuery("hasOffering", true))
 }
 
 func (c *BoolQuery) QueryByWeekdays(weekdays string) {
 	c.query = c.query.Filter(elastic.NewNestedQuery("classes",
-		elastic.NewMatchQuery("classes.offerDate", weekdays)))
+		elastic.NewMatchQuery("classes.offer_date", weekdays)))
 }
 
-func (c *BoolQuery) QueryByStartTime(startTime string) {
-	c.query = c.query.Must(elastic.NewScript(
-		fmt.Sprintf(`"source": "doc.endTime.getHourOfDay() >= %s"`, startTime)))
+func (c *BoolQuery) QueryByStartTime(startTime float32) {
+	c.query = c.query.Filter(elastic.NewNestedQuery("classes",
+		elastic.NewRangeQuery("classes.start_time").Gte(startTime)))
 }
 
-func (c *BoolQuery) QueryByEndTime(endTime string) {
-	c.query = c.query.Must(elastic.NewScript(
-		fmt.Sprintf(`"source": "doc.startTime.getHourOfDay() <= %s"`, endTime)))
+func (c *BoolQuery) QueryByEndTime(endTime float32) {
+	c.query = c.query.Filter(elastic.NewNestedQuery("classes",
+		elastic.NewRangeQuery("classes.end_time").Lte(endTime)))
 }
 
 func (c *BoolQuery) QueryByProfessors(professors []string) {
@@ -95,7 +94,7 @@ func (c *BoolQuery) QueryByTags(tags []string) {
 	c.query = c.query.Must(elastic.NewTermQuery("tags", tags))
 }
 
-func (c *BoolQuery) QueryByRating(rating int32) {
+func (c *BoolQuery) QueryByRating(rating float32) {
 	c.query = c.query.Filter(elastic.NewRangeQuery("rating").Gte(rating))
 }
 

@@ -67,21 +67,21 @@ func (c *BoolQuery) QueryByTypes(types string) {
 }
 
 func (c *BoolQuery) QueryByOffering() {
-	c.query = c.query.Must(elastic.NewTermsQuery("hasOffering", true))
+	c.query = c.query.Filter(elastic.NewTermsQuery("hasOffering", true))
 }
 
 func (c *BoolQuery) QueryByWeekdays(weekdays string) {
-	c.query = c.query.Must(elastic.NewNestedQuery("classes",
-		elastic.NewMatchQuery("classes.offer_date", weekdays)))
+	c.query = c.query.Filter(elastic.NewNestedQuery("classes",
+		elastic.NewTermsQuery("classes.offer_date", weekdays)), elastic.NewTermsQuery("hasOffering", true))
 }
 
 func (c *BoolQuery) QueryByStartTime(startTime float32) {
-	c.query = c.query.Must(elastic.NewNestedQuery("classes",
+	c.query = c.query.Filter(elastic.NewNestedQuery("classes",
 		elastic.NewRangeQuery("classes.start_time").Gte(startTime)))
 }
 
 func (c *BoolQuery) QueryByEndTime(endTime float32) {
-	c.query = c.query.Must(elastic.NewNestedQuery("classes",
+	c.query = c.query.Filter(elastic.NewNestedQuery("classes",
 		elastic.NewRangeQuery("classes.end_time").Lte(endTime)))
 }
 
@@ -99,7 +99,7 @@ func (c *BoolQuery) QueryByRating(rating float32) {
 }
 
 func (c *BoolQuery) QueryByOnline() {
-	c.query = c.query.Must(elastic.NewNestedQuery("classes",
+	c.query = c.query.Filter(elastic.NewNestedQuery("classes",
 		elastic.NewTermsQuery("classes.start_time", 0)))
 }
 

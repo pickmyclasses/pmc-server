@@ -1,25 +1,34 @@
+// Package major - aura dao for majro
+// All rights reserved by pickmyclass.com
+// Author: Kaijie Fu
+// Date: 3/13/2022
 package major
 
 import (
 	"fmt"
-	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+
 	"pmc_server/dao/aura/course"
 	"pmc_server/init/aura"
 	"pmc_server/shared"
+
+	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 )
 
+// Entity defines the major entity
 type Entity struct {
-	CollegeID        int
-	Name             string
-	DegreeHour       int32
-	MinMajorHour     int32
-	EmphasisRequired bool
+	CollegeID        int    // the id of the college of the major
+	Name             string // the name of the major
+	DegreeHour       int32  // how many hours does this degree cost
+	MinMajorHour     int32  // the minimum major hours (different from degree hour, it is part of the degree hour)
+	EmphasisRequired bool   // if the major requires emphasis
 }
 
+// Insertion defines the action to insert an entity
 type Insertion struct {
-	Major Entity
+	Major Entity // the major entity for insertion
 }
 
+// InsertMajor defines the action to insert a major
 func (m Insertion) InsertMajor() (string, error) {
 	session := aura.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -30,6 +39,7 @@ func (m Insertion) InsertMajor() (string, error) {
 	return result.(string), nil
 }
 
+// insertMajorFn defines a helper function for inserting a major to Aura
 func (m *Insertion) insertMajorFn(tx neo4j.Transaction) (interface{}, error) {
 	records, err := tx.Run("CREATE (m:Major { name: $name, degree_hour: $degree_hour,"+
 		" min_major_hour: $min_major_hour, emphasis_required: $emphasis_required, college_id: $college_id}) "+
@@ -54,17 +64,20 @@ func (m *Insertion) insertMajorFn(tx neo4j.Transaction) (interface{}, error) {
 	return record.Values[1], nil
 }
 
+// Emphasis defines the emphasis entity
 type Emphasis struct {
-	Name          string `json:"name"`
-	TotalCredit   int32  `json:"totalCredit"`
-	MainMajorName string `json:"mainMajorName"`
-	CollegeID     int32  `json:"collegeID"`
+	Name          string `json:"name"`          // the name of the emphasis
+	TotalCredit   int32  `json:"totalCredit"`   // the total credit takes for the emphasis
+	MainMajorName string `json:"mainMajorName"` // the parent major name of the emphasis
+	CollegeID     int32  `json:"collegeID"`     // the ID of the college this emphasis belonsg to
 }
 
+// EmphasisInsertion defines the action for inserting an emphasis to Aura
 type EmphasisInsertion struct {
-	Emphasis Emphasis
+	Emphasis Emphasis // the emphasis entity
 }
 
+// InsertEmphasis defines the action for inserting an emphasis
 func (m EmphasisInsertion) InsertEmphasis() (string, error) {
 	session := aura.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()
@@ -75,6 +88,7 @@ func (m EmphasisInsertion) InsertEmphasis() (string, error) {
 	return result.(string), nil
 }
 
+// insertEmphasisFn defines the helper function for inserting emphasis
 func (m *EmphasisInsertion) insertEmphasisFn(tx neo4j.Transaction) (interface{}, error) {
 	records, err := tx.Run("MATCH (m:Emphasis) WHERE m.m = $major_name "+
 		"CREATE (e:Emphasis)-[:SUB_OF]->(m) SET e.name = $name, e.total_credit = $total_credit, "+
@@ -98,16 +112,19 @@ func (m *EmphasisInsertion) insertEmphasisFn(tx neo4j.Transaction) (interface{},
 	return record.Values[0], nil
 }
 
+// DegreeType defines the entity for a degree
 type DegreeType struct {
-	Name      string
-	Major     string
-	CollegeID int32
+	Name      string // the name of the degree
+	Major     string // the major that directly linked to the degree
+	CollegeID int32  // the ID of the college
 }
 
+// DegreeInsertion defines the action to insert a degree to Aura
 type DegreeInsertion struct {
-	Type DegreeType
+	Type DegreeType // the degree type entity
 }
 
+// InsertDegreeType is the action to insert a degree type to Aura
 func (m DegreeInsertion) InsertDegreeType() (string, error) {
 	session := aura.Driver.NewSession(neo4j.SessionConfig{})
 	defer session.Close()

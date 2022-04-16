@@ -1,9 +1,15 @@
+// Package course - aura dao for course
+// All rights reserved by pickmyclass.com
+// Author: Kaijie Fu
+// Date: 3/13/2022
 package course
 
 import (
 	"fmt"
-	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
+
 	"pmc_server/init/aura"
+
+	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 )
 
 // Set defines a course SET, for example, CS pre-major

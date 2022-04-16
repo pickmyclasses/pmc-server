@@ -1,4 +1,4 @@
-// Package major - aura dao for majro
+// Package major - aura dao for major
 // All rights reserved by pickmyclass.com
 // Author: Kaijie Fu
 // Date: 3/13/2022
@@ -69,7 +69,7 @@ type Emphasis struct {
 	Name          string `json:"name"`          // the name of the emphasis
 	TotalCredit   int32  `json:"totalCredit"`   // the total credit takes for the emphasis
 	MainMajorName string `json:"mainMajorName"` // the parent major name of the emphasis
-	CollegeID     int32  `json:"collegeID"`     // the ID of the college this emphasis belonsg to
+	CollegeID     int32  `json:"collegeID"`     // the ID of the college this emphasis belongs to
 }
 
 // EmphasisInsertion defines the action for inserting an emphasis to Aura
@@ -135,6 +135,7 @@ func (m DegreeInsertion) InsertDegreeType() (string, error) {
 	return result.(string), nil
 }
 
+// insertDegreeTypeFn is a helper function for inserting degree types
 func (m *DegreeInsertion) insertDegreeTypeFn(tx neo4j.Transaction) (interface{}, error) {
 	records, err := tx.Run("MATCH (m:Major) WHERE m.name = $major_name "+
 		"CREATE (d:DegreeType)<-[HAS_DEGREE]-(m) SET d.name = $name, d.college_id = $college_id RETURN d.name",
@@ -155,10 +156,12 @@ func (m *DegreeInsertion) insertDegreeTypeFn(tx neo4j.Transaction) (interface{},
 	return record.Values[0], nil
 }
 
+// Read defines an entity for read the major info
 type Read struct {
-	CollegeID int32
+	CollegeID int32 // the ID of the college that this major belongs to
 }
 
+// FindAll defines the action to fetch the entire major list
 func (r Read) FindAll() ([]Entity, error) {
 	session := aura.Driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
@@ -171,6 +174,7 @@ func (r Read) FindAll() ([]Entity, error) {
 	return result.([]Entity), nil
 }
 
+// findAllFn is a helper function for fetching the entire major list
 func (r *Read) findAllFn(tx neo4j.Transaction) (interface{}, error) {
 	res, err := tx.Run("MATCH (m:Major {college_id : $college_id})"+
 		"RETURN m.degree_hour, m.emphasis_required, m.min_major_hour, m.name",
@@ -205,11 +209,13 @@ func (r *Read) findAllFn(tx neo4j.Transaction) (interface{}, error) {
 	return majorList, nil
 }
 
+// ReadEmphasis defines the action for reading emphasis entities
 type ReadEmphasis struct {
 	CollegeID int32
 	MajorName string
 }
 
+// FindAllEmphasisesOfAMajor defines the action to find the emphasis list under a major
 func (r ReadEmphasis) FindAllEmphasisesOfAMajor() ([]Emphasis, error) {
 	session := aura.Driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
@@ -222,6 +228,7 @@ func (r ReadEmphasis) FindAllEmphasisesOfAMajor() ([]Emphasis, error) {
 	return result.([]Emphasis), nil
 }
 
+// findAllEmphasisesFn is a helper function for fetching emphasis list under a major
 func (r *ReadEmphasis) findAllEmphasisesFn(tx neo4j.Transaction) (interface{}, error) {
 	res, err := tx.Run("MATCH (m:Major {college_id: $college_id, name: $major_name})<-[:SUB_OF]-(emphasis) "+
 		" RETURN emphasis.name, emphasis.total_credit",
@@ -291,6 +298,7 @@ func (r *ReadList) ReadAllFn(tx neo4j.Transaction) (interface{}, error) {
 	return courseList, nil
 }
 
+// ReadDirectCourseSet defines the action to read the direct course set of the major
 func (r ReadList) ReadDirectCourseSet() ([]course.Set, error) {
 	session := aura.Driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
@@ -301,6 +309,7 @@ func (r ReadList) ReadDirectCourseSet() ([]course.Set, error) {
 	return result.([]course.Set), nil
 }
 
+// ReadDirectCourseSetFn is a helper function for reading teh direct course sets of the major
 func (r ReadList) ReadDirectCourseSetFn(tx neo4j.Transaction) (interface{}, error) {
 	command := fmt.Sprintf("MATCH (m:Major{name:'%s'})-[:HAS]->(d:Degree{name:'Bachelor or Arts - %s'})"+
 		"<-[:REQUIRED_BY]-(courseSet) RETURN courseSet.name, courseSet.course_required",
@@ -317,12 +326,14 @@ func (r ReadList) ReadDirectCourseSetFn(tx neo4j.Transaction) (interface{}, erro
 	return courseSetList, nil
 }
 
+// SubSet defines the entity for subsets in the major
 type SubSet struct {
 	Name           string  `json:"name"`
 	CourseRequired int32   `json:"courseRequired"`
 	CourseIDList   []int64 `json:"courseIDList"`
 }
 
+// ReadSubCourseSets defines the action to read the sub course sets from a major
 func (r ReadList) ReadSubCourseSets() ([]SubSet, error) {
 	session := aura.Driver.NewSession(neo4j.SessionConfig{AccessMode: neo4j.AccessModeRead})
 	defer session.Close()
@@ -333,6 +344,7 @@ func (r ReadList) ReadSubCourseSets() ([]SubSet, error) {
 	return result.([]SubSet), nil
 }
 
+// ReadSubCourseSetsFn is a helper function for reading course subsets
 func (r ReadList) ReadSubCourseSetsFn(tx neo4j.Transaction) (interface{}, error) {
 	command := fmt.Sprintf(
 		"MATCH (connected)-[*]-(m:CourseSet{name:\"%s\"})-[:REQUIRED_BY]->(:Degree{name:\"Bachelor or Arts -"+

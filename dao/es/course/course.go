@@ -1,3 +1,7 @@
+// Package course - elastic search dao for course
+// All rights reserved by pickmyclass.com
+// Author: Kaijie Fu
+// Date: 3/13/2022
 package course
 
 import (

@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+	"fmt"
 	"gorm.io/gorm"
 	"pmc_server/shared"
 	"strings"
@@ -46,10 +47,18 @@ func GetCourseByID(id int) (*model.Course, error) {
 }
 
 // GetClassListByCourseID gets the class list associated with the course with the given ID
-func GetClassListByCourseID(id int) (*[]model.Class, int64) {
+func GetClassListByCourseID(id int) (*[]model.Class, int64, error) {
 	var classes []model.Class
 	res := postgres.DB.Where("course_id = ?", id).Find(&classes)
-	return &classes, res.RowsAffected
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return &[]model.Class{}, 0, nil
+		}
+		return nil, -1, shared.InternalErr{
+			Msg: fmt.Sprintf("Error when fetching class list for course ID %d", id),
+		}
+	}
+	return &classes, res.RowsAffected, nil
 }
 
 // GetCourseByCatalogName gets a course entity with the given catalog name (eg, CS4500)
@@ -71,6 +80,9 @@ func GetCourseListByMajorName(majorName string) ([]model.Course, error) {
 	majorName = majorName + "%"
 	res := postgres.DB.Where("catalog_course_name LIKE ?", majorName).Find(&courseList)
 	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return []model.Course{}, nil
+		}
 		return nil, shared.InternalErr{}
 	}
 	return courseList, nil

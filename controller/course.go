@@ -1,3 +1,7 @@
+// Package controller - controller for course entities
+// All rights reserved by pickmyclass.com
+// Author: Kaijie Fu
+// Date: 3/13/2022
 package controller
 
 import (
@@ -22,6 +26,17 @@ type CreateBatchCourseInSetParam struct {
 	IsLeaf              bool     `json:"isLeaf"`              // Is the course set a leaf set, or does it have any subsets
 	MajorID             int32    `json:"majorID"`             // the id of the major we are fetching
 	ParentSetID         int32    `json:"parentSetID"`         // the id of the parent course set of the current course set
+}
+
+// NameList defines a collection of course names
+type NameList struct {
+	CourseNameList []string `json:"courseNameList"`
+}
+
+// Entity is a course entity that only contains the basic info
+type Entity struct {
+	Name string `json:"name"`
+	ID   int64  `json:"id"`
 }
 
 // GetCourseListHandler Get the entire course list
@@ -180,6 +195,13 @@ func CreateBatchCourseInSetHandler(c *gin.Context) {
 	})
 }
 
+// GetCourseByNameHandler get the course entity of the single given ID
+// @Summary Use this API to fetch the course entity with the given ID
+// @Description This API is used to fetch a course entity
+// @Tags Course
+// @Accept application/json
+// @Produce application/json
+// @Router /course [get]
 func GetCourseByNameHandler(c *gin.Context) {
 	courseName := c.Query("name")
 	if courseName == "" {
@@ -198,14 +220,13 @@ func GetCourseByNameHandler(c *gin.Context) {
 	})
 }
 
-type NameList struct {
-	CourseNameList []string `json:"courseNameList"`
-}
-type Entity struct {
-	Name string `json:"name"`
-	ID   int64  `json:"id"`
-}
-
+// GetCourseIDsByNameListHandler gets multiple course entities with the given course ID list
+// @Summary Use this API to fetch a list of course entities with the given course ID list
+// @Description This API is used to fetch a list of courses
+// @Tags Course
+// @Accept application/json
+// @Produce application/json
+// @Router /course [post]
 func GetCourseIDsByNameListHandler(c *gin.Context) {
 	var nameList NameList
 	if err := c.ShouldBindJSON(&nameList); err != nil {

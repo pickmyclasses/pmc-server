@@ -1,3 +1,7 @@
+// Package controller - controller for user entities
+// All rights reserved by pickmyclass.com
+// Author: Kaijie Fu
+// Date: 3/13/2022
 package controller
 
 import (
@@ -12,16 +16,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// PostUserMajorParams defines the parameters for users to post their major
 type PostUserMajorParams struct {
-	UserID     int64  `json:"userID"`
-	MajorName  string `json:"majorName"`
-	Emphasis   string `json:"emphasisName"`
-	SchoolYear string `json:"schoolYear"`
+	UserID     int64  `json:"userID"`       // the ID of the user
+	MajorName  string `json:"majorName"`    // the name of the major of the user
+	Emphasis   string `json:"emphasisName"` // the name of the emphasis of the user, this can be empty
+	SchoolYear string `json:"schoolYear"`   // the school year of the user, i.e. senior, junior and such
 }
 
+// HistoryParam defines the parameters for users to fetch/post their course history
 type HistoryParam struct {
-	CourseID int64 `json:"courseID"`
-	UserID   int64 `json:"userID"`
+	CourseID int64 `json:"courseID"` // the ID of the course user has taken
+	UserID   int64 `json:"userID"`   // the ID of the user
 }
 
 // RegisterHandler User registration interface
@@ -158,6 +164,15 @@ func RemoveUserHistoryHandler(c *gin.Context) {
 	})
 }
 
+// PostUserMajorHandler posts the major of the user to the database
+// @Summary Use this API to post user's major info including emphasis and year info
+// @Description this API is used to post major/emphasis info of the user, emphasis could be empty
+// @Tags User
+// @Accept application/json
+// @Produce application/json
+// @Param object body PostUserMajorParams true "Post major/emphasis/year parameters"
+// @Success 200 {string} success
+// @Router /user/major [post]
 func PostUserMajorHandler(c *gin.Context) {
 	var param PostUserMajorParams
 	if err := c.ShouldBindJSON(&param); err != nil {
@@ -176,6 +191,15 @@ func PostUserMajorHandler(c *gin.Context) {
 	})
 }
 
+// GetUserRecommendCourseHandler fetches the recommended course list of the given user
+// @Summary Use this API to get the recommended course list of the given user along with the degree catalog
+// @Description This API will give the degree catalogs of the user and major, 8 top courses for each degree catalog
+// @Tags User
+// @Accept application/json
+// @Produce application/json
+// @Param int parameter int true "user ID"
+// @Success 200 {string} success
+// @Router /register [post]
 func GetUserRecommendCourseHandler(ctx *gin.Context) {
 	id := ctx.Param("id")
 	uid, err := strconv.Atoi(id)

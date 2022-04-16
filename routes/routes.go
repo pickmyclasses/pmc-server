@@ -1,3 +1,7 @@
+// Package routes - routes for the APIs
+// All rights reserved by pickmyclass.com
+// Author: Kaijie Fu
+// Date: 3/13/2022
 package routes
 
 import (
@@ -13,11 +17,14 @@ import (
 )
 
 func SetUp(mode string) *gin.Engine {
+	// check the current running mode
+	// TODO: migrate everything to environment variables
 	if mode == gin.ReleaseMode {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
 	r := gin.New()
+	// inject the logger, the recovery, so the server won't just crash
 	r.Use(logger.GinLogger(), logger.GinRecovery(true))
 
 	r.Use(auth.Cors(), err.JsonErrReporter())

@@ -2,7 +2,9 @@ package dao
 
 import (
 	"crypto/sha512"
+	"errors"
 	"fmt"
+	"gorm.io/gorm"
 	"pmc_server/shared"
 	"strings"
 
@@ -27,6 +29,9 @@ func UserExistByID(userID int64) (bool, error) {
 	var user model.User
 	result := postgres.DB.Where("id = ?", userID).Find(&user)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
 		return true, shared.InternalErr{}
 	}
 	return result.RowsAffected != 0, nil
@@ -141,7 +146,7 @@ func UpdateUserMajorAndYear(userID int64, majorName, emphasis string, schoolYear
 	res = postgres.DB.Where("id = ?", userID).First(&user)
 	if res.Error != nil {
 		return nil, shared.InternalErr{
-			Msg: fmt.Sprintf("failed to find user %d", userID, ),
+			Msg: fmt.Sprintf("failed to find user %d", userID),
 		}
 	}
 

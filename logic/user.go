@@ -1,32 +1,42 @@
+// Package logic  - logic for users
+// All rights reserved by pickmyclass.com
+// Author: Kaijie Fu
+// Date: 3/13/2022
 package logic
 
 import (
 	"errors"
+	historyDao "pmc_server/dao/postgres/history"
+	"strconv"
+
 	courseDao "pmc_server/dao/postgres/course"
 	majorDao "pmc_server/dao/postgres/major"
 	reviewDao "pmc_server/dao/postgres/review"
 	tagDao "pmc_server/dao/postgres/tag"
 	"pmc_server/dao/postgres/user"
 	"pmc_server/init/postgres"
-	"pmc_server/model/dto"
-	"pmc_server/shared"
-	"strconv"
-
 	"pmc_server/libs/jwt"
 	libs "pmc_server/libs/snowflake"
-	model "pmc_server/model"
+	"pmc_server/model"
+	"pmc_server/model/dto"
+	"pmc_server/shared"
 )
 
+// Recommendation is used for the recommended courses on the page for the users
 type Recommendation struct {
-	CourseCatalogList []CourseCatalog `json:"courseCatalogList"`
+	CourseCatalogList []CourseCatalog `json:"courseCatalogList"` // a list of catalogs (with their catalog name and courses)
 }
 
+//CourseCatalog represents a catalog of course collections
 type CourseCatalog struct {
-	DirectCourseSetName string       `json:"directCourseSetName"`
-	CourseList          []dto.Course `json:"courseList"`
+	DirectCourseSetName string       `json:"directCourseSetName"` // the name of the catalog
+	CourseList          []dto.Course `json:"courseList"`          // the courses the catalog contains
 }
 
+// Register creates a new user based on the given information
+// Users' password should be encrypted
 func Register(param *model.RegisterParams) error {
+	// check if the user already exist
 	exist, err := dao.UserExist(param.Email)
 	if err != nil {
 		return err
@@ -36,6 +46,7 @@ func Register(param *model.RegisterParams) error {
 		return errors.New("user already exist")
 	}
 
+	// generate snowflake ID
 	userID := libs.GenID()
 
 	return dao.InsertUser(&model.User{
@@ -48,7 +59,9 @@ func Register(param *model.RegisterParams) error {
 	})
 }
 
+// Login lets the user access their data by the given information
 func Login(param *model.LoginParams) (*dto.User, error) {
+	// read if the user exist first
 	user, err := dao.ReadUser(&model.User{
 		Email:    param.Email,
 		Password: param.Password,
@@ -57,6 +70,7 @@ func Login(param *model.LoginParams) (*dto.User, error) {
 		return nil, err
 	}
 
+	// JWT token for the user to be continuly logged in
 	token, err := jwt.GenToken(user.UserID, user.FirstName, user.LastName)
 	if err != nil {
 		return nil, err
@@ -74,6 +88,7 @@ func Login(param *model.LoginParams) (*dto.User, error) {
 	}, nil
 }
 
+// GetUserHistoryCourseList gets the user taken courses info along with the entities of the courses
 func GetUserHistoryCourseList(userID int64) ([]dto.Course, error) {
 	historyCourseList, err := dao.GetUserHistoryCourseList(userID)
 	if err != nil {
@@ -86,7 +101,11 @@ func GetUserHistoryCourseList(userID int64) ([]dto.Course, error) {
 		if err != nil {
 			return nil, err
 		}
-		classList, _ := courseDao.GetClassListByCourseID(int(c))
+		classList, _, err := courseDao.GetClassListByCourseID(int(c))
+		if err != nil {
+			return nil, err
+		}
+
 		rating, err := reviewDao.GetCourseOverallRating(c)
 		if err != nil {
 			return nil, err
@@ -152,6 +171,7 @@ func GetUserHistoryCourseList(userID int64) ([]dto.Course, error) {
 				return nil, err
 			}
 
+			// check the degree catalogs
 			degreeCatalogList := make([][]string, 0)
 			for _, set := range majorSetList {
 				for _, cid := range set.CourseIDList {
@@ -168,15 +188,14 @@ func GetUserHistoryCourseList(userID int64) ([]dto.Course, error) {
 					}
 				}
 			}
-
 			courseDto.DegreeCatalogs = degreeCatalogList
 		}
-
 		courseDtoList = append(courseDtoList, courseDto)
 	}
 	return courseDtoList, nil
 }
 
+// AddUserCourseHistory adds course histories to users' records
 func AddUserCourseHistory(userID, courseID int64) error {
 	err := dao.AddUserHistoryCourse(userID, courseID)
 	if err != nil {
@@ -185,6 +204,7 @@ func AddUserCourseHistory(userID, courseID int64) error {
 	return nil
 }
 
+// RemoveUserCourseHistory removes a course form given users' history record
 func RemoveUserCourseHistory(userID, courseID int64) error {
 	err := dao.RemoveUserHistoryCourse(userID, courseID)
 	if err != nil {
@@ -193,6 +213,8 @@ func RemoveUserCourseHistory(userID, courseID int64) error {
 	return nil
 }
 
+// PostUserMajor posts the major of the user
+// By declaring users' major, the created user entity will also be returned
 func PostUserMajor(userID int64, majorName, emphasis string, schoolYear string) (*dto.User, error) {
 	exist, err := dao.UserExistByID(userID)
 	if err != nil {
@@ -202,6 +224,7 @@ func PostUserMajor(userID int64, majorName, emphasis string, schoolYear string) 
 		return nil, shared.ContentNotFoundErr{}
 	}
 
+	// update the user major and year here
 	user, err := dao.UpdateUserMajorAndYear(userID, majorName, emphasis, schoolYear)
 	if err != nil {
 		return nil, err
@@ -219,13 +242,16 @@ func PostUserMajor(userID int64, majorName, emphasis string, schoolYear string) 
 	}, nil
 }
 
+// RecommendCourses calculates the highest rated courses in each catalog
+// pick the top 8 courses in each catalog, and return to the user
 func RecommendCourses(userID int64) (*Recommendation, error) {
 	user, err := dao.GetUserByID(userID)
 	if err != nil {
 		return nil, err
 	}
 
-	//_, err := historyDao.GetUserCourseHistoryList(userID)
+	// skip the courses that are already in user's history
+	_, err = historyDao.GetUserCourseHistoryList(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -249,6 +275,8 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		return nil, err
 	}
 
+	// get the id and all the sub-sets information
+	// basically fetching all the courses in the degree catalog
 	idScoreMapping := make(map[string][]int64)
 	for _, set := range directSets {
 		directSubSets, _ := courseSetQ.QueryChildrenCourseSetList(int32(set.ID))
@@ -329,18 +357,37 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 	return &Recommendation{CourseCatalogList: courseCatalogList}, nil
 }
 
+// buildCourseDtoEntity is a helper function to build a single course dto entity
 func buildCourseDtoEntity(cid int64) (*dto.Course, error) {
 	course, err := courseDao.GetCourseByID(int(cid))
 	if err != nil {
 		return nil, err
 	}
 
-	maxCredit, _ := strconv.ParseFloat(course.MaxCredit, 32)
-	minCredit, _ := strconv.ParseFloat(course.MinCredit, 32)
+	maxCredit, err := strconv.ParseFloat(course.MaxCredit, 32)
+	if err != nil {
+		return nil, err
+	}
 
-	classList, _ := courseDao.GetClassListByCourseID(int(cid))
-	rating, _ := reviewDao.GetCourseOverallRating(cid)
-	tags, _ := tagDao.GetTagListByCourseID(cid)
+	minCredit, err := strconv.ParseFloat(course.MinCredit, 32)
+	if err != nil {
+		return nil, err
+	}
+
+	classList, _, err := courseDao.GetClassListByCourseID(int(cid))
+	if err != nil {
+		return nil, err
+	}
+
+	rating, err := reviewDao.GetCourseOverallRating(cid)
+	if err != nil {
+		return nil, err
+	}
+
+	tags, err := tagDao.GetTagListByCourseID(cid)
+	if err != nil {
+		return nil, err
+	}
 
 	return &dto.Course{
 		CourseID:           course.ID,

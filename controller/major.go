@@ -1,11 +1,17 @@
+// Package controller - controller for major entity
+// All rights reserved by pickmyclass.com
+// Author: Kaijie Fu
+// Date: 3/13/2022
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
+
 	"pmc_server/logic"
 	"pmc_server/shared"
-	"strconv"
+	
+	"github.com/gin-gonic/gin"
 )
 
 // CreateParams defines the action to create a major
@@ -183,7 +189,7 @@ func GetMajorCourseSetHandler(ctx *gin.Context) {
 // @Tags Major
 // @Accept application/json
 // @Produce application/json
-// @Router college/:id/major/ [get]
+// @Router college/:id/major/requirement [get]
 func GetMajorDirectRequirementsHandler(ctx *gin.Context) {
 	id := ctx.Param("id")
 	collegeID, err := strconv.Atoi(id)

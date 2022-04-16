@@ -1,3 +1,7 @@
+// Package controller - controller for admin
+// All rights reserved by pickmyclass.com
+// Author: Kaijie Fu
+// Date: 3/13/2022
 package controller
 
 import (

@@ -17,6 +17,15 @@ import (
 	model "pmc_server/model"
 )
 
+type Recommendation struct {
+	CourseCatalogList []CourseCatalog `json:"courseCatalogList"`
+}
+
+type CourseCatalog struct {
+	DirectCourseSetName string       `json:"directCourseSetName"`
+	CourseList          []dto.Course `json:"courseList"`
+}
+
 func Register(param *model.RegisterParams) error {
 	exist, err := dao.UserExist(param.Email)
 	if err != nil {
@@ -210,15 +219,6 @@ func PostUserMajor(userID int64, majorName, emphasis string, schoolYear string) 
 	}, nil
 }
 
-type Recommendation struct {
-	CourseCatalogList []CourseCatalog `json:"courseCatalogList"`
-}
-
-type CourseCatalog struct {
-	DirectCourseSetName string       `json:"directCourseSetName"`
-	CourseList          []dto.Course `json:"courseList"`
-}
-
 func RecommendCourses(userID int64) (*Recommendation, error) {
 	user, err := dao.GetUserByID(userID)
 	if err != nil {
@@ -286,20 +286,27 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		}
 	}
 
+	// calculate the average rating and give the courses a score, we only need top 8 courses in all the catalogs
 	courseCatalogList := make([]CourseCatalog, 0)
 	for k, v := range idScoreMapping {
 		courseSetList := make(map[int64]float32)
 		for _, id := range v {
 			rating, _ := reviewDao.GetCourseOverallRating(id)
-			score := rating.OverAllRating * 15
+			score := (rating.OverAllRating * 15) / float32(rating.TotalRatingCount)
 			if len(courseSetList) < 8 {
 				courseSetList[id] = score
 			} else {
+				lowestVal := shared.MAX
+				var lowestIdx int64
 				for kk, vv := range courseSetList {
-					if score > vv {
-						delete(courseSetList, kk)
-						courseSetList[id] = score
+					if float64(vv) < lowestVal {
+						lowestVal = float64(vv)
+						lowestIdx = kk
 					}
+				}
+				if float64(score) > lowestVal {
+					delete(courseSetList, lowestIdx)
+					courseSetList[id] = score
 				}
 			}
 		}
@@ -319,13 +326,6 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		})
 	}
 
-	arth, _ := buildCourseDtoEntity(21538)
-
-	for _, catalog := range courseCatalogList {
-		if catalog.DirectCourseSetName == "General Education Courses" {
-			catalog.CourseList[0] = *arth
-		}
-	}
 	return &Recommendation{CourseCatalogList: courseCatalogList}, nil
 }
 

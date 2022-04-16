@@ -2,7 +2,7 @@
 
 ### Prerequisites for running the server
 
-- Go 1.8 is required to install on the machine if desired to run locally
+- Go 1.8 is required to be installed on the machine if desired to run locally
 - The connection to our **backup** database info is included in config.yaml
 - There is no further requirements for setting up the databases, we have remote databases deployed
 - If running locally, please change app:

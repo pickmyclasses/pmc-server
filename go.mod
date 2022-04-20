@@ -5,7 +5,6 @@ module pmc_server
 go 1.16
 
 require (
-	github.com/DATA-DOG/go-sqlmock v1.5.0 // indirect
 	github.com/anaskhan96/go-password-encoder v0.0.0-20201010210601-c765b799fd72
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -14,9 +13,9 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/lib/pq v1.10.4
 	github.com/natefinch/lumberjack v2.0.0+incompatible
-	github.com/neo4j/neo4j-go-driver/v4 v4.4.1 // indirect
+	github.com/neo4j/neo4j-go-driver/v4 v4.4.1
 	github.com/olivere/elastic/v7 v7.0.31
-	github.com/onsi/ginkgo v1.16.5 // indirect
+	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.17.0 // indirect
 	github.com/spf13/viper v1.10.1
 	github.com/swaggo/gin-swagger v1.4.0

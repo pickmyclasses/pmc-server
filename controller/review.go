@@ -145,3 +145,34 @@ func UpdateCourseReviewHandler(c *gin.Context) {
 		MESSAGE: SUCCESS,
 	})
 }
+
+type VoteReview struct {
+	UserID   int64
+	VoterID  int64
+	IsUpvote bool
+}
+
+func VoteCourseReviewHandler(c *gin.Context) {
+	var param VoteReview
+	if err := c.ShouldBind(&param); err != nil {
+		_ = c.Error(shared.ParamInsufficientErr{})
+		return
+	}
+
+	courseID := c.Query("id")
+	courseIDInt, err := strconv.Atoi(courseID)
+	if err != nil {
+		_ = c.Error(shared.ParamIncompatibleErr{})
+		return
+	}
+
+	err = logic.VoteCourseReview(param.UserID, int64(courseIDInt), param.VoterID, param.IsUpvote)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
+	})
+}

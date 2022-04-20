@@ -193,3 +193,7 @@ func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) e
 func UpdateCourseReview(review model.ReviewParams) error {
 	return reviewDao.UpdateCourseReview(review)
 }
+
+func VoteCourseReview(userID, courseID, voterID int64, isUpvote bool) error {
+	return nil
+}

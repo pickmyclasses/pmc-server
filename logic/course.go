@@ -108,6 +108,9 @@ func GetCourseInfo(id string, uid int64) (*dto.Course, error) {
 	}
 
 	tagList, err := tagDao.GetTagListByCourseID(course.ID)
+	if err != nil {
+		return nil, err
+	}
 
 	courseDto := &dto.Course{
 		CourseID:           course.ID,
@@ -185,7 +188,10 @@ func GetClassListByCourseID(id string) (*[]model.Class, int64, error) {
 	if err != nil {
 		return nil, 0, shared.MalformedIDErr{}
 	}
-	classList, total := courseDao.GetClassListByCourseID(idInt)
+	classList, total, err := courseDao.GetClassListByCourseID(idInt)
+	if err != nil {
+		return nil, -1, err
+	}
 	return classList, total, nil
 }
 

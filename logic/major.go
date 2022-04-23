@@ -173,6 +173,8 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 		return nil, err
 	}
 
+	fmt.Println(directCourseSetList)
+
 	courseSetDtoList := make([]CourseSet, 0)
 	for _, set := range directCourseSetList {
 

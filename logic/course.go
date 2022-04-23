@@ -171,6 +171,7 @@ func GetCourseInfo(id string, uid int64) (*dto.Course, error) {
 							catalogTuple = append(catalogTuple, parentSet.Name)
 						}
 					}
+
 					catalogTuple = append(catalogTuple, set.Name)
 					degreeCatalogList = append(degreeCatalogList, catalogTuple)
 				}

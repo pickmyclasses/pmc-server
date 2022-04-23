@@ -14,6 +14,9 @@ func GetSemesterByID(semesterID int32) (*model.Semester, error) {
 	var semester model.Semester
 	res := postgres.DB.Where("id = ?", semesterID).First(&semester)
 	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return &model.Semester{}, nil
+		}
 		return nil, shared.InternalErr{}
 	}
 	return &semester, nil

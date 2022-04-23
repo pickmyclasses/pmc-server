@@ -22,7 +22,7 @@ func GetUserCourseHistoryByID(userID, courseID int64) (*model.UserCourseHistory,
 	res := postgres.DB.Where("user_id = ? and course_id = ?", userID, courseID).First(&courseHistory)
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return &model.UserCourseHistory{}, nil
 		}
 		return nil, shared.InternalErr{}
 	}

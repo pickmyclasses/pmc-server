@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"errors"
+	"gorm.io/gorm"
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
@@ -31,6 +33,9 @@ func GetCollegeByID(collegeID int32) (*model.College, error) {
 	var college model.College
 	res := postgres.DB.Where("id = ?", collegeID).First(&college)
 	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return &model.College{}, nil
+		}
 		return nil, shared.InternalErr{}
 	}
 	return &college, nil

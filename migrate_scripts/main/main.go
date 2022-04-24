@@ -3,5 +3,8 @@ package main
 import migrate "pmc_server/migrate_scripts"
 
 func main() {
-	migrate.CourseEs()
+	err := migrate.GenerateCourseAssociatedTags()
+	if err != nil {
+		panic(err)
+	}
 }

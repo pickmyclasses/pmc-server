@@ -176,3 +176,30 @@ func VoteCourseReviewHandler(c *gin.Context) {
 		MESSAGE: SUCCESS,
 	})
 }
+
+func GetUserInfoOfCourseReviewHandler(c *gin.Context) {
+	id := c.Param("id")
+	courseID, err := strconv.Atoi(id)
+	if err != nil {
+		_ = c.Error(shared.ParamIncompatibleErr{})
+		return
+	}
+
+	userID := c.Query("userID")
+	userIDInt, err := strconv.Atoi(userID)
+	if err != nil {
+		_ = c.Error(shared.ParamIncompatibleErr{})
+		return
+	}
+
+	userReviewInfo, err := logic.GetUserReviewInfo(int64(userIDInt), int64(courseID))
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
+		DATA:    userReviewInfo,
+	})
+}

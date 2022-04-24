@@ -2,8 +2,6 @@ package logic
 
 import (
 	"fmt"
-	"strconv"
-
 	collegeDao "pmc_server/dao/postgres/college"
 	historyDao "pmc_server/dao/postgres/history"
 	reviewDao "pmc_server/dao/postgres/review"
@@ -12,6 +10,7 @@ import (
 	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
+	"strconv"
 )
 
 func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error) {
@@ -196,4 +195,69 @@ func UpdateCourseReview(review model.ReviewParams) error {
 
 func VoteCourseReview(userID, courseID, voterID int64, isUpvote bool) error {
 	return nil
+}
+
+type UserReviewInfo struct {
+	HasTaken      bool       `json:"hasTaken"`
+	HasReviewed   bool       `json:"hasReviewed"`
+	ReviewContent dto.Review `json:"reviewContent"`
+}
+
+func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
+	history, err := historyDao.GetUserCourseHistoryByID(userID, courseID)
+	if err != nil {
+		return nil, err
+	}
+	if history == nil {
+		return &UserReviewInfo{
+			HasTaken:      false,
+			HasReviewed:   false,
+			ReviewContent: dto.Review{},
+		}, nil
+	}
+
+	review, err := reviewDao.GetReviewOfUserForACourse(userID, courseID)
+	if err != nil {
+		return nil, err
+	}
+	if review == nil {
+		return &UserReviewInfo{
+			HasTaken:      true,
+			HasReviewed:   false,
+			ReviewContent: dto.Review{},
+		}, nil
+	}
+
+	semester, err := semesterDao.GetSemesterByID(history.SemesterID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UserReviewInfo{
+		HasTaken:    true,
+		HasReviewed: true,
+		ReviewContent: dto.Review{
+			Rating:             review.Rating,
+			Anonymous:          review.Anonymous,
+			Recommended:        review.Recommended,
+			Pros:               review.Pros,
+			Cons:               review.Cons,
+			Comment:            review.Comment,
+			CourseID:           review.CourseID,
+			UserID:             review.UserID,
+			CreatedAt:          review.CreatedAt,
+			LikedCount:         review.LikeCount,
+			DislikedCount:      review.DislikeCount,
+			HourSpent:          review.HourSpent,
+			GradeReceived:      review.GradeReceived,
+			IsExamHeavy:        review.ExamHeavy,
+			IsHomeworkHeavy:    review.HomeworkHeavy,
+			ExtraCreditOffered: review.ExtraCreditOffered,
+			ClassSemester: dto.Semester{
+				Year:   semester.Year,
+				Season: semester.Season,
+			},
+			ClassProfessor: history.ProfessorName,
+		},
+	}, nil
 }

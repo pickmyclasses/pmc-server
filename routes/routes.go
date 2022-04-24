@@ -60,6 +60,7 @@ func SetUp(mode string) *gin.Engine {
 		r.POST("/course/:id/review", controller.PostCourseReviewHandler)
 		r.PUT("/course/:id/review", controller.UpdateCourseReviewHandler)
 		r.POST("/course/:id/review/vote", controller.VoteCourseReviewHandler)
+		r.GET("/course/:id/review/user", controller.GetUserInfoOfCourseReviewHandler)
 
 		// for class
 		r.GET("/class/list", controller.GetClassListHandler)

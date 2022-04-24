@@ -127,6 +127,9 @@ func GetReviewOfUserForACourse(userID, courseID int64) (*model.Review, error) {
 	var review model.Review
 	res := postgres.DB.Where("course_id = ? and user_id = ?", courseID, userID).First(&review)
 	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, shared.InternalErr{}
 	}
 	return &review, nil

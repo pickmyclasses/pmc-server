@@ -37,5 +37,9 @@ auradb:
   uri: "neo4j+s://f8e9dc6c.databases.neo4j.io:7687"
   username: "neo4j"
   password: "9_a9iCvVKRvW8LbdT5eiBfeSFQdclfboXk0JcuZ9mgQ"
+twinword-tags:
+  uri: "https://twinword-topic-tagging.p.rapidapi.com/generate/?text="
+  host: "twinword-topic-tagging.p.rapidapi.com"
+  key: "aASFE865ImTtakxSwxZYWXFO8Jmm8ZtG955HM3hNiNIo7bU6IvLtFgvhY2f8jgSamzKlXfHnGISNKiv9eTo/pQ=="
 
 

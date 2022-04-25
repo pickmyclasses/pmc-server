@@ -94,6 +94,24 @@ func GetCourseAverageRatingTrendBySemesterHandler(c *gin.Context) {
 	})
 }
 
+func GetCoursePopularity(c *gin.Context) {
+	id := c.Param("id")
+	courseID, err := strconv.Atoi(id)
+	if err != nil {
+		_ = c.Error(shared.ParamIncompatibleErr{})
+		return
+	}
+
+	popularity, err := logic.GetCoursePopularity(int64(courseID))
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		shared.DATA: popularity,
+	})
+}
+
 // GetMajorTopAvgGradeHandler gets the stats for top 10 rated courses and major average grade
 // @Summary Use this API to get the stats for top-rated courses and major average grade
 // @Description This API is for getting the average grade of the major and top 10 rated courses

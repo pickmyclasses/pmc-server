@@ -36,3 +36,14 @@ func GetSemesterByName(season string, year int32) (*model.Semester, error) {
 	}
 	return &semester, nil
 }
+
+func GetSemesterListByCollegeID(collegeID int32) ([]model.Semester, error) {
+	var semesterList []model.Semester
+	res := postgres.DB.Where("college_id = ?", collegeID).Find(&semesterList)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return []model.Semester{}, nil
+		}
+	}
+	return semesterList, nil
+}

@@ -38,10 +38,13 @@ func GetCourseByID(id int) (*model.Course, error) {
 	var course model.Course
 	result := postgres.DB.Where("id = ?", id).First(&course)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, shared.InternalErr{}
 	}
 	if result.RowsAffected == 0 {
-		return nil, shared.ContentNotFoundErr{}
+		return nil, nil
 	}
 	return &course, nil
 }
@@ -86,4 +89,16 @@ func GetCourseListByMajorName(majorName string) ([]model.Course, error) {
 		return nil, shared.InternalErr{}
 	}
 	return courseList, nil
+}
+
+func GetCoursePopularityBySemesterID(courseID int64, semesterID int32) (*model.CoursePopularity, error) {
+	var popularity model.CoursePopularity
+	res := postgres.DB.Where("course_id = ? and semester_id = ?", courseID, semesterID).First(&popularity)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, shared.InternalErr{}
+	}
+	return &popularity, nil
 }

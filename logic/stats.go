@@ -217,6 +217,51 @@ func GetCourseRatingTrendBySemester(courseID int64) ([]SemesterRating, error) {
 	return semesterRatingList, nil
 }
 
+type Popularity struct {
+	Trends []Trend `json:"trends"`
+}
+
+type Trend struct {
+	Number   int32  `json:"popularity"`
+	Semester string `json:"semester"`
+}
+
+func GetCoursePopularity(courseID int64) (*Popularity, error) {
+	course, err := courseDao.GetCourseByID(int(courseID))
+	if err != nil {
+		return nil, err
+	}
+	if course == nil {
+		return nil, shared.ContentNotFoundErr{
+			Msg: fmt.Sprintf("unable to find course %d\n", courseID),
+		}
+	}
+
+	//TODO: change this college id
+	semesterList, err := semesterDao.GetSemesterListByCollegeID(1)
+	if err != nil {
+		return nil, err
+	}
+
+	trendList := make([]Trend, 0)
+	for _, s := range semesterList {
+		popularity, err := courseDao.GetCoursePopularityBySemesterID(courseID, int32(s.ID))
+		if err != nil {
+			return nil, err
+		}
+		if popularity == nil {
+			continue
+		}
+
+		trendList = append(trendList, Trend{
+			Number:   popularity.Popularity,
+			Semester: fmt.Sprintf("%s %d", s.Season, s.Year),
+		})
+	}
+
+	return &Popularity{Trends: trendList}, nil
+}
+
 func getCourseNumberGrade(grade string) (float32, error) {
 	mapping := map[string]float32{
 		"A":  4.0,

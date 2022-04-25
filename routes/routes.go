@@ -98,6 +98,7 @@ func SetUp(mode string) *gin.Engine {
 		r.GET("/stats/course/:id/professor/rank", controller.GetCourseProfessorRankingHandler)
 		r.GET("/stats/course/:id/load", controller.GetCourseAverageLoadHandler)
 		r.GET("/stats/course/:id/rating/trend", controller.GetCourseAverageRatingTrendBySemesterHandler)
+		r.GET("/stats/course/:id/popularity", controller.GetCoursePopularity)
 		//r.GET("/stats/major/:id/grade", controller.GetMajorTopAvgGradeHandler)
 
 		// for testing

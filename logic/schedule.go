@@ -8,7 +8,6 @@ import (
 
 	classDao "pmc_server/dao/postgres/class"
 	courseDao "pmc_server/dao/postgres/course"
-	historyDao "pmc_server/dao/postgres/history"
 	reviewDao "pmc_server/dao/postgres/review"
 	dao "pmc_server/dao/postgres/schedule"
 	tagDao "pmc_server/dao/postgres/tag"
@@ -52,16 +51,16 @@ func CreateSchedule(param model.PostEventParam) error {
 	}
 
 	// update user course history
-	class, err := classDao.GetClassByID(int(param.ClassID))
-	if err != nil {
-		return err
-	}
+	//class, err := classDao.GetClassByID(int(param.ClassID))
+	//if err != nil {
+	//	return err
+	//}
 
 	// TODO: fix this semesterID
-	err = historyDao.CreateSingleUserCourseHistory(param.UserID, class.CourseID, 2, class.Instructors)
-	if err != nil {
-		return err
-	}
+	//err = historyDao.CreateSingleUserCourseHistory(param.UserID, class.CourseID, 2, class.Instructors)
+	//if err != nil {
+	//	return err
+	//}
 
 	return nil
 }
@@ -217,15 +216,15 @@ func DeleteSchedule(userID, classID int64) error {
 		return err
 	}
 
-	class, err := classDao.GetClassByID(int(classID))
-	if err != nil {
-		return err
-	}
+	//class, err := classDao.GetClassByID(int(classID))
+	//if err != nil {
+	//	return err
+	//}
 	// TODO: fix this semesterID
-	err = historyDao.DeleteSingleUserCourseHistory(userID, class.CourseID, 2)
-	if err != nil {
-		return err
-	}
+	//err = historyDao.DeleteSingleUserCourseHistory(userID, class.CourseID, 2)
+	//if err != nil {
+	//	return err
+	//}
 	return nil
 }
 

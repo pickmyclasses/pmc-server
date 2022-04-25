@@ -112,6 +112,8 @@ func GetCourseInfo(id string, uid int64) (*dto.Course, error) {
 		return nil, err
 	}
 
+	// get keywords
+
 	courseDto := &dto.Course{
 		CourseID:           course.ID,
 		IsHonor:            course.IsHonor,

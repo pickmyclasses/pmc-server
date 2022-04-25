@@ -80,3 +80,14 @@ func GetHistoryListByCourseID(courseID int64) ([]model.UserCourseHistory, error)
 	}
 	return history, nil
 }
+
+func UpdateHistoryByCourseID(userID, courseID int64, semesterID int32, professorName string) error {
+	res := postgres.DB.Model(&model.UserCourseHistory{}).Where("user_id = ? and course_id = ?", userID, courseID).
+		Updates(map[string]interface{}{"semester_id": semesterID, "professor_name": professorName})
+	if res.Error != nil {
+		return shared.InternalErr{
+			Msg: "Unable to update the history",
+		}
+	}
+	return nil
+}

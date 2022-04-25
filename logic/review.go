@@ -1,16 +1,20 @@
 package logic
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	collegeDao "pmc_server/dao/postgres/college"
 	historyDao "pmc_server/dao/postgres/history"
 	reviewDao "pmc_server/dao/postgres/review"
 	semesterDao "pmc_server/dao/postgres/semester"
+	tagDao "pmc_server/dao/postgres/tag"
 	userDao "pmc_server/dao/postgres/user"
 	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
 	"strconv"
+	"strings"
 )
 
 func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error) {
@@ -52,8 +56,6 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 			Rating:             review.Rating,
 			Anonymous:          review.Anonymous,
 			Recommended:        review.Recommended,
-			Pros:               review.Pros,
-			Cons:               review.Cons,
 			Comment:            review.Comment,
 			CourseID:           int64(idInt),
 			UserID:             review.UserID,
@@ -108,17 +110,28 @@ func GetReviewByID(reviewID string) (*model.Review, error) {
 	return reviewDao.GetReviewByID(idInt)
 }
 
-func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) error {
+func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) error { // analyze keywords
 	if extraInfoNeeded {
 		semester, err := semesterDao.GetSemesterByName(review.ClassSemester.Season, review.ClassSemester.Year)
 		if err != nil {
 			return err
 		}
 
-		err = historyDao.CreateSingleUserCourseHistory(review.UserID, courseID, int32(semester.ID),
-			review.ClassProfessor)
+		exist, err := historyDao.CheckIfCourseInUserCourseHistory(review.UserID, courseID)
 		if err != nil {
 			return err
+		}
+		if exist {
+			err = historyDao.UpdateHistoryByCourseID(review.UserID, review.CourseID, int32(semester.ID), review.ClassProfessor)
+			if err != nil {
+				return err
+			}
+		} else {
+			err = historyDao.CreateSingleUserCourseHistory(review.UserID, courseID, int32(semester.ID),
+				review.ClassProfessor)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	userCourseHistoryExist, err := historyDao.CheckIfCourseInUserCourseHistory(review.UserID, courseID)
@@ -155,12 +168,23 @@ func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) e
 		((rating.OverAllRating * float32(rating.TotalRatingCount)) + review.Rating) /
 			(float32(rating.TotalRatingCount) + 1)
 
+	tagList, err := analyzeTags(review.Tags)
+	if err != nil {
+		return err
+	}
+
+	// insert tags
+	for _, tag := range tagList {
+		err := tagDao.CreateTagByCourseID(courseID, tag.Content, int32(tag.Type))
+		if err != nil {
+			return err
+		}
+	}
+
 	reviewRec := &model.Review{
 		Rating:             review.Rating,
 		Anonymous:          review.Anonymous,
 		Recommended:        review.Recommended,
-		Pros:               review.Pros,
-		Cons:               review.Cons,
 		Comment:            review.Comment,
 		CourseID:           courseID,
 		UserID:             review.UserID,
@@ -240,8 +264,6 @@ func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
 			Rating:             review.Rating,
 			Anonymous:          review.Anonymous,
 			Recommended:        review.Recommended,
-			Pros:               review.Pros,
-			Cons:               review.Cons,
 			Comment:            review.Comment,
 			CourseID:           review.CourseID,
 			UserID:             review.UserID,
@@ -260,4 +282,53 @@ func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
 			ClassProfessor: history.ProfessorName,
 		},
 	}, nil
+}
+
+type Tag struct {
+	Content string
+	Type    int
+}
+
+type TwinwordResp struct {
+	ResultMessage string `json:"result_msg"`
+	Type          string `json:"type"`
+}
+
+func analyzeTags(contents []string) ([]Tag, error) {
+	keywordList := make([]Tag, 0)
+	for _, content := range contents {
+		text := content
+		text = strings.ReplaceAll(strings.TrimSpace(text), " ", "%20")
+		if text == "" {
+			continue
+		}
+
+		uri := fmt.Sprintf("https://api.twinword.com/api/sentiment/analyze/latest/?text=%s", text)
+		req, _ := http.NewRequest("GET", uri, nil)
+		req.Header.Add("X-RapidAPI-Host", "api.twinword.com")
+		req.Header.Add("X-RapidAPI-Key", "aASFE865ImTtakxSwxZYWXFO8Jmm8ZtG955HM3hNiNIo7bU6IvLtFgvhY2f8jgSamzKlXfHnGISNKiv9eTo/pQ==")
+		res, _ := http.DefaultClient.Do(req)
+		defer res.Body.Close()
+
+		var result TwinwordResp
+		err := json.NewDecoder(res.Body).Decode(&result)
+		if err != nil {
+			continue
+		}
+		if result.ResultMessage != "Success" {
+			keywordType := -1
+			fmt.Println(result)
+			if result.Type == "neutral" || result.Type == "positive" {
+				keywordType = 1
+			} else {
+				keywordType = 0
+			}
+			keywordList = append(keywordList, Tag{
+				Content: strings.TrimSpace(content),
+				Type:    keywordType,
+			})
+		}
+	}
+
+	return keywordList, nil
 }

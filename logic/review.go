@@ -137,6 +137,7 @@ func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) e
 			}
 		}
 	}
+
 	userCourseHistoryExist, err := historyDao.CheckIfCourseInUserCourseHistory(review.UserID, courseID)
 	if err != nil {
 		return err
@@ -205,6 +206,7 @@ func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) e
 		ExamHeavy:          review.IsExamHeavy,
 		HomeworkHeavy:      review.IsHomeworkHeavy,
 		ExtraCreditOffered: review.ExtraCreditOffered,
+		Tags:               review.Tags,
 	}
 
 	err = reviewDao.CreateCourseReview(*reviewRec)
@@ -239,7 +241,8 @@ type UserReviewInfo struct {
 }
 
 func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
-	// this logic is not perfect, fix it later by removing all the scheduled items
+	info := &UserReviewInfo{}
+	// this logic is not perfect, fix it later by removing all the scheduled items after the semester ends
 	scheduleList, err := dao.GetScheduleByUserID(userID)
 	if err != nil {
 		return nil, err
@@ -260,42 +263,36 @@ func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
 		}
 	}
 
+	historicalTaken := false
 	history, err := historyDao.GetUserCourseHistoryByID(userID, courseID)
 	if err != nil {
 		return nil, err
 	}
-	if history == nil {
-		return &UserReviewInfo{
-			CurrentlyTaking: currentlyTaking,
-			HasTaken:        false,
-			HasReviewed:     false,
-			ReviewContent:   dto.Review{},
-		}, nil
+	if history != nil {
+		historicalTaken = true
 	}
 
+	hasReviewed := false
 	review, err := reviewDao.GetReviewOfUserForACourse(userID, courseID)
 	if err != nil {
 		return nil, err
 	}
 	if review == nil {
-		return &UserReviewInfo{
-			CurrentlyTaking: false,
-			HasTaken:        true,
-			HasReviewed:     false,
-			ReviewContent:   dto.Review{},
-		}, nil
+		hasReviewed = true
 	}
 
-	semester, err := semesterDao.GetSemesterByID(history.SemesterID)
-	if err != nil {
-		return nil, err
+	var semester *model.Semester
+	if historicalTaken && hasReviewed {
+		semester, err = semesterDao.GetSemesterByID(history.SemesterID)
+		if err != nil {
+			return nil, err
+		}
 	}
-
-	return &UserReviewInfo{
-		HasTaken:        true,
-		HasReviewed:     true,
-		CurrentlyTaking: false,
-		ReviewContent: dto.Review{
+	info.HasTaken = historicalTaken
+	info.HasReviewed = hasReviewed
+	info.CurrentlyTaking = currentlyTaking
+	if info.HasReviewed {
+		info.ReviewContent = dto.Review{
 			Rating:             review.Rating,
 			Anonymous:          review.Anonymous,
 			Recommended:        review.Recommended,
@@ -315,8 +312,10 @@ func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
 				Season: semester.Season,
 			},
 			ClassProfessor: history.ProfessorName,
-		},
-	}, nil
+			Tags:           review.Tags,
+		}
+	}
+	return info, nil
 }
 
 type Tag struct {

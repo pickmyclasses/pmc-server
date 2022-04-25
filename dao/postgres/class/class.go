@@ -116,6 +116,9 @@ func GetClassByID(id int) (*model.Class, error) {
 	var class model.Class
 	result := postgres.DB.Where("id = ?", id).First(&class)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, shared.InternalErr{}
 	}
 	return &class, nil

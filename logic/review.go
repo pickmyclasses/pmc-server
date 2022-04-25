@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	classDao "pmc_server/dao/postgres/class"
 	collegeDao "pmc_server/dao/postgres/college"
+	courseDao "pmc_server/dao/postgres/course"
 	historyDao "pmc_server/dao/postgres/history"
 	reviewDao "pmc_server/dao/postgres/review"
+	dao "pmc_server/dao/postgres/schedule"
 	semesterDao "pmc_server/dao/postgres/semester"
 	tagDao "pmc_server/dao/postgres/tag"
 	userDao "pmc_server/dao/postgres/user"
@@ -229,21 +232,44 @@ func VoteCourseReview(userID, courseID, voterID int64, isUpvote bool) error {
 }
 
 type UserReviewInfo struct {
-	HasTaken      bool       `json:"hasTaken"`
-	HasReviewed   bool       `json:"hasReviewed"`
-	ReviewContent dto.Review `json:"reviewContent"`
+	HasTaken        bool       `json:"hasTaken"`
+	HasReviewed     bool       `json:"hasReviewed"`
+	CurrentlyTaking bool       `json:"currentlyTaking"`
+	ReviewContent   dto.Review `json:"reviewContent"`
 }
 
 func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
+	// this logic is not perfect, fix it later by removing all the scheduled items
+	scheduleList, err := dao.GetScheduleByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	currentlyTaking := false
+	for _, s := range scheduleList {
+		class, err := classDao.GetClassByID(int(s.ClassID))
+		if err != nil {
+			return nil, err
+		}
+		course, err := courseDao.GetCourseByID(int(class.CourseID))
+		if err != nil {
+			return nil, err
+		}
+		if courseID == course.ID {
+			currentlyTaking = true
+		}
+	}
+
 	history, err := historyDao.GetUserCourseHistoryByID(userID, courseID)
 	if err != nil {
 		return nil, err
 	}
 	if history == nil {
 		return &UserReviewInfo{
-			HasTaken:      false,
-			HasReviewed:   false,
-			ReviewContent: dto.Review{},
+			CurrentlyTaking: currentlyTaking,
+			HasTaken:        false,
+			HasReviewed:     false,
+			ReviewContent:   dto.Review{},
 		}, nil
 	}
 
@@ -253,9 +279,10 @@ func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
 	}
 	if review == nil {
 		return &UserReviewInfo{
-			HasTaken:      true,
-			HasReviewed:   false,
-			ReviewContent: dto.Review{},
+			CurrentlyTaking: false,
+			HasTaken:        true,
+			HasReviewed:     false,
+			ReviewContent:   dto.Review{},
 		}, nil
 	}
 
@@ -265,8 +292,9 @@ func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
 	}
 
 	return &UserReviewInfo{
-		HasTaken:    true,
-		HasReviewed: true,
+		HasTaken:        true,
+		HasReviewed:     true,
+		CurrentlyTaking: false,
 		ReviewContent: dto.Review{
 			Rating:             review.Rating,
 			Anonymous:          review.Anonymous,

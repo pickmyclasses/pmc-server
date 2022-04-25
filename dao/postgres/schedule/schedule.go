@@ -1,6 +1,8 @@
 package dao
 
 import (
+	"errors"
+	"gorm.io/gorm"
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
@@ -61,6 +63,9 @@ func GetScheduleByUserID(userID int64) ([]model.Schedule, error) {
 	var schedule []model.Schedule
 	res := postgres.DB.Where("user_id = ?", userID).Find(&schedule)
 	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return []model.Schedule{}, nil
+		}
 		return nil, shared.InternalErr{}
 	}
 	return schedule, nil

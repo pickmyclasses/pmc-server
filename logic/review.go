@@ -113,7 +113,52 @@ func GetReviewByID(reviewID string) (*model.Review, error) {
 	return reviewDao.GetReviewByID(idInt)
 }
 
-func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) error { // analyze keywords
+func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) error {
+	exist, err := reviewDao.CheckReviewExist(review.UserID, courseID)
+	if err != nil {
+		return err
+	}
+	if exist {
+		oldReview, err := reviewDao.GetReviewOfUserForACourse(review.UserID, courseID)
+		if err != nil {
+			return err
+		}
+		oldRating := oldReview.Rating
+		reviewModel := model.Review{
+			Rating:             review.Rating,
+			Anonymous:          review.Anonymous,
+			Recommended:        review.Recommended,
+			Comment:            review.Comment,
+			HourSpent:          review.HourSpent,
+			GradeReceived:      review.GradeReceived,
+			ExamHeavy:          review.IsExamHeavy,
+			HomeworkHeavy:      review.IsHomeworkHeavy,
+			ExtraCreditOffered: review.ExtraCreditOffered,
+			Tags:               review.Tags,
+			CourseID:           review.CourseID,
+			UserID:             review.UserID,
+		}
+		err = reviewDao.UpdateCourseReview(reviewModel)
+		if err != nil {
+			return err
+		}
+
+		oldCourseRating, err := reviewDao.GetCourseOverallRating(courseID)
+		if err != nil {
+			return nil
+		}
+		newRating := (oldCourseRating.OverAllRating - oldRating + review.Rating) / float32(oldCourseRating.TotalRatingCount)
+		err = reviewDao.UpdateCourseRating(model.OverAllRating{
+			CourseID:         courseID,
+			OverAllRating:    newRating,
+			TotalRatingCount: oldCourseRating.TotalRatingCount,
+		})
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
 	if extraInfoNeeded {
 		semester, err := semesterDao.GetSemesterByName(review.ClassSemester.Season, review.ClassSemester.Year)
 		if err != nil {
@@ -216,10 +261,6 @@ func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) e
 	}
 
 	return nil
-}
-
-func UpdateCourseReview(review model.ReviewParams) error {
-	return reviewDao.UpdateCourseReview(review)
 }
 
 func VoteCourseReview(userID, courseID, voterID int64, isUpvote bool) error {

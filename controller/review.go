@@ -9,7 +9,6 @@ import (
 	"strconv"
 
 	"pmc_server/logic"
-	"pmc_server/model"
 	"pmc_server/model/dto"
 	"pmc_server/shared"
 	. "pmc_server/shared"
@@ -128,23 +127,23 @@ func PostCourseReviewHandler(c *gin.Context) {
 // @Param object body model.ReviewParams true "Update review parameters"
 // @Success 200 {string} OK
 // @Router /course/review [put]
-func UpdateCourseReviewHandler(c *gin.Context) {
-	var param model.ReviewParams
-	if err := c.ShouldBind(&param); err != nil {
-		_ = c.Error(shared.ParamInsufficientErr{})
-		return
-	}
-
-	err := logic.UpdateCourseReview(param)
-	if err != nil {
-		_ = c.Error(err)
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		MESSAGE: SUCCESS,
-	})
-}
+//func UpdateCourseReviewHandler(c *gin.Context) {
+//	var param model.ReviewParams
+//	if err := c.ShouldBind(&param); err != nil {
+//		_ = c.Error(shared.ParamInsufficientErr{})
+//		return
+//	}
+//
+//	err := logic.PostCourseReview(param)
+//	if err != nil {
+//		_ = c.Error(err)
+//		return
+//	}
+//
+//	c.JSON(http.StatusOK, gin.H{
+//		MESSAGE: SUCCESS,
+//	})
+//}
 
 type VoteReview struct {
 	UserID   int64

@@ -102,7 +102,7 @@ func CreateCourseReview(review model.Review) error {
 	return nil
 }
 
-func UpdateCourseReview(review model.ReviewParams) error {
+func UpdateCourseReview(review model.Review) error {
 	var currentReview model.Review
 	res := postgres.DB.Where("course_id = ?, user_id = ?", review.CourseID, review.UserID).Find(&currentReview)
 	if res.RowsAffected == 0 || res.Error != nil {
@@ -110,13 +110,17 @@ func UpdateCourseReview(review model.ReviewParams) error {
 	}
 
 	currentReview.CreatedAt = time.Now()
-	currentReview.Anonymous = review.IsAnonymous
+	currentReview.Anonymous = review.Anonymous
 	currentReview.Rating = review.Rating
 	currentReview.Comment = review.Comment
-	currentReview.Pros = review.Pros
-	currentReview.Cons = review.Cons
 	currentReview.Recommended = review.Recommended
-	res = postgres.DB.Updates(&currentReview)
+	currentReview.Tags = review.Tags
+	currentReview.HomeworkHeavy = review.HomeworkHeavy
+	currentReview.ExamHeavy = review.ExamHeavy
+	currentReview.HourSpent = review.HourSpent
+	currentReview.GradeReceived = review.GradeReceived
+
+	res = postgres.DB.Save(&currentReview)
 	if res.RowsAffected == 0 || res.Error != nil {
 		return shared.InternalErr{}
 	}
@@ -133,4 +137,16 @@ func GetReviewOfUserForACourse(userID, courseID int64) (*model.Review, error) {
 		return nil, shared.InternalErr{}
 	}
 	return &review, nil
+}
+
+func CheckReviewExist(userID, courseID int64) (bool, error) {
+	var review model.Review
+	res := postgres.DB.Where("course_id = ? and user_id = ?", courseID, userID).First(&review)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, shared.InternalErr{}
+	}
+	return true, nil
 }

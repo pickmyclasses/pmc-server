@@ -303,10 +303,10 @@ func analyzeTags(contents []string) ([]Tag, error) {
 			continue
 		}
 
-		uri := fmt.Sprintf("https://api.twinword.com/api/sentiment/analyze/latest/?text=%s", text)
+		uri := fmt.Sprintf("https://twinword-sentiment-analysis.p.rapidapi.com/analyze/?text=%s", text)
 		req, _ := http.NewRequest("GET", uri, nil)
-		req.Header.Add("X-RapidAPI-Host", "api.twinword.com")
-		req.Header.Add("X-RapidAPI-Key", "aASFE865ImTtakxSwxZYWXFO8Jmm8ZtG955HM3hNiNIo7bU6IvLtFgvhY2f8jgSamzKlXfHnGISNKiv9eTo/pQ==")
+		req.Header.Add("X-RapidAPI-Host", "twinword-sentiment-analysis.p.rapidapi.com")
+		req.Header.Add("X-RapidAPI-Key", "40604cbd89msh0c3990b01aaabbap141213jsn02ce51189bf0")
 		res, _ := http.DefaultClient.Do(req)
 		defer res.Body.Close()
 
@@ -315,9 +315,8 @@ func analyzeTags(contents []string) ([]Tag, error) {
 		if err != nil {
 			continue
 		}
-		if result.ResultMessage != "Success" {
+		if result.ResultMessage == "Success" {
 			keywordType := -1
-			fmt.Println(result)
 			if result.Type == "neutral" || result.Type == "positive" {
 				keywordType = 1
 			} else {

@@ -175,7 +175,14 @@ func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) e
 
 	// insert tags
 	for _, tag := range tagList {
-		err := tagDao.CreateTagByCourseID(courseID, tag.Content, int32(tag.Type))
+		exit, err := tagDao.CheckIfTagExist(strings.TrimSpace(tag.Content))
+		if err != nil {
+			return err
+		}
+		if exit {
+			continue
+		}
+		err = tagDao.CreateTagByCourseID(courseID, tag.Content, int32(tag.Type))
 		if err != nil {
 			return err
 		}

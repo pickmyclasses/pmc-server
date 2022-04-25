@@ -1,7 +1,9 @@
 package dao
 
 import (
+	"errors"
 	"fmt"
+	"gorm.io/gorm"
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
@@ -86,4 +88,18 @@ func VoteForTagByID(tagID int32, userID int64) error {
 	}
 
 	return nil
+}
+
+func CheckIfTagExist(tagName string) (bool, error) {
+	var tag model.Tag
+	res := postgres.DB.Where("name = ?", tagName).First(&tag)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, shared.InternalErr{
+			Msg: "Unable to fetch tag",
+		}
+	}
+	return true, nil
 }

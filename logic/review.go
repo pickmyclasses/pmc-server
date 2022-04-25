@@ -179,14 +179,7 @@ func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) e
 
 	// insert tags
 	for _, tag := range tagList {
-		exit, err := tagDao.CheckIfTagExist(strings.TrimSpace(tag.Content))
-		if err != nil {
-			return err
-		}
-		if exit {
-			continue
-		}
-		err = tagDao.CreateTagByCourseID(courseID, tag.Content, int32(tag.Type))
+		err = tagDao.CreateTagByCourseID(courseID, strings.TrimSpace(tag.Content), int32(tag.Type))
 		if err != nil {
 			return err
 		}
@@ -277,7 +270,7 @@ func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	if review == nil {
+	if review != nil {
 		hasReviewed = true
 	}
 

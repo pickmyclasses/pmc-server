@@ -21,7 +21,7 @@ func PopulateRandomData() error {
 	}
 
 	var courseList []model.Course
-	res := db.Find(&courseList)
+	res := db.Where("catalog_course_name LIKE 'CS%' ").Find(&courseList)
 	if res.Error != nil {
 		return res.Error
 	}

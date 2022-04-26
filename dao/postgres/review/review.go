@@ -167,8 +167,9 @@ func UpdateReviewVotes(courseID, userID int64, voterID int64, isUpvote bool) err
 	if res.Error != nil {
 		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 			alreadyVoted = false
+		} else {
+			return shared.InternalErr{}
 		}
-		return shared.InternalErr{}
 	}
 
 	if alreadyVoted {

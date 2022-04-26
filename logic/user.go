@@ -342,19 +342,11 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		courseDtoList := make([]dto.Course, 0)
 
 		for cid, _ := range courseSetList {
-
 			courseEntity, err := buildCourseDtoEntity(cid)
 			if err != nil {
 				return nil, err
 			}
 			courseDtoList = append(courseDtoList, *courseEntity)
-		}
-
-		if k == "General Education Courses" {
-			chem, _ := buildCourseDtoEntity(22417)
-			auth, _ := buildCourseDtoEntity(21538)
-			courseDtoList[0] = *chem
-			courseDtoList[1] = *auth
 		}
 
 		courseCatalogList = append(courseCatalogList, CourseCatalog{

@@ -161,6 +161,41 @@ func UpdateReviewVotes(courseID, userID int64, voterID int64, isUpvote bool) err
 		return shared.InternalErr{}
 	}
 
+	alreadyVoted := true
+	var userVotedReview model.UserVotedReview
+	res = postgres.DB.Where("user_id = ? and reviewer_id = ? and course_id = ?", voterID, userID, courseID).First(&userVotedReview)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			alreadyVoted = false
+		}
+		return shared.InternalErr{}
+	}
+
+	if alreadyVoted {
+		if userVotedReview.IsUpvote == isUpvote {
+			return shared.ResourceConflictErr{}
+		}
+		// if already liked/disliked, update the original
+		userVotedReview.IsUpvote = isUpvote
+		res = postgres.DB.Save(&userVotedReview)
+
+		// update the like, disliked count for review
+		if isUpvote == false {
+			review.LikeCount--
+			review.DislikeCount++
+		} else {
+			review.LikeCount++
+			review.DislikeCount--
+		}
+
+		res = postgres.DB.Save(&review)
+		if res.Error != nil {
+			return shared.InternalErr{}
+		}
+
+		return nil
+	}
+
 	// update the vote count
 	if isUpvote {
 		review.LikeCount += 1
@@ -185,4 +220,16 @@ func UpdateReviewVotes(courseID, userID int64, voterID int64, isUpvote bool) err
 		return shared.InternalErr{}
 	}
 	return nil
+}
+
+func GetUserVotedReviews(userID int64, courseID int64) ([]model.UserVotedReview, error) {
+	var reviewHistory []model.UserVotedReview
+	res := postgres.DB.Where("user_id = ? and course_id = ?", userID, courseID).Find(&reviewHistory)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return []model.UserVotedReview{}, nil
+		}
+		return nil, shared.InternalErr{}
+	}
+	return reviewHistory, nil
 }

@@ -280,10 +280,17 @@ func VoteCourseReview(userID, courseID, voterID int64, isUpvote bool) error {
 }
 
 type UserReviewInfo struct {
-	HasTaken        bool       `json:"hasTaken"`
-	HasReviewed     bool       `json:"hasReviewed"`
-	CurrentlyTaking bool       `json:"currentlyTaking"`
-	ReviewContent   dto.Review `json:"reviewContent"`
+	HasTaken        bool          `json:"hasTaken"`
+	HasReviewed     bool          `json:"hasReviewed"`
+	CurrentlyTaking bool          `json:"currentlyTaking"`
+	ReviewContent   dto.Review    `json:"reviewContent"`
+	VotedReviews    []VotedReview `json:"votedReviews"`
+}
+
+type VotedReview struct {
+	ReviewerID int64 `json:"reviewerID"`
+	CourseID   int64 `json:"courseID"`
+	IsUpvote   bool  `json:"isUpvote"`
 }
 
 func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
@@ -361,6 +368,23 @@ func GetUserReviewInfo(userID, courseID int64) (*UserReviewInfo, error) {
 			Tags:           review.Tags,
 		}
 	}
+
+	voteHistory, err := reviewDao.GetUserVotedReviews(userID, courseID)
+	if err != nil {
+		return nil, err
+	}
+
+	votedReviewList := make([]VotedReview, 0)
+	for _, his := range voteHistory {
+		votedReviewList = append(votedReviewList, VotedReview{
+			ReviewerID: his.ReviewerID,
+			CourseID:   his.CourseID,
+			IsUpvote:   his.IsUpvote,
+		})
+	}
+
+	info.VotedReviews = votedReviewList
+
 	return info, nil
 }
 

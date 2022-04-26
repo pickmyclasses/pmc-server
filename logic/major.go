@@ -173,7 +173,9 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 		return nil, err
 	}
 
-	fmt.Println(directCourseSetList)
+	for _, c := range directCourseSetList {
+		c.CourseIDList = removeDuplicateInt(c.CourseIDList)
+	}
 
 	courseSetDtoList := make([]CourseSet, 0)
 	for _, set := range directCourseSetList {
@@ -185,6 +187,7 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 
 		subsetDtoList := make([]CourseSet, 0)
 		for _, subset := range subsetList {
+			subset.CourseIDList = removeDuplicateInt(subset.CourseIDList)
 			subsetDto := CourseSet{
 				ID:           int32(subset.ID),
 				SetName:      subset.Name,
@@ -203,6 +206,7 @@ func GetMajorCourseSets(collegeID int32, majorName string) ([]CourseSet, error) 
 			if len(thirdLayer) != 0 {
 				thirdLayerDtoList := make([]CourseSet, 0)
 				for _, l := range thirdLayer {
+					l.CourseIDList = removeDuplicateInt(l.CourseIDList)
 					thirdLayerDtoList = append(thirdLayerDtoList, CourseSet{
 						ID:           int32(l.ID),
 						SetName:      l.Name,
@@ -239,10 +243,6 @@ func BuildCourseDto(courseIDList []int64) ([]dto.Course, error) {
 		if err != nil {
 			return nil, err
 		}
-		//classList, err := classDao.GetClassByCourseID(id)
-		//if err != nil {
-		//	return nil, err
-		//}
 
 		rating, err := reviewDao.GetCourseOverallRating(id)
 		if err != nil {
@@ -280,4 +280,16 @@ func BuildCourseDto(courseIDList []int64) ([]dto.Course, error) {
 		})
 	}
 	return courseEntityList, nil
+}
+
+func removeDuplicateInt(intSlice []int64) []int64 {
+	allKeys := make(map[int64]bool)
+	var list []int64
+	for _, item := range intSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
 }

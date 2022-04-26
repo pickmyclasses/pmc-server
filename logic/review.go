@@ -47,6 +47,14 @@ func GetCourseReviewList(pn, pSize int, courseID string) (*dto.ReviewList, error
 		OverallRating: rating.OverAllRating,
 	}
 
+	var diff float32
+	if len(reviewList) == 0 {
+		diff = 0
+	} else {
+		diff = calcDifficulty(reviewList)
+	}
+	reviewRsp.Difficulty = diff
+
 	for _, review := range reviewList {
 		var username string
 		userInfo, err := userDao.GetUserByID(review.UserID)
@@ -402,4 +410,51 @@ func analyzeTags(contents []string) ([]Tag, error) {
 	}
 
 	return keywordList, nil
+}
+
+func calcDifficulty(reviews []model.Review) float32 {
+	var diff float32
+	for _, review := range reviews {
+		if review.HomeworkHeavy {
+			diff += 1
+		}
+		if review.ExamHeavy {
+			diff += 1
+		}
+		if review.HourSpent == 2 {
+			diff += 1
+		}
+		grade, _ := getCourseNumberGrade(review.GradeReceived)
+		if review.HourSpent == 2 && grade < 3.0 {
+			diff += 2
+		}
+	}
+	if diff < 2.0*float32(len(reviews)) {
+		diff = 2.0 * float32(len(reviews))
+	}
+	return diff / float32(len(reviews))
+}
+
+func getCourseNumberGrade(grade string) (float32, error) {
+	if grade == "" {
+		return 0, nil
+	}
+	mapping := map[string]float32{
+		"A":  4.0,
+		"A-": 3.7,
+		"B+": 3.3,
+		"B":  3.0,
+		"B-": 2.7,
+		"C+": 2.3,
+		"C":  2.0,
+		"C-": 1.7,
+		"D+": 1.3,
+		"D":  1.0,
+		"E":  0.0,
+		"F":  0.0,
+	}
+	if _, ok := mapping[grade]; ok {
+		return mapping[grade], nil
+	}
+	return 0, shared.InfoUnmatchedErr{}
 }

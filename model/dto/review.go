@@ -8,6 +8,7 @@ type ReviewList struct {
 	Total         int64    `json:"total"`         // The total number of reviews of the course
 	Reviews       []Review `json:"reviews"`       // The review set
 	OverallRating float32  `json:"overallRating"` // The over all rating of the course
+	Difficulty    float32  `json:"difficulty"`
 }
 
 type Review struct {

@@ -416,12 +416,15 @@ func calcDifficulty(reviews []model.Review) float32 {
 	var diff float32
 	for _, review := range reviews {
 		if review.HomeworkHeavy {
-			diff += 1
+			diff += 0.5
 		}
 		if review.ExamHeavy {
 			diff += 1
 		}
 		if review.HourSpent == 2 {
+			diff += 0.5
+		}
+		if review.Rating < 3 {
 			diff += 1
 		}
 		grade, _ := getCourseNumberGrade(review.GradeReceived)

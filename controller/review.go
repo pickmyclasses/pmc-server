@@ -146,9 +146,9 @@ func PostCourseReviewHandler(c *gin.Context) {
 //}
 
 type VoteReview struct {
-	UserID   int64
-	VoterID  int64
-	IsUpvote bool
+	UserID   int64 `json:"userID"`
+	VoterID  int64 `json:"voterID"`
+	IsUpvote bool  `json:"isUpvote"`
 }
 
 func VoteCourseReviewHandler(c *gin.Context) {
@@ -158,7 +158,7 @@ func VoteCourseReviewHandler(c *gin.Context) {
 		return
 	}
 
-	courseID := c.Query("id")
+	courseID := c.Param("id")
 	courseIDInt, err := strconv.Atoi(courseID)
 	if err != nil {
 		_ = c.Error(shared.ParamIncompatibleErr{})

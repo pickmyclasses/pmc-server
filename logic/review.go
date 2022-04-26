@@ -264,6 +264,10 @@ func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) e
 }
 
 func VoteCourseReview(userID, courseID, voterID int64, isUpvote bool) error {
+	err := reviewDao.UpdateReviewVotes(courseID, userID, voterID, isUpvote)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

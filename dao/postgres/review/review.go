@@ -150,3 +150,39 @@ func CheckReviewExist(userID, courseID int64) (bool, error) {
 	}
 	return true, nil
 }
+
+func UpdateReviewVotes(courseID, userID int64, voterID int64, isUpvote bool) error {
+	var review model.Review
+	res := postgres.DB.Where("course_id  = ? and user_id = ?", courseID, userID).First(&review)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return shared.NoPreviousRecordErr{}
+		}
+		return shared.InternalErr{}
+	}
+
+	// update the vote count
+	if isUpvote {
+		review.LikeCount += 1
+	} else {
+		review.DislikeCount += 1
+	}
+
+	res = postgres.DB.Save(&review)
+	if res.Error != nil {
+		return shared.InternalErr{}
+	}
+
+	// update the user voted history
+	userVoted := model.UserVotedReview{
+		UserID:     voterID,
+		ReviewerID: userID,
+		CourseID:   courseID,
+		IsUpvote:   isUpvote,
+	}
+	res = postgres.DB.Create(&userVoted)
+	if res.Error != nil || res.RowsAffected == 0 {
+		return shared.InternalErr{}
+	}
+	return nil
+}

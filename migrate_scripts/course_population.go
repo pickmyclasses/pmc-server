@@ -20,8 +20,8 @@ func PopulateRandomData() error {
 		return err
 	}
 
-	var courseList []model.Course
-	res := db.Where("catalog_course_name LIKE 'CS%' ").Find(&courseList)
+	var course model.Course
+	res := db.Where("id =? ", 28354).Find(&course)
 	if res.Error != nil {
 		return res.Error
 	}
@@ -32,19 +32,17 @@ func PopulateRandomData() error {
 		return res.Error
 	}
 
-	for _, course := range courseList {
-		for _, semester := range semesterList {
-			rand.Seed(time.Now().UnixNano())
-			randomNum := rand.Intn(140-20) + 20
-			coursePop := model.CoursePopularity{
-				CourseID:   course.ID,
-				Popularity: int32(randomNum),
-				SemesterID: int32(semester.ID),
-			}
-			res = db.Create(&coursePop)
-			if res.Error != nil {
-				return res.Error
-			}
+	for _, semester := range semesterList {
+		rand.Seed(time.Now().UnixNano())
+		randomNum := rand.Intn(140-20) + 20
+		coursePop := model.CoursePopularity{
+			CourseID:   course.ID,
+			Popularity: int32(randomNum),
+			SemesterID: int32(semester.ID),
+		}
+		res = db.Create(&coursePop)
+		if res.Error != nil {
+			return res.Error
 		}
 	}
 	return nil

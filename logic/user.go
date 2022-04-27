@@ -6,6 +6,7 @@ package logic
 
 import (
 	"errors"
+	"sort"
 	"strconv"
 
 	collegeDao "pmc_server/dao/postgres/college"
@@ -327,42 +328,41 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 	// calculate the average rating and give the courses a score, we only need top 8 courses in all the catalogs
 	courseCatalogList := make([]CourseCatalog, 0)
 	for k, v := range idScoreMapping {
-		courseSetList := make(map[int64]float32)
-		for _, id := range v {
-			rating, _ := reviewDao.GetCourseOverallRating(id)
-			score := (rating.OverAllRating + 15) / float32(rating.TotalRatingCount+5)
-			if len(courseSetList) < 8 {
-				courseSetList[id] = score
-			} else {
-				lowestVal := shared.MAX
-				var lowestIdx int64
-				for kk, vv := range courseSetList {
-					if float64(vv) < lowestVal {
-						lowestVal = float64(vv)
-						lowestIdx = kk
-					}
-				}
-				if float64(score) > lowestVal {
-					delete(courseSetList, lowestIdx)
-					courseSetList[id] = score
-				}
-			}
+		type kv struct {
+			Cid   int64
+			Score float32
 		}
 
-		courseDtoList := make([]dto.Course, 0)
-
-		for cid, _ := range courseSetList {
-			courseEntity, err := buildCourseDtoEntity(cid)
-			if err != nil {
-				return nil, err
-			}
-
+		kvList := make([]kv, 0)
+		for _, id := range v {
 			for _, h := range history {
-				if cid == h.CourseID {
+				if id == h.CourseID {
 					continue
 				}
 			}
 
+			rating, _ := reviewDao.GetCourseOverallRating(id)
+			score := (rating.OverAllRating + 15) / float32(rating.TotalRatingCount+5)
+			if rating.TotalRatingCount == 0 {
+				score = 0
+			}
+			kvList = append(kvList, kv{
+				Cid:   id,
+				Score: score,
+			})
+		}
+
+		// sort the slice
+		sort.Slice(kvList, func(i, j int) bool {
+			return kvList[i].Score > kvList[j].Score
+		})
+
+		courseDtoList := make([]dto.Course, 0)
+		for i := 0; i < 8; i++ {
+			courseEntity, err := buildCourseDtoEntity(kvList[i].Cid)
+			if err != nil {
+				return nil, err
+			}
 			courseDtoList = append(courseDtoList, *courseEntity)
 		}
 

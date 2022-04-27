@@ -348,10 +348,11 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		}
 
 		kvList = removeDuplicate(kvList)
-		for _, kv := range kvList {
+
+		for i := 0; i < len(kvList); i++ {
 			for _, h := range history {
-				if kv.Cid == h.CourseID {
-					kv.Score = -1
+				if kvList[i].Cid == h.CourseID {
+					kvList[i].Score = -1
 				}
 			}
 		}

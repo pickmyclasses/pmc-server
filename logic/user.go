@@ -335,11 +335,6 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 	for k, v := range idScoreMapping {
 		kvList := make([]kv, 0)
 		for _, id := range v {
-			for _, h := range history {
-				if id == h.CourseID {
-					continue
-				}
-			}
 
 			rating, _ := reviewDao.GetCourseOverallRating(id)
 			score := (rating.OverAllRating + 15) / float32(rating.TotalRatingCount+5)
@@ -353,6 +348,13 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		}
 
 		kvList = removeDuplicate(kvList)
+		for _, kv := range kvList {
+			for _, h := range history {
+				if kv.Cid == h.CourseID {
+					kv.Score = -1
+				}
+			}
+		}
 
 		// sort the slice
 		sort.Slice(kvList, func(i, j int) bool {

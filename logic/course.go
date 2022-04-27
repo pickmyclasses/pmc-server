@@ -91,7 +91,11 @@ func GetCourseInfo(id string, uid int64) (*dto.Course, error) {
 		return nil, err
 	}
 
-	keywordList, _ := getCourseKeywords(course.Description)
+	keywordList, err := getCourseKeywords(course.Description)
+	if err != nil {
+		return nil, err
+	}
+
 	keywordStrList := make([]string, 0)
 	for _, k := range keywordList {
 		keywordStrList = append(keywordStrList, k.Content)
@@ -120,8 +124,6 @@ func GetCourseInfo(id string, uid int64) (*dto.Course, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// get keywords
 
 	courseDto := &dto.Course{
 		CourseID:           course.ID,
@@ -447,14 +449,20 @@ func getCourseKeywords(content string) ([]Keyword, error) {
 	}
 
 	uri := fmt.Sprintf("https://twinword-topic-tagging.p.rapidapi.com/generate/?text=%s", text)
-	req, _ := http.NewRequest("GET", uri, nil)
+	req, err := http.NewRequest("GET", uri, nil)
+	if err != nil {
+		return []Keyword{}, nil
+	}
 	req.Header.Add("X-RapidAPI-Host", "twinword-topic-tagging.p.rapidapi.com")
 	req.Header.Add("X-RapidAPI-Key", "40604cbd89msh0c3990b01aaabbap141213jsn02ce51189bf0")
-	res, _ := http.DefaultClient.Do(req)
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return []Keyword{}, nil
+	}
 	defer res.Body.Close()
 
 	var resp TwinwordKeywordResp
-	err := json.NewDecoder(res.Body).Decode(&resp)
+	err = json.NewDecoder(res.Body).Decode(&resp)
 	if err != nil {
 		return []Keyword{}, nil
 	}

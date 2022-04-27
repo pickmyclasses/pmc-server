@@ -18,4 +18,5 @@ type Course struct {
 	OverallRating      float32       `json:"overallRating"` // The overall rating of the class
 	Tags               []model.Tag   `json:"tags"`
 	DegreeCatalogs     [][]string    `json:"degreeCatalogs"`
+	KeywordList        []string      `json:"keywordList"`
 }

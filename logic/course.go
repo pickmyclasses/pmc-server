@@ -1,11 +1,14 @@
 package logic
 
 import (
+	"encoding/json"
 	"fmt"
+	"net/http"
 	majorDao "pmc_server/dao/postgres/major"
 	dao "pmc_server/dao/postgres/user"
 	"pmc_server/init/postgres"
 	"strconv"
+	"strings"
 
 	"pmc_server/dao/aura/course"
 	courseEsDao "pmc_server/dao/es/course"
@@ -88,6 +91,12 @@ func GetCourseInfo(id string, uid int64) (*dto.Course, error) {
 		return nil, err
 	}
 
+	keywordList, _ := getCourseKeywords(course.Description)
+	keywordStrList := make([]string, 0)
+	for _, k := range keywordList {
+		keywordStrList = append(keywordStrList, k.Content)
+	}
+
 	classList, err := classDao.GetClassByCourseID(course.ID)
 	if err != nil {
 		return nil, err
@@ -129,6 +138,7 @@ func GetCourseInfo(id string, uid int64) (*dto.Course, error) {
 		Classes:            *classList,
 		OverallRating:      rating.OverAllRating,
 		Tags:               tagList,
+		KeywordList:        keywordStrList,
 	}
 
 	// check if the course is in user's major, if yes, add an extra attachment to it
@@ -414,4 +424,55 @@ func GetCourseByName(name string) (int64, error) {
 	}
 
 	return entity.ID, nil
+}
+
+type Keyword struct {
+	Content string
+	Weight  float32
+}
+
+type TwinwordKeywordResp struct {
+	Keyword    map[string]int     `json:"keyword"`
+	ResultCode string             `json:"result_code"`
+	Topic      map[string]float32 `json:"topic"`
+}
+
+func getCourseKeywords(content string) ([]Keyword, error) {
+	keywordList := make([]Keyword, 0)
+
+	text := content
+	text = strings.ReplaceAll(strings.TrimSpace(text), " ", "%20")
+	if text == "" {
+		return []Keyword{}, nil
+	}
+
+	uri := fmt.Sprintf("https://twinword-topic-tagging.p.rapidapi.com/generate/?text=%s", text)
+	req, _ := http.NewRequest("GET", uri, nil)
+	req.Header.Add("X-RapidAPI-Host", "twinword-topic-tagging.p.rapidapi.com")
+	req.Header.Add("X-RapidAPI-Key", "40604cbd89msh0c3990b01aaabbap141213jsn02ce51189bf0")
+	res, _ := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+
+	var resp TwinwordKeywordResp
+	err := json.NewDecoder(res.Body).Decode(&resp)
+	if err != nil {
+		return []Keyword{}, nil
+	}
+
+	if resp.ResultCode == "200" {
+		for k, v := range resp.Keyword {
+			keywordList = append(keywordList, Keyword{
+				Content: k,
+				Weight:  float32(v),
+			})
+		}
+		for k, v := range resp.Topic {
+			keywordList = append(keywordList, Keyword{
+				Content: k,
+				Weight:  v,
+			})
+		}
+	}
+
+	return keywordList, nil
 }

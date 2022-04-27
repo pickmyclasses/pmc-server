@@ -6,6 +6,7 @@ package logic
 
 import (
 	"errors"
+	collegeDao "pmc_server/dao/postgres/college"
 	historyDao "pmc_server/dao/postgres/history"
 	"strconv"
 
@@ -70,21 +71,29 @@ func Login(param *model.LoginParams) (*dto.User, error) {
 		return nil, err
 	}
 
-	// JWT token for the user to be continuly logged in
+	// JWT token for the user to be continually logged in
 	token, err := jwt.GenToken(user.UserID, user.FirstName, user.LastName)
 	if err != nil {
 		return nil, err
 	}
+
+	college, err := collegeDao.GetCollegeByID(int32(user.CollegeID))
+	if err != nil {
+		return nil, err
+	}
+
 	return &dto.User{
-		ID:         user.ID,
-		Token:      token,
-		FirstName:  user.FirstName,
-		LastName:   user.LastName,
-		Role:       user.Role,
-		CollegeID:  int32(user.CollegeID),
-		Major:      user.Major,
-		Emphasis:   user.Emphasis,
-		SchoolYear: user.AcademicYear,
+		ID:          user.ID,
+		Token:       token,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		Role:        user.Role,
+		CollegeID:   int32(user.CollegeID),
+		Major:       user.Major,
+		Emphasis:    user.Emphasis,
+		SchoolYear:  user.AcademicYear,
+		CollegeName: college.Name,
+		Email:       user.Email,
 	}, nil
 }
 
@@ -406,4 +415,36 @@ func buildCourseDtoEntity(cid int64) (*dto.Course, error) {
 		OverallRating:      rating.OverAllRating,
 		Tags:               tags,
 	}, nil
+}
+
+func GetUserBookmarks(userID int64) ([]dto.Course, error) {
+	courseIDList, err := dao.GetUserBookmarks(userID)
+	if err != nil {
+		return nil, err
+	}
+	courseDtoList := make([]dto.Course, 0)
+	for _, id := range courseIDList {
+		entity, err := buildCourseDtoEntity(id)
+		if err != nil {
+			continue
+		}
+		courseDtoList = append(courseDtoList, *entity)
+	}
+	return courseDtoList, nil
+}
+
+func PostUserBookmark(userID, courseID int64) error {
+	err := dao.AddUserBookmark(userID, courseID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteUserBookmark(userID, courseID int64) error {
+	err := dao.DeleteUserBookmark(userID, courseID)
+	if err != nil {
+		return err
+	}
+	return nil
 }

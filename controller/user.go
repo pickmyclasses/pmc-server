@@ -219,3 +219,82 @@ func GetUserRecommendCourseHandler(ctx *gin.Context) {
 		DATA: recommendCourses,
 	})
 }
+
+func GetUserBookmark(ctx *gin.Context) {
+	id := ctx.Param("id")
+	uid, err := strconv.Atoi(id)
+
+	if err != nil {
+		_ = ctx.Error(shared.ParamIncompatibleErr{
+			Msg: "Unable to process the given user ID",
+		})
+	}
+
+	bookmarkList, err := logic.GetUserBookmarks(int64(uid))
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		DATA: bookmarkList,
+	})
+}
+
+type BookmarkParam struct {
+	CourseID int64 `json:"courseID"`
+}
+
+func AddUserBookmark(ctx *gin.Context) {
+	id := ctx.Param("id")
+	uid, err := strconv.Atoi(id)
+
+	if err != nil {
+		_ = ctx.Error(shared.ParamIncompatibleErr{
+			Msg: "Unable to process the given user ID",
+		})
+	}
+
+	var param BookmarkParam
+	if err := ctx.ShouldBindJSON(&param); err != nil {
+		_ = ctx.Error(shared.ParamInsufficientErr{})
+		return
+	}
+
+	err = logic.PostUserBookmark(int64(uid), param.CourseID)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
+	})
+}
+
+func DeleteUserBookmark(ctx *gin.Context) {
+	id := ctx.Param("id")
+	uid, err := strconv.Atoi(id)
+
+	if err != nil {
+		_ = ctx.Error(shared.ParamIncompatibleErr{
+			Msg: "Unable to process the given user ID",
+		})
+	}
+
+	var param BookmarkParam
+	if err := ctx.ShouldBindJSON(&param); err != nil {
+		_ = ctx.Error(shared.ParamInsufficientErr{})
+		return
+	}
+
+	err = logic.DeleteUserBookmark(int64(uid), param.CourseID)
+	if err != nil {
+		_ = ctx.Error(err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		MESSAGE: SUCCESS,
+	})
+}

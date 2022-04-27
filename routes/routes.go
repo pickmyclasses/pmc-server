@@ -37,6 +37,9 @@ func SetUp(mode string) *gin.Engine {
 		r.PUT("/user/history", controller.RemoveUserHistoryHandler)
 		r.POST("/user/major", controller.PostUserMajorHandler)
 		r.GET("/user/:id/recommend", controller.GetUserRecommendCourseHandler)
+		r.GET("/user/:id/bookmark", controller.GetUserBookmark)
+		r.POST("/user/:id/bookmark", controller.AddUserBookmark)
+		r.PUT("/user/:id/bookmark", controller.DeleteUserBookmark)
 
 		// for schedule
 		r.POST("/schedule", controller.AddUserScheduleHandler)

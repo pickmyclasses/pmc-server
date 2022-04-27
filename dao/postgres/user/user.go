@@ -152,3 +152,40 @@ func UpdateUserMajorAndYear(userID int64, majorName, emphasis string, schoolYear
 
 	return &user, nil
 }
+
+func GetUserBookmarks(userID int64) ([]int64, error) {
+	var courseIDList []int64
+	res := postgres.DB.Model(&model.Bookmark{}).Where("user_id = ?", userID).Select("marked_course_id").Find(&courseIDList)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return []int64{}, nil
+		}
+		return nil, shared.InternalErr{}
+	}
+
+	return courseIDList, nil
+}
+
+func AddUserBookmark(userID, courseID int64) error {
+	bookmark := model.Bookmark{
+		UserID:   userID,
+		CourseID: courseID,
+	}
+	res := postgres.DB.Model(&model.Bookmark{}).Create(&bookmark)
+	if res.Error != nil || res.RowsAffected == 0 {
+		return shared.InternalErr{}
+	}
+	return nil
+}
+
+func DeleteUserBookmark(userID, courseID int64) error {
+	var bookmark model.Bookmark
+	res := postgres.DB.Model(model.Bookmark{}).Where("user_id = ? and marked_course_id = ?", userID, courseID).Delete(&bookmark)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return shared.InternalErr{}
+	}
+	return nil
+}

@@ -129,6 +129,7 @@ func PostCourseReview(review dto.Review, courseID int64, extraInfoNeeded bool) e
 	if exist {
 		oldReview, err := reviewDao.GetReviewOfUserForACourse(review.UserID, courseID)
 		if err != nil {
+			fmt.Println("error is at 0 ------")
 			return err
 		}
 		oldRating := oldReview.Rating

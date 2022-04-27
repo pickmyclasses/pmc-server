@@ -4,12 +4,11 @@ import (
 	"errors"
 	"time"
 
+	"gorm.io/gorm"
+
 	"pmc_server/init/postgres"
 	"pmc_server/model"
 	"pmc_server/shared"
-	. "pmc_server/shared"
-
-	"gorm.io/gorm"
 )
 
 func GetCourseOverallRating(courseID int64) (*model.OverAllRating, error) {
@@ -44,7 +43,7 @@ func CreateCourseRating(CourseID int64) (*model.OverAllRating, error) {
 }
 
 func UpdateCourseRating(rating model.OverAllRating) error {
-	res := postgres.DB.Model(&rating).
+	res := postgres.DB.Model(&rating).Where("course_id = ?", rating.CourseID).
 		Updates(map[string]interface{}{"over_all_rating": rating.OverAllRating, "total_rating_count": rating.TotalRatingCount})
 
 	if res.Error != nil || res.RowsAffected == 0 {
@@ -65,7 +64,7 @@ func GetReviewTotalByCourseID(courseID int) (int64, error) {
 func GetPaginatedReviewsByCourseID(courseID, pn, pSize int) ([]model.Review, error) {
 	var reviewList []model.Review
 
-	res := postgres.DB.Scopes(Paginate(pn, pSize)).Where("course_id = ?", courseID).Find(&reviewList)
+	res := postgres.DB.Scopes(shared.Paginate(pn, pSize)).Where("course_id = ?", courseID).Find(&reviewList)
 	if res.Error != nil {
 		return make([]model.Review, 0), shared.InternalErr{}
 	}
@@ -104,7 +103,7 @@ func CreateCourseReview(review model.Review) error {
 
 func UpdateCourseReview(review model.Review) error {
 	var currentReview model.Review
-	res := postgres.DB.Where("course_id = ?, user_id = ?", review.CourseID, review.UserID).Find(&currentReview)
+	res := postgres.DB.Where("course_id = ? and user_id = ?", review.CourseID, review.UserID).Find(&currentReview)
 	if res.RowsAffected == 0 || res.Error != nil {
 		return shared.InternalErr{}
 	}

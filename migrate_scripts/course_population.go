@@ -21,7 +21,7 @@ func PopulateRandomData() error {
 	}
 
 	var course model.Course
-	res := db.Where("id =? ", 28354).Find(&course)
+	res := db.Where("id =? ", 31826).Find(&course)
 	if res.Error != nil {
 		return res.Error
 	}

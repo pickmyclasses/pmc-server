@@ -252,6 +252,11 @@ func PostUserMajor(userID int64, majorName, emphasis string, schoolYear string) 
 	}, nil
 }
 
+type kv struct {
+	Cid   int64
+	Score float32
+}
+
 // RecommendCourses calculates the highest rated courses in each catalog
 // pick the top 8 courses in each catalog, and return to the user
 func RecommendCourses(userID int64) (*Recommendation, error) {
@@ -328,11 +333,6 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 	// calculate the average rating and give the courses a score, we only need top 8 courses in all the catalogs
 	courseCatalogList := make([]CourseCatalog, 0)
 	for k, v := range idScoreMapping {
-		type kv struct {
-			Cid   int64
-			Score float32
-		}
-
 		kvList := make([]kv, 0)
 		for _, id := range v {
 			for _, h := range history {
@@ -351,6 +351,8 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 				Score: score,
 			})
 		}
+
+		kvList = removeDuplicate(kvList)
 
 		// sort the slice
 		sort.Slice(kvList, func(i, j int) bool {
@@ -373,6 +375,18 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 	}
 
 	return &Recommendation{CourseCatalogList: courseCatalogList}, nil
+}
+
+func removeDuplicate(kvList []kv) []kv {
+	allKeys := make(map[int64]bool)
+	var list []kv
+	for _, item := range kvList {
+		if _, value := allKeys[item.Cid]; !value {
+			allKeys[item.Cid] = true
+			list = append(list, item)
+		}
+	}
+	return list
 }
 
 // buildCourseDtoEntity is a helper function to build a single course dto entity

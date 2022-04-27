@@ -6,11 +6,11 @@ package logic
 
 import (
 	"errors"
-	collegeDao "pmc_server/dao/postgres/college"
-	historyDao "pmc_server/dao/postgres/history"
 	"strconv"
 
+	collegeDao "pmc_server/dao/postgres/college"
 	courseDao "pmc_server/dao/postgres/course"
+	historyDao "pmc_server/dao/postgres/history"
 	majorDao "pmc_server/dao/postgres/major"
 	reviewDao "pmc_server/dao/postgres/review"
 	tagDao "pmc_server/dao/postgres/tag"
@@ -260,7 +260,7 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 	}
 
 	// skip the courses that are already in user's history
-	_, err = historyDao.GetUserCourseHistoryList(userID)
+	history, err := historyDao.GetUserCourseHistoryList(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -269,6 +269,7 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 		CollegeID: int32(user.CollegeID),
 		Querier:   postgres.DB,
 	}
+
 	major, err := majorQ.QueryMajorByName(user.Major)
 	if err != nil {
 		return nil, err
@@ -355,6 +356,13 @@ func RecommendCourses(userID int64) (*Recommendation, error) {
 			if err != nil {
 				return nil, err
 			}
+
+			for _, h := range history {
+				if cid == h.CourseID {
+					continue
+				}
+			}
+
 			courseDtoList = append(courseDtoList, *courseEntity)
 		}
 

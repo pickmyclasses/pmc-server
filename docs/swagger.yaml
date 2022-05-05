@@ -1,0 +1,575 @@
+basePath: /user
+definitions:
+  dto.Class:
+    properties:
+      component:
+        type: string
+      course_catalog_name:
+        type: string
+      course_id:
+        type: integer
+      course_title:
+        type: string
+      end_time:
+        type: string
+      id:
+        type: integer
+      instructors:
+        type: string
+      location:
+        type: string
+      note:
+        type: string
+      number:
+        type: string
+      offer_date:
+        type: string
+      recommendation_score:
+        type: integer
+      seat_available:
+        type: integer
+      semester:
+        type: string
+      session:
+        type: string
+      start_time:
+        type: string
+      type:
+        type: string
+      unit:
+        type: string
+      wait_list:
+        type: string
+      year:
+        type: string
+    type: object
+  dto.Course:
+    properties:
+      classes:
+        description: The classes (sessions) of the given course
+        items:
+          $ref: '#/definitions/model.Class'
+        type: array
+      course:
+        $ref: '#/definitions/model.Course'
+        description: The course info of the given course ID
+    type: object
+  dto.Review:
+    properties:
+      anonymous:
+        description: Is the review posted anonymously
+        type: boolean
+      comment:
+        description: The overall comment
+        type: string
+      cons:
+        description: The written text under cons
+        type: string
+      course_id:
+        description: The course ID of the review
+        type: integer
+      pros:
+        description: The written text under pros
+        type: string
+      rating:
+        description: The giving rating of the review
+        type: number
+      recommended:
+        description: Is the review recommend
+        type: boolean
+      user_id:
+        description: The userID who posted this review
+        type: integer
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  model.Class:
+    properties:
+      component:
+        type: string
+      course:
+        $ref: '#/definitions/model.Course'
+      courseCatalogName:
+        type: string
+      courseID:
+        type: integer
+      courseTitle:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      endTime:
+        type: string
+      id:
+        type: integer
+      instructors:
+        type: string
+      isDeleted:
+        type: boolean
+      location:
+        type: string
+      note:
+        type: string
+      number:
+        type: string
+      offerDate:
+        type: string
+      recommendationScore:
+        type: integer
+      seatAvailable:
+        type: integer
+      semester:
+        type: string
+      session:
+        type: string
+      startTime:
+        type: string
+      type:
+        type: string
+      unit:
+        type: string
+      waitList:
+        type: string
+      year:
+        type: string
+    type: object
+  model.College:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      isDeleted:
+        type: boolean
+      name:
+        type: string
+    type: object
+  model.Course:
+    properties:
+      associatedCourseID:
+        type: integer
+      catalogCourseName:
+        type: string
+      component:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      designationCatalog:
+        type: string
+      fixedCredit:
+        type: boolean
+      id:
+        type: integer
+      isDeleted:
+        type: boolean
+      isHonor:
+        type: boolean
+      maxCredit:
+        type: string
+      minCredit:
+        type: string
+      prerequisites:
+        type: string
+      subject:
+        $ref: '#/definitions/model.Subject'
+      subjectID:
+        type: integer
+      title:
+        type: string
+    type: object
+  model.LoginParams:
+    properties:
+      email:
+        description: User Email
+        type: string
+      password:
+        description: User password
+        type: string
+      re_password:
+        description: User reentered password, to make sure they match
+        type: string
+    required:
+    - email
+    - password
+    - re_password
+    type: object
+  model.RegisterParams:
+    properties:
+      college:
+        description: User college, this is restricted to UofU now
+        type: string
+      email:
+        description: User Email
+        type: string
+      first_name:
+        description: User first name
+        type: string
+      last_name:
+        description: User Last name
+        type: string
+      password:
+        description: User provided password, will be encrypted
+        type: string
+      re_password:
+        description: User reentered password, to make sure they match
+        type: string
+    required:
+    - email
+    - first_name
+    - last_name
+    - password
+    - re_password
+    type: object
+  model.ReviewParams:
+    properties:
+      comments:
+        description: The detailed comment on the review given by the user
+        type: string
+      cons:
+        description: The cons of the course given by the user
+        type: string
+      course_id:
+        description: Course ID
+        type: integer
+      is_anonymous:
+        description: Is the user posting this review anonymously
+        type: boolean
+      pros:
+        description: The pros of the course given by the user
+        type: string
+      rating:
+        description: The rating of the course given by the user
+        type: number
+      recommended:
+        description: Is teh course recommended by the user
+        type: boolean
+      user_id:
+        description: User ID
+        type: integer
+    required:
+    - comments
+    - cons
+    - course_id
+    - is_anonymous
+    - pros
+    - rating
+    - recommended
+    - user_id
+    type: object
+  model.Subject:
+    properties:
+      abbreviation:
+        type: string
+      college:
+        $ref: '#/definitions/model.College'
+      collegeID:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      isDeleted:
+        type: boolean
+      name:
+        type: string
+    type: object
+host: localhost
+info:
+  contact:
+    email: fio827601499@gmail.com
+    name: Kaijie Fu
+    url: http://www.swagger.io/support
+  description: General API Description for PickMyClasses
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: PickMyClasses API Guide
+  version: "1.0"
+paths:
+  /admin/user/list:
+    get:
+      consumes:
+      - application/json
+      description: This API will only be used by admin for fetching the user list
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Use this API to fetch the entire user list
+      tags:
+      - Admin
+  /class/:id:
+    get:
+      consumes:
+      - application/json
+      description: This API is used to get the class by the given ID
+      parameters:
+      - description: class id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Class'
+      summary: Use this API to get the class by the given ID
+      tags:
+      - Review
+  /class/list:
+    get:
+      consumes:
+      - application/json
+      description: This API is used to get the class list of the given course, you
+        should do pagination
+      parameters:
+      - description: Page number of the paginated class list, default is 1
+        in: query
+        name: pn
+        type: integer
+      - description: Page size(number of class to fetch) of the paginated class list,
+          default is 10
+        in: query
+        name: psize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Class'
+            type: array
+      summary: Use this API to get the list of the classes
+      tags:
+      - Class
+  /course/:id:
+    get:
+      consumes:
+      - application/json
+      description: This API is used to get the course info along with the classes
+      parameters:
+      - description: course id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Class'
+      summary: Use this API to get the class by the given ID
+      tags:
+      - Course
+  /course/:id/class:
+    get:
+      consumes:
+      - application/json
+      description: This API is used to get the class list, you should do pagination
+      parameters:
+      - description: course id
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Page number of the paginated class list, default is 1
+        in: query
+        name: pn
+        type: integer
+      - description: Page size(number of classes to fetch) of the paginated class
+          list, default is 10
+        in: query
+        name: psize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Class'
+            type: array
+      summary: Use this API to get the list of the classes
+      tags:
+      - Course
+  /course/:id/review:
+    get:
+      consumes:
+      - application/json
+      description: This API is used to get the review list of the given course, you
+        should do pagination
+      parameters:
+      - description: 'course ID '
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: Page number of the paginated review list, default is 1
+        in: query
+        name: pn
+        type: integer
+      - description: Page size(number of reviews to fetch) of the paginated review
+          list, default is 10
+        in: query
+        name: psize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Review'
+            type: array
+      summary: Use this API to get the list of reviews of the given course
+      tags:
+      - Review
+    post:
+      consumes:
+      - application/json
+      description: This API is for posting a review under a course
+      parameters:
+      - description: Post review parameters
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/model.ReviewParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Use this API to post a single review under a course
+      tags:
+      - Review
+  /course/:id/review/:review_id:
+    get:
+      consumes:
+      - application/json
+      description: This API is used when user click on a single review and gets its
+        detail, I will say it's hardly useful
+      parameters:
+      - description: The course id which the review is posted to
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: The actual review ID
+        in: query
+        name: review_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.Review'
+      summary: Use this API to get a single review under a class
+      tags:
+      - Review
+  /course/list:
+    get:
+      consumes:
+      - application/json
+      description: This API is used to get the course list, you should do pagination
+      parameters:
+      - description: Page number of the paginated course list, default is 1
+        in: query
+        name: pn
+        type: integer
+      - description: Page size(number of course to fetch) of the paginated course
+          list, default is 10
+        in: query
+        name: psize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Course'
+            type: array
+      summary: Use this API to get the list of the classes
+      tags:
+      - Course
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: After login, a token will be returned to verify user in the future
+      parameters:
+      - description: login parameters
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Use this API to login
+      tags:
+      - User
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: You should only use this interface to register for student, professor/admin
+        should be assigned directly
+      parameters:
+      - description: registration parameters
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegisterParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Use this API to register a user
+      tags:
+      - User
+swagger: "2.0"

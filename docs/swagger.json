@@ -1,0 +1,841 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "General API Description for PickMyClasses",
+        "title": "PickMyClasses API Guide",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Kaijie Fu",
+            "url": "http://www.swagger.io/support",
+            "email": "fio827601499@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost",
+    "basePath": "/user",
+    "paths": {
+        "/admin/user/list": {
+            "get": {
+                "description": "This API will only be used by admin for fetching the user list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Use this API to fetch the entire user list",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/class/:id": {
+            "get": {
+                "description": "This API is used to get the class by the given ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Use this API to get the class by the given ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "class id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Class"
+                        }
+                    }
+                }
+            }
+        },
+        "/class/list": {
+            "get": {
+                "description": "This API is used to get the class list of the given course, you should do pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Use this API to get the list of the classes",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number of the paginated class list, default is 1",
+                        "name": "pn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size(number of class to fetch) of the paginated class list, default is 10",
+                        "name": "psize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.Class"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/course/:id": {
+            "get": {
+                "description": "This API is used to get the course info along with the classes",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Use this API to get the class by the given ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "course id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Class"
+                        }
+                    }
+                }
+            }
+        },
+        "/course/:id/class": {
+            "get": {
+                "description": "This API is used to get the class list, you should do pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Use this API to get the list of the classes",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "course id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number of the paginated class list, default is 1",
+                        "name": "pn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size(number of classes to fetch) of the paginated class list, default is 10",
+                        "name": "psize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.Class"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/course/:id/review": {
+            "get": {
+                "description": "This API is used to get the review list of the given course, you should do pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Use this API to get the list of reviews of the given course",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "course ID ",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number of the paginated review list, default is 1",
+                        "name": "pn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size(number of reviews to fetch) of the paginated review list, default is 10",
+                        "name": "psize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.Review"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "This API is for posting a review under a course",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Use this API to post a single review under a course",
+                "parameters": [
+                    {
+                        "description": "Post review parameters",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ReviewParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/course/:id/review/:review_id": {
+            "get": {
+                "description": "This API is used when user click on a single review and gets its detail, I will say it's hardly useful",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Use this API to get a single review under a class",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "The course id which the review is posted to",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The actual review ID",
+                        "name": "review_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.Review"
+                        }
+                    }
+                }
+            }
+        },
+        "/course/list": {
+            "get": {
+                "description": "This API is used to get the course list, you should do pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Course"
+                ],
+                "summary": "Use this API to get the list of the classes",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page number of the paginated course list, default is 1",
+                        "name": "pn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size(number of course to fetch) of the paginated course list, default is 10",
+                        "name": "psize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.Course"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "After login, a token will be returned to verify user in the future",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Use this API to login",
+                "parameters": [
+                    {
+                        "description": "login parameters",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.LoginParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "description": "You should only use this interface to register for student, professor/admin should be assigned directly",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Use this API to register a user",
+                "parameters": [
+                    {
+                        "description": "registration parameters",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RegisterParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.Class": {
+            "type": "object",
+            "properties": {
+                "component": {
+                    "type": "string"
+                },
+                "course_catalog_name": {
+                    "type": "string"
+                },
+                "course_id": {
+                    "type": "integer"
+                },
+                "course_title": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "instructors": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "offer_date": {
+                    "type": "string"
+                },
+                "recommendation_score": {
+                    "type": "integer"
+                },
+                "seat_available": {
+                    "type": "integer"
+                },
+                "semester": {
+                    "type": "string"
+                },
+                "session": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                },
+                "wait_list": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Course": {
+            "type": "object",
+            "properties": {
+                "classes": {
+                    "description": "The classes (sessions) of the given course",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Class"
+                    }
+                },
+                "course": {
+                    "description": "The course info of the given course ID",
+                    "$ref": "#/definitions/model.Course"
+                }
+            }
+        },
+        "dto.Review": {
+            "type": "object",
+            "properties": {
+                "anonymous": {
+                    "description": "Is the review posted anonymously",
+                    "type": "boolean"
+                },
+                "comment": {
+                    "description": "The overall comment",
+                    "type": "string"
+                },
+                "cons": {
+                    "description": "The written text under cons",
+                    "type": "string"
+                },
+                "course_id": {
+                    "description": "The course ID of the review",
+                    "type": "integer"
+                },
+                "pros": {
+                    "description": "The written text under pros",
+                    "type": "string"
+                },
+                "rating": {
+                    "description": "The giving rating of the review",
+                    "type": "number"
+                },
+                "recommended": {
+                    "description": "Is the review recommend",
+                    "type": "boolean"
+                },
+                "user_id": {
+                    "description": "The userID who posted this review",
+                    "type": "integer"
+                }
+            }
+        },
+        "gorm.DeletedAt": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if Time is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "model.Class": {
+            "type": "object",
+            "properties": {
+                "component": {
+                    "type": "string"
+                },
+                "course": {
+                    "$ref": "#/definitions/model.Course"
+                },
+                "courseCatalogName": {
+                    "type": "string"
+                },
+                "courseID": {
+                    "type": "integer"
+                },
+                "courseTitle": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "instructors": {
+                    "type": "string"
+                },
+                "isDeleted": {
+                    "type": "boolean"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "note": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "offerDate": {
+                    "type": "string"
+                },
+                "recommendationScore": {
+                    "type": "integer"
+                },
+                "seatAvailable": {
+                    "type": "integer"
+                },
+                "semester": {
+                    "type": "string"
+                },
+                "session": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "unit": {
+                    "type": "string"
+                },
+                "waitList": {
+                    "type": "string"
+                },
+                "year": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.College": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDeleted": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Course": {
+            "type": "object",
+            "properties": {
+                "associatedCourseID": {
+                    "type": "integer"
+                },
+                "catalogCourseName": {
+                    "type": "string"
+                },
+                "component": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "designationCatalog": {
+                    "type": "string"
+                },
+                "fixedCredit": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDeleted": {
+                    "type": "boolean"
+                },
+                "isHonor": {
+                    "type": "boolean"
+                },
+                "maxCredit": {
+                    "type": "string"
+                },
+                "minCredit": {
+                    "type": "string"
+                },
+                "prerequisites": {
+                    "type": "string"
+                },
+                "subject": {
+                    "$ref": "#/definitions/model.Subject"
+                },
+                "subjectID": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.LoginParams": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "re_password"
+            ],
+            "properties": {
+                "email": {
+                    "description": "User Email",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "User password",
+                    "type": "string"
+                },
+                "re_password": {
+                    "description": "User reentered password, to make sure they match",
+                    "type": "string"
+                }
+            }
+        },
+        "model.RegisterParams": {
+            "type": "object",
+            "required": [
+                "email",
+                "first_name",
+                "last_name",
+                "password",
+                "re_password"
+            ],
+            "properties": {
+                "college": {
+                    "description": "User college, this is restricted to UofU now",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "User Email",
+                    "type": "string"
+                },
+                "first_name": {
+                    "description": "User first name",
+                    "type": "string"
+                },
+                "last_name": {
+                    "description": "User Last name",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "User provided password, will be encrypted",
+                    "type": "string"
+                },
+                "re_password": {
+                    "description": "User reentered password, to make sure they match",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ReviewParams": {
+            "type": "object",
+            "required": [
+                "comments",
+                "cons",
+                "course_id",
+                "is_anonymous",
+                "pros",
+                "rating",
+                "recommended",
+                "user_id"
+            ],
+            "properties": {
+                "comments": {
+                    "description": "The detailed comment on the review given by the user",
+                    "type": "string"
+                },
+                "cons": {
+                    "description": "The cons of the course given by the user",
+                    "type": "string"
+                },
+                "course_id": {
+                    "description": "Course ID",
+                    "type": "integer"
+                },
+                "is_anonymous": {
+                    "description": "Is the user posting this review anonymously",
+                    "type": "boolean"
+                },
+                "pros": {
+                    "description": "The pros of the course given by the user",
+                    "type": "string"
+                },
+                "rating": {
+                    "description": "The rating of the course given by the user",
+                    "type": "number"
+                },
+                "recommended": {
+                    "description": "Is teh course recommended by the user",
+                    "type": "boolean"
+                },
+                "user_id": {
+                    "description": "User ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Subject": {
+            "type": "object",
+            "properties": {
+                "abbreviation": {
+                    "type": "string"
+                },
+                "college": {
+                    "$ref": "#/definitions/model.College"
+                },
+                "collegeID": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDeleted": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,45 @@
+app:
+  name: "pmc"
+  mode: "release"
+log:
+  level: "debug"
+  filename: "pmc-dev.log"
+  max_size: 200
+  max_age: 30
+  max_backups: 7
+  mode: "debug"
+mongo:
+  host: "127.0.0.1"
+  port: 27017
+  max_pool: 20
+  w: "majority"
+  dbname: "dev"
+postgres:
+  host: "pmc1.ccyv4mlgftmr.us-east-1.rds.amazonaws.com"
+  port: 5432
+  username: "admin1"
+  password: "pickmyclassesdotcom"
+  dbname: "postgres"
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  db: 1
+  password: ""
+  pool_size: 100
+snowflake:
+  start_time: "2022-01-04"
+  machine_id: 1
+elastic:
+  url: "http://34.227.17.136:9200"
+  username: "admin1"
+  password: "Admin123!"
+auradb:
+  uri: "neo4j+s://f8e9dc6c.databases.neo4j.io:7687"
+  username: "neo4j"
+  password: "9_a9iCvVKRvW8LbdT5eiBfeSFQdclfboXk0JcuZ9mgQ"
+twinword-tags:
+  uri: "https://twinword-topic-tagging.p.rapidapi.com/generate/?text="
+  host: "twinword-topic-tagging.p.rapidapi.com"
+  key: "aASFE865ImTtakxSwxZYWXFO8Jmm8ZtG955HM3hNiNIo7bU6IvLtFgvhY2f8jgSamzKlXfHnGISNKiv9eTo/pQ=="
+
+
